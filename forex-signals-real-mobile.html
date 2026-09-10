@@ -278,6 +278,38 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
   background: #0c1a2e; border: 1px solid #1e3a5f;
   border-radius: 12px; padding: 0.7rem 0.85rem; margin: 0.5rem 0 0.85rem;
 }
+
+.section-label {
+  font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.04em;
+  color: var(--muted); margin: 0.75rem 0 0.4rem; font-weight: 700;
+}
+.ticker.single-col { grid-template-columns: 1fr; }
+.honesty {
+  font-size: 0.72rem; color: #fde68a; margin: 0.35rem 0 0.15rem; line-height: 1.35;
+}
+.session-pill {
+  display: inline-block; font-size: 0.68rem; font-weight: 700;
+  padding: 0.12rem 0.45rem; border-radius: 999px; margin-left: 0.35rem;
+  vertical-align: middle;
+}
+.session-pill.open { background: #14532d; color: #86efac; }
+.session-pill.closed { background: #334155; color: #cbd5e1; }
+.badge.rattrapage { background: #713f12; color: #fde68a; }
+.badge.nouveau { background: #1e3a5f; color: #93c5fd; }
+.badge.copie { background: #164e63; color: #a5f3fc; }
+.badge.gagne { background: #14532d; color: #86efac; }
+.badge.perdu { background: #7f1d1d; color: #fca5a5; }
+.badge.manque { background: #44403c; color: #d6d3d1; }
+.today-item {
+  border: 1px solid var(--border); border-radius: 12px;
+  padding: 0.7rem; margin-bottom: 0.5rem; font-size: 0.85rem; background: #0d1218;
+}
+.today-item.expanded { border-color: var(--accent); }
+.today-actions { display: flex; flex-wrap: wrap; gap: 0.35rem; margin-top: 0.55rem; }
+.cap-note {
+  font-size: 0.78rem; color: #bfdbfe; background: #0c1a2e;
+  border: 1px solid #1e3a5f; border-radius: 10px; padding: 0.55rem 0.7rem; margin-top: 0.55rem;
+}
 </style>
 </head>
 <body>
@@ -350,12 +382,29 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
       <span id="sourceWarn" class="neg" hidden style="display:block;margin-top:0.25rem"></span>
     </div>
     <div id="errorBox" class="error-box" hidden></div>
+
+    <div class="section-label">Forex (primaire)</div>
     <div class="ticker" id="ticker"></div>
     <p class="ref-note">
       <strong>Consensus multi-sources (écart possible vs Exness)</strong> —
       médiane des API OK. Robustesse ↑, match millimétrique Exness = impossible.
       Sources OK : <span id="apiSource">—</span> · historique local pour le momentum.
     </p>
+
+    <div class="section-label">Métaux</div>
+    <p class="honesty" id="goldHonesty">Or : source secondaire gratuite (qualité variable, pas un tick Exness).</p>
+    <div class="ticker" id="tickerGold"></div>
+
+    <div class="section-label">Crypto</div>
+    <p class="honesty" id="cryptoHonesty">Crypto : API publiques (Coinbase / Binance Vision) — spot indicatif, pas Exness.</p>
+    <div class="ticker" id="tickerCrypto"></div>
+
+    <div class="section-label">Indices Londres / Japon</div>
+    <p class="honesty" id="indexHonesty">
+      Pas d’API FTSE/Nikkei gratuite CORS fiable sans clé — proxy éducatif session
+      (GBPUSD ↔ Londres, USDJPY ↔ Tokyo) + horaires. Niveaux index réels non affichés.
+    </p>
+    <div class="ticker single-col" id="tickerIndices"></div>
   </section>
 
   <section class="card">
@@ -368,7 +417,29 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
     </div>
     <p class="muted" style="margin-top:0">
       Quand ON : évalue à chaque mise à jour réussie. Max 2 signaux actifs · cooldown entre nouveaux.
+      Objectif labo ≥5 signaux/jour (seuil assoupli + rattrapage) · plafond 12/jour.
     </p>
+    <div class="toggle-row" style="margin-top:0.55rem">
+      <span>Inclure or</span>
+      <label class="switch" title="Inclure or">
+        <input type="checkbox" id="toggleGold" checked />
+        <span class="slider"></span>
+      </label>
+    </div>
+    <div class="toggle-row">
+      <span>Inclure crypto</span>
+      <label class="switch" title="Inclure crypto">
+        <input type="checkbox" id="toggleCrypto" checked />
+        <span class="slider"></span>
+      </label>
+    </div>
+    <div class="toggle-row">
+      <span>Inclure indices Londres/Japon</span>
+      <label class="switch" title="Inclure indices">
+        <input type="checkbox" id="toggleIndices" checked />
+        <span class="slider"></span>
+      </label>
+    </div>
     <div class="settings-grid" style="margin-top:0.75rem">
       <div>
         <label for="cfgThreshold">Seuil momentum (pips)</label>
@@ -390,6 +461,21 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
     <button type="button" class="btn-ghost btn-sm" id="btnEval" style="width:100%;margin-top:0.75rem">
       Évaluer maintenant
     </button>
+    <p class="cap-note" id="dailyCapNote">
+      Signaux du jour : objectif ≥5 (rattrapage éducatif si besoin) · max 12 · plafond partagé FX/or/crypto/indices.
+    </p>
+  </section>
+
+  <section class="card">
+    <div class="card-head">
+      <h2 id="todayTitle">Signaux du jour (0)</h2>
+      <span class="muted" id="todayMeta">localStorage</span>
+    </div>
+    <p class="muted" style="margin-top:0;font-size:0.78rem" id="catchupNote">
+      Historique « Aujourd’hui » : chaque signal est sauvé (heure, paire, direction, SL, version règles, statut).
+      Si &lt; 5 signaux, le labo assouplit le seuil et peut émettre des « rattrapage » éducatifs (chemin du jour).
+    </p>
+    <div id="todayList"></div>
   </section>
 
   <section class="card">
@@ -444,18 +530,27 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
   'use strict';
 
   var STORAGE_KEY = 'fx_signals_real_v1';
-  var PAIRS = ['EURUSD', 'GBPUSD', 'USDJPY', 'USDCHF'];
+  var FX_PAIRS = ['EURUSD', 'GBPUSD', 'USDJPY', 'USDCHF'];
+  var GOLD_PAIRS = ['XAUUSD'];
+  var CRYPTO_PAIRS = ['BTCUSD', 'ETHUSD'];
+  var INDEX_IDS = ['FTSE100', 'NIKKEI225'];
+  var PAIRS = FX_PAIRS.slice(); // FX consensus pairs (baby) — never mixed into median math
   var POLL_MS = 45000;
   var HISTORY_MAX = 40;
   var MOMENTUM_N = 6;
   var MAX_SLOTS = 2;
   var COOLDOWN_MS = 3 * 60 * 1000;
+  var DAILY_MIN = 5;
+  var DAILY_MAX = 12;
   var DEFAULTS = {
     thresholdPips: 5,
     slPips: 18,
     rr: 1.5,
     riskPct: 1,
-    auto: false
+    auto: false,
+    includeGold: true,
+    includeCrypto: true,
+    includeIndices: true
   };
 
   var state = loadState();
@@ -464,12 +559,43 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
 
   var $ = function (id) { return document.getElementById(id); };
 
+  function assetMeta(pair) {
+    if (pair === 'XAUUSD') {
+      return { cls: 'metal', pip: 0.1, digits: 2, label: 'XAUUSD (Or)', slScale: 1.2, unit: 'pips or' };
+    }
+    if (pair === 'BTCUSD') {
+      return { cls: 'crypto', pip: 10, digits: 2, label: 'BTCUSD', slScale: 2.5, unit: 'pts $' };
+    }
+    if (pair === 'ETHUSD') {
+      return { cls: 'crypto', pip: 1, digits: 2, label: 'ETHUSD', slScale: 2.5, unit: 'pts $' };
+    }
+    if (pair === 'FTSE100') {
+      return {
+        cls: 'index', pip: 0.0001, digits: 5, label: 'Londres (LSE / FTSE)',
+        slScale: 1, unit: 'pips', proxyPair: 'GBPUSD', session: 'london'
+      };
+    }
+    if (pair === 'NIKKEI225') {
+      return {
+        cls: 'index', pip: 0.01, digits: 3, label: 'Japon (TSE / Nikkei)',
+        slScale: 1, unit: 'pips', proxyPair: 'USDJPY', session: 'tokyo'
+      };
+    }
+    return {
+      cls: 'fx',
+      pip: pair.indexOf('JPY') >= 0 ? 0.01 : 0.0001,
+      digits: pair.indexOf('JPY') >= 0 ? 3 : 5,
+      label: pair,
+      slScale: 1,
+      unit: 'pips'
+    };
+  }
+
   function loadState() {
     try {
       var raw = localStorage.getItem(STORAGE_KEY);
       if (!raw) return freshState();
-      var s = JSON.parse(raw);
-      return normalize(s);
+      return normalize(JSON.parse(raw));
     } catch (e) {
       return freshState();
     }
@@ -481,6 +607,7 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
       history: {},
       signals: [],
       journal: [],
+      todaySignals: [],
       lastSignalAt: 0,
       cfg: Object.assign({}, DEFAULTS),
       apiSource: null,
@@ -491,7 +618,13 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
       lastFetchAt: null,
       lastError: null,
       wins: 0,
-      losses: 0
+      losses: 0,
+      ruleVersion: 1,
+      ruleHistory: [],
+      goldSource: null,
+      cryptoSource: null,
+      indexNote: null,
+      extraMeta: {}
     };
   }
 
@@ -502,9 +635,13 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
     f.history = s.history || {};
     f.signals = Array.isArray(s.signals) ? s.signals : [];
     f.journal = Array.isArray(s.journal) ? s.journal : [];
+    f.todaySignals = Array.isArray(s.todaySignals) ? s.todaySignals : [];
     f.lastSignalAt = s.lastSignalAt || 0;
     f.cfg = Object.assign({}, DEFAULTS, s.cfg || {});
     f.cfg.riskPct = Math.min(2, Math.max(0.5, Number(f.cfg.riskPct) || 1));
+    if (f.cfg.includeGold == null) f.cfg.includeGold = true;
+    if (f.cfg.includeCrypto == null) f.cfg.includeCrypto = true;
+    if (f.cfg.includeIndices == null) f.cfg.includeIndices = true;
     f.apiSource = s.apiSource || null;
     f.divergence = s.divergence || {};
     f.sourceCount = s.sourceCount != null ? s.sourceCount : null;
@@ -515,6 +652,10 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
     f.wins = s.wins || 0;
     f.losses = s.losses || 0;
     f.ruleVersion = s.ruleVersion || 1;
+    f.goldSource = s.goldSource || null;
+    f.cryptoSource = s.cryptoSource || null;
+    f.indexNote = s.indexNote || null;
+    f.extraMeta = s.extraMeta || {};
     f.ruleHistory = Array.isArray(s.ruleHistory) && s.ruleHistory.length
       ? s.ruleHistory
       : [{
@@ -527,11 +668,26 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
           after: snapshotRules(f.cfg),
           changes: ['État migré / règles actuelles']
         }];
+    pruneToday(f);
     return f;
+  }
+
+  function todayKey(d) {
+    d = d || new Date();
+    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' +
+      String(d.getDate()).padStart(2, '0');
+  }
+
+  function pruneToday(st) {
+    var key = todayKey();
+    st.todaySignals = (st.todaySignals || []).filter(function (x) {
+      return x && x.day === key;
+    });
   }
 
   function save() {
     try {
+      pruneToday(state);
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
     } catch (e) { /* quota */ }
   }
@@ -544,14 +700,46 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
     toast._t = setTimeout(function () { el.classList.remove('show'); }, 2800);
   }
 
+  function snapshotRules(cfg) {
+    cfg = cfg || state.cfg;
+    return {
+      thresholdPips: Number(cfg.thresholdPips),
+      slPips: Number(cfg.slPips),
+      rr: Number(cfg.rr),
+      riskPct: Number(cfg.riskPct)
+    };
+  }
+
+  function formatRules(r) {
+    if (!r) return '—';
+    return 'seuil ' + r.thresholdPips + ' · SL ' + r.slPips + ' · R:R ' + r.rr + ' · risque ' + r.riskPct + '%';
+  }
+
+  function describeChanges(before, after) {
+    if (!before || !after) return ['État initial'];
+    var parts = [];
+    if (before.thresholdPips !== after.thresholdPips) {
+      parts.push('seuil ' + before.thresholdPips + ' → ' + after.thresholdPips);
+    }
+    if (before.slPips !== after.slPips) {
+      parts.push('SL ' + before.slPips + ' → ' + after.slPips);
+    }
+    if (before.rr !== after.rr) {
+      parts.push('R:R ' + before.rr + ' → ' + after.rr);
+    }
+    if (before.riskPct !== after.riskPct) {
+      parts.push('risque ' + before.riskPct + '% → ' + after.riskPct + '%');
+    }
+    return parts.length ? parts : ['Aucun changement de paramètres'];
+  }
+
   function pipSize(pair) {
-    return pair.indexOf('JPY') >= 0 ? 0.01 : 0.0001;
+    return assetMeta(pair).pip;
   }
 
   function formatPrice(pair, price) {
     if (price == null || !isFinite(price)) return '—';
-    var digits = pair.indexOf('JPY') >= 0 ? 3 : 5;
-    return Number(price).toFixed(digits);
+    return Number(price).toFixed(assetMeta(pair).digits);
   }
 
   function pipsBetween(pair, a, b) {
@@ -568,9 +756,6 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
     return side === 'buy' ? entry + d : entry - d;
   }
 
-  /* ---------- API providers (browser CORS, no keys) ---------- */
-  // Parallel worldwide sources → median consensus per pair.
-  // Honest: improves robustness; CANNOT match Exness ticks exactly.
   function median(nums) {
     var a = nums.filter(function (n) { return n != null && isFinite(n); })
       .slice()
@@ -580,6 +765,7 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
     return a.length % 2 ? a[mid] : (a[mid - 1] + a[mid]) / 2;
   }
 
+  /* ---------- FX API providers (browser CORS, no keys) — UNCHANGED baby ---------- */
   async function fetchOpenErApi() {
     var res = await fetch('https://open.er-api.com/v6/latest/USD', { cache: 'no-store' });
     if (!res.ok) throw new Error('open.er-api HTTP ' + res.status);
@@ -636,7 +822,6 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
   }
 
   async function fetchCurrencyApi() {
-    // fawazahmed0 currency-api via jsDelivr CDN (CORS *, no key)
     var res = await fetch(
       'https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/usd.json',
       { cache: 'no-store' }
@@ -660,7 +845,6 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
   }
 
   async function fetchBankOfCanada() {
-    // CAD cross-rates from Bank of Canada Valet API (CORS *, no key)
     var url = 'https://www.bankofcanada.ca/valet/observations/' +
       'FXUSDCAD,FXEURCAD,FXGBPCAD,FXJPYCAD,FXCHFCAD/json?recent=1';
     var res = await fetch(url, { cache: 'no-store' });
@@ -696,7 +880,7 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
     { id: 'banque-canada', fn: fetchBankOfCanada }
   ];
 
-  async function fetchPrices() {
+  async function fetchFxConsensus() {
     var settled = await Promise.all(PRICE_PROVIDERS.map(function (p) {
       return p.fn().then(function (r) {
         return { ok: true, id: p.id, result: r };
@@ -713,7 +897,7 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
 
     var prices = {};
     var divergence = {};
-    PAIRS.forEach(function (pair) {
+    FX_PAIRS.forEach(function (pair) {
       var vals = [];
       ok.forEach(function (s) {
         var v = s.result.prices[pair];
@@ -723,12 +907,7 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
       if (vals.length) {
         var mn = Math.min.apply(null, vals);
         var mx = Math.max.apply(null, vals);
-        divergence[pair] = {
-          min: mn,
-          max: mx,
-          spread: mx - mn,
-          n: vals.length
-        };
+        divergence[pair] = { min: mn, max: mx, spread: mx - mn, n: vals.length };
       } else {
         divergence[pair] = null;
       }
@@ -749,13 +928,178 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
     };
   }
 
+  /* ---------- Gold (secondary, no key) ---------- */
+  async function fetchGoldXaus() {
+    var res = await fetch('https://xaus.com/api/v1/spot', { cache: 'no-store' });
+    if (!res.ok) throw new Error('xaus HTTP ' + res.status);
+    var data = await res.json();
+    var p = Number((data.xau && data.xau.price) || data.spot_usd_oz);
+    if (!isFinite(p) || p <= 0) throw new Error('xaus invalide');
+    return { source: 'xaus.com (spot indicatif)', price: p, quality: 'secondaire' };
+  }
+
+  async function fetchGoldApi() {
+    var res = await fetch('https://api.gold-api.com/price/XAU', { cache: 'no-store' });
+    if (!res.ok) throw new Error('gold-api HTTP ' + res.status);
+    var data = await res.json();
+    var p = Number(data.price);
+    if (!isFinite(p) || p <= 0) throw new Error('gold-api invalide');
+    return { source: 'gold-api.com (spot indicatif)', price: p, quality: 'secondaire' };
+  }
+
+  async function fetchGold() {
+    var errs = [];
+    try { return await fetchGoldXaus(); } catch (e) { errs.push((e && e.message) || String(e)); }
+    try { return await fetchGoldApi(); } catch (e) { errs.push((e && e.message) || String(e)); }
+    throw new Error('Or indisponible · ' + errs.join(' · '));
+  }
+
+  /* ---------- Crypto (no key) ---------- */
+  async function fetchCryptoBinance() {
+    var res = await fetch(
+      'https://data-api.binance.vision/api/v3/ticker/price?symbols=%5B%22BTCUSDT%22,%22ETHUSDT%22%5D',
+      { cache: 'no-store' }
+    );
+    if (!res.ok) throw new Error('binance-vision HTTP ' + res.status);
+    var data = await res.json();
+    var map = {};
+    (data || []).forEach(function (row) { map[row.symbol] = Number(row.price); });
+    if (!isFinite(map.BTCUSDT) || !isFinite(map.ETHUSDT)) throw new Error('binance-vision invalide');
+    return {
+      source: 'Binance Vision (USDT≈USD)',
+      prices: { BTCUSD: map.BTCUSDT, ETHUSD: map.ETHUSDT },
+      quality: 'spot public'
+    };
+  }
+
+  async function fetchCryptoCoinbase() {
+    var b = await fetch('https://api.coinbase.com/v2/prices/BTC-USD/spot', { cache: 'no-store' });
+    var e = await fetch('https://api.coinbase.com/v2/prices/ETH-USD/spot', { cache: 'no-store' });
+    if (!b.ok || !e.ok) throw new Error('coinbase HTTP');
+    var bj = await b.json();
+    var ej = await e.json();
+    var bp = Number(bj.data && bj.data.amount);
+    var ep = Number(ej.data && ej.data.amount);
+    if (!isFinite(bp) || !isFinite(ep)) throw new Error('coinbase invalide');
+    return {
+      source: 'Coinbase spot',
+      prices: { BTCUSD: bp, ETHUSD: ep },
+      quality: 'spot public'
+    };
+  }
+
+  async function fetchCrypto() {
+    var errs = [];
+    try { return await fetchCryptoBinance(); } catch (e) { errs.push((e && e.message) || String(e)); }
+    try { return await fetchCryptoCoinbase(); } catch (e) { errs.push((e && e.message) || String(e)); }
+    throw new Error('Crypto indisponible · ' + errs.join(' · '));
+  }
+
+  /* ---------- London / Japan session awareness (no paid index API) ---------- */
+  function londonSessionOpen(d) {
+    d = d || new Date();
+    var utc = d.getUTCHours() + d.getUTCMinutes() / 60;
+    var day = d.getUTCDay(); // 0 Sun .. 6 Sat
+    if (day === 0 || day === 6) return false;
+    // Approx LSE cash: 08:00–16:30 London ≈ 07:00–15:30 UTC (winter) / 08:00–16:30 UTC summer
+    // Use broad window 07:00–16:30 UTC
+    return utc >= 7 && utc < 16.5;
+  }
+
+  function tokyoSessionOpen(d) {
+    d = d || new Date();
+    var utc = d.getUTCHours() + d.getUTCMinutes() / 60;
+    var day = d.getUTCDay();
+    if (day === 0 || day === 6) return false;
+    // TSE approx 00:00–06:00 UTC (09:00–15:00 JST)
+    return utc >= 0 && utc < 6;
+  }
+
+  function indexSessionInfo() {
+    var now = new Date();
+    return {
+      FTSE100: {
+        open: londonSessionOpen(now),
+        label: 'Londres (LSE / FTSE)',
+        proxyPair: 'GBPUSD',
+        note: 'Proxy éducatif GBPUSD · pas le niveau FTSE réel (API CORS gratuite indisponible)'
+      },
+      NIKKEI225: {
+        open: tokyoSessionOpen(now),
+        label: 'Japon (TSE / Nikkei)',
+        proxyPair: 'USDJPY',
+        note: 'Proxy éducatif USDJPY · pas le niveau Nikkei réel (API CORS gratuite indisponible)'
+      }
+    };
+  }
+
+  async function fetchPrices() {
+    var fx = await fetchFxConsensus();
+    var prices = Object.assign({}, fx.prices);
+    var extra = { gold: null, crypto: null, indices: indexSessionInfo() };
+
+    if (state.cfg.includeGold) {
+      try {
+        var g = await fetchGold();
+        prices.XAUUSD = g.price;
+        extra.gold = g;
+        state.goldSource = g.source + ' · qualité ' + g.quality;
+      } catch (e) {
+        state.goldSource = 'Or KO · ' + ((e && e.message) || String(e));
+      }
+    } else {
+      state.goldSource = 'Or désactivé (toggle)';
+    }
+
+    if (state.cfg.includeCrypto) {
+      try {
+        var c = await fetchCrypto();
+        Object.assign(prices, c.prices);
+        extra.crypto = c;
+        state.cryptoSource = c.source + ' · ' + c.quality;
+      } catch (e) {
+        state.cryptoSource = 'Crypto KO · ' + ((e && e.message) || String(e));
+      }
+    } else {
+      state.cryptoSource = 'Crypto désactivée (toggle)';
+    }
+
+    // Index: map proxy FX into synthetic keys for momentum history only (honest)
+    if (state.cfg.includeIndices) {
+      if (prices.GBPUSD != null) prices.FTSE100 = prices.GBPUSD;
+      if (prices.USDJPY != null) prices.NIKKEI225 = prices.USDJPY;
+      state.indexNote = 'Sessions LSE/TSE + proxy FX (pas de tick index réel)';
+    } else {
+      state.indexNote = 'Indices désactivés (toggle)';
+    }
+
+    state.extraMeta = extra;
+    return {
+      prices: prices,
+      source: fx.source,
+      sourceCount: fx.sourceCount,
+      sourceTotal: fx.sourceTotal,
+      sourceNames: fx.sourceNames,
+      failedNames: fx.failedNames,
+      divergence: fx.divergence,
+      warning: fx.warning
+    };
+  }
+
+  function allTrackPairs() {
+    var list = FX_PAIRS.slice();
+    if (state.cfg.includeGold) list = list.concat(GOLD_PAIRS);
+    if (state.cfg.includeCrypto) list = list.concat(CRYPTO_PAIRS);
+    if (state.cfg.includeIndices) list = list.concat(INDEX_IDS);
+    return list;
+  }
+
   function pushHistory(prices, ts) {
-    PAIRS.forEach(function (pair) {
+    allTrackPairs().forEach(function (pair) {
       var p = prices[pair];
       if (p == null || !isFinite(p)) return;
       if (!state.history[pair]) state.history[pair] = [];
       var arr = state.history[pair];
-      // Avoid duplicate identical samples within 20s
       var last = arr[arr.length - 1];
       if (last && (ts - last.t) < 20000 && Math.abs(last.p - p) < pipSize(pair) * 0.1) {
         return;
@@ -770,88 +1114,262 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
     if (arr.length < 2) return 0;
     var n = Math.min(MOMENTUM_N, arr.length);
     var recent = arr.slice(-n);
-    var first = recent[0].p;
-    var last = recent[recent.length - 1].p;
-    return pipsBetween(pair, first, last);
+    return pipsBetween(pair, recent[0].p, recent[recent.length - 1].p);
   }
 
-  function uid() {
-    return 'sig_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 7);
+  function uid(prefix) {
+    return (prefix || 'sig') + '_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 7);
   }
 
   function activeCount() {
     return state.signals.filter(function (s) { return s.status === 'active'; }).length;
   }
 
-  function evaluateSignals(manual) {
-    var threshold = Number(state.cfg.thresholdPips) || DEFAULTS.thresholdPips;
-    var slPips = Number(state.cfg.slPips) || DEFAULTS.slPips;
+  function todayCount() {
+    pruneToday(state);
+    return state.todaySignals.length;
+  }
+
+  function effectiveThreshold() {
+    var base = Number(state.cfg.thresholdPips) || DEFAULTS.thresholdPips;
+    var n = todayCount();
+    if (n < DAILY_MIN) {
+      // Soften toward ≥5/day educational target
+      return Math.max(2, Math.round((base * 0.65) * 2) / 2);
+    }
+    return base;
+  }
+
+  function candidatePairs() {
+    var list = FX_PAIRS.slice();
+    if (state.cfg.includeGold) list = list.concat(GOLD_PAIRS);
+    if (state.cfg.includeCrypto) list = list.concat(CRYPTO_PAIRS);
+    if (state.cfg.includeIndices) {
+      var sess = indexSessionInfo();
+      // Only consider index proxies when session open (secondary)
+      if (sess.FTSE100.open) list.push('FTSE100');
+      if (sess.NIKKEI225.open) list.push('NIKKEI225');
+    }
+    return list;
+  }
+
+  function recordToday(sig, status, tag) {
+    pruneToday(state);
+    var existing = null;
+    for (var i = 0; i < state.todaySignals.length; i++) {
+      if (state.todaySignals[i].id === sig.id) { existing = state.todaySignals[i]; break; }
+    }
+    if (existing) {
+      if (status) existing.status = status;
+      if (tag) existing.tag = tag;
+      return existing;
+    }
+    if (state.todaySignals.length >= DAILY_MAX) return null;
+    var row = {
+      id: sig.id,
+      day: todayKey(),
+      at: sig.createdAt || Date.now(),
+      pair: sig.pair,
+      side: sig.side,
+      entry: sig.entry,
+      sl: sig.sl,
+      tp: sig.tp,
+      slPips: sig.slPips,
+      tpPips: sig.tpPips,
+      rr: sig.rr,
+      riskPct: sig.riskPct,
+      momentum: sig.momentum,
+      ruleVersion: sig.ruleVersion || state.ruleVersion || 1,
+      status: status || 'nouveau',
+      tag: tag || sig.tag || null,
+      assetClass: assetMeta(sig.pair).cls,
+      displayLabel: sig.displayLabel || assetMeta(sig.pair).label
+    };
+    state.todaySignals.unshift(row);
+    return row;
+  }
+
+  function createSignal(c, opts) {
+    opts = opts || {};
+    if (todayCount() >= DAILY_MAX) return null;
+    var meta = assetMeta(c.pair);
+    var slPips = Math.round((Number(state.cfg.slPips) || DEFAULTS.slPips) * (meta.slScale || 1));
     var rr = Number(state.cfg.rr) || DEFAULTS.rr;
     var risk = Math.min(2, Math.max(0.5, Number(state.cfg.riskPct) || 1));
+    var side = c.mom > 0 ? 'buy' : 'sell';
+    var tpPips = slPips * rr;
+    var entry = c.price;
+    var displayPair = c.pair;
+    var displayLabel = meta.label;
+    // For index proxies, SL/TP computed on proxy FX price; label honesty
+    if (meta.cls === 'index') {
+      displayLabel = meta.label + ' · proxy ' + meta.proxyPair;
+    }
+    var sig = {
+      id: uid(opts.rattrapage ? 'rat' : 'sig'),
+      pair: displayPair,
+      side: side,
+      entry: entry,
+      sl: priceFromPips(c.pair, entry, side, slPips),
+      tp: tpFromPips(c.pair, entry, side, tpPips),
+      slPips: slPips,
+      tpPips: tpPips,
+      rr: rr,
+      riskPct: risk,
+      momentum: Math.round(c.mom * 10) / 10,
+      createdAt: opts.at || Date.now(),
+      status: opts.activate === false ? 'history' : 'active',
+      ruleVersion: state.ruleVersion || 1,
+      tag: opts.tag || null,
+      displayLabel: displayLabel,
+      assetClass: meta.cls
+    };
+    if (opts.activate !== false && activeCount() < MAX_SLOTS) {
+      state.signals.unshift(sig);
+      state.lastSignalAt = Date.now();
+    } else if (opts.activate !== false) {
+      // Still record in today history even if slots full
+      sig.status = 'history';
+    }
+    recordToday(sig, opts.status || 'nouveau', opts.tag || null);
+    return sig;
+  }
 
-    if (!manual && !state.cfg.auto) return;
-    if (activeCount() >= MAX_SLOTS) return;
-    if (!manual && state.lastSignalAt && (Date.now() - state.lastSignalAt) < COOLDOWN_MS) return;
+  function evaluateSignals(manual) {
+    var threshold = effectiveThreshold();
+    var soft = todayCount() < DAILY_MIN;
 
-    // Rank pairs by absolute momentum
+    if (!manual && !state.cfg.auto) {
+      maybeCatchUp();
+      return;
+    }
+    if (todayCount() >= DAILY_MAX) {
+      if (manual) toast('Plafond journalier atteint (' + DAILY_MAX + ')');
+      return;
+    }
+    if (activeCount() >= MAX_SLOTS && !manual) {
+      maybeCatchUp();
+      return;
+    }
+    if (!manual && state.lastSignalAt && (Date.now() - state.lastSignalAt) < COOLDOWN_MS) {
+      maybeCatchUp();
+      return;
+    }
+
     var candidates = [];
-    PAIRS.forEach(function (pair) {
+    candidatePairs().forEach(function (pair) {
       var price = state.prices[pair];
       if (price == null) return;
       var mom = momentumPips(pair);
-      if (Math.abs(mom) < threshold) return;
-      // Skip if already active on this pair
+      var thr = threshold;
+      // Slightly softer for secondary assets when catching up
+      if (soft && assetMeta(pair).cls !== 'fx') thr = Math.max(1.5, thr * 0.85);
+      if (Math.abs(mom) < thr) return;
       var exists = state.signals.some(function (s) {
         return s.status === 'active' && s.pair === pair;
       });
       if (exists) return;
+      // Avoid duplicate today on same pair+side within 90 min
+      var sideGuess = mom > 0 ? 'buy' : 'sell';
+      var dup = state.todaySignals.some(function (t) {
+        return t.pair === pair && t.side === sideGuess && (Date.now() - t.at) < 90 * 60 * 1000;
+      });
+      if (dup) return;
       candidates.push({ pair: pair, mom: mom, price: price });
     });
 
-    candidates.sort(function (a, b) {
-      return Math.abs(b.mom) - Math.abs(a.mom);
-    });
+    candidates.sort(function (a, b) { return Math.abs(b.mom) - Math.abs(a.mom); });
 
     if (!candidates.length) {
-      if (manual) toast('Aucun momentum ≥ ' + threshold + ' pips');
+      if (manual) toast('Aucun momentum ≥ ' + threshold + ' (seuil effectif' + (soft ? ' assoupli' : '') + ')');
+      maybeCatchUp();
       return;
     }
 
-    var slotsLeft = MAX_SLOTS - activeCount();
+    var slotsLeft = Math.max(0, MAX_SLOTS - activeCount());
+    var room = DAILY_MAX - todayCount();
     var created = 0;
-    for (var i = 0; i < candidates.length && created < slotsLeft; i++) {
-      if (!manual && created > 0) break; // auto: one new signal per cycle
+    for (var i = 0; i < candidates.length && created < room; i++) {
+      if (!manual && created > 0) break;
+      if (slotsLeft <= 0 && !manual) break;
       var c = candidates[i];
-      var side = c.mom > 0 ? 'buy' : 'sell';
-      var tpPips = slPips * rr;
-      var entry = c.price;
-      var sl = priceFromPips(c.pair, entry, side, slPips);
-      var tp = tpFromPips(c.pair, entry, side, tpPips);
-
-      state.signals.unshift({
-        id: uid(),
-        pair: c.pair,
-        side: side,
-        entry: entry,
-        sl: sl,
-        tp: tp,
-        slPips: slPips,
-        tpPips: tpPips,
-        rr: rr,
-        riskPct: risk,
-        momentum: Math.round(c.mom * 10) / 10,
-        createdAt: Date.now(),
-        status: 'active',
-        ruleVersion: state.ruleVersion || 1
+      var activate = slotsLeft > 0;
+      var sig = createSignal(c, {
+        activate: activate,
+        tag: soft && assetMeta(c.pair).cls !== 'fx' ? 'secondaire' : null
       });
-      created++;
-      state.lastSignalAt = Date.now();
+      if (sig) {
+        created++;
+        if (activate) slotsLeft--;
+      }
     }
 
     if (created) {
       save();
       render();
       toast(created + ' signal(s) · copie sur démo Exness');
+    }
+    maybeCatchUp();
+  }
+
+  function dayPathMomentum(pair) {
+    var arr = state.history[pair] || [];
+    if (arr.length < 3) return null;
+    var startOfDay = new Date();
+    startOfDay.setHours(0, 0, 0, 0);
+    var dayPts = arr.filter(function (x) { return x.t >= startOfDay.getTime(); });
+    if (dayPts.length < 3) dayPts = arr.slice(-Math.min(12, arr.length));
+    if (dayPts.length < 3) return null;
+    var first = dayPts[0].p;
+    var last = dayPts[dayPts.length - 1].p;
+    var mid = dayPts[Math.floor(dayPts.length / 2)].p;
+    var momFull = pipsBetween(pair, first, last);
+    var momEarly = pipsBetween(pair, first, mid);
+    var momLate = pipsBetween(pair, mid, last);
+    return { momFull: momFull, momEarly: momEarly, momLate: momLate, price: last, first: first };
+  }
+
+  function maybeCatchUp() {
+    pruneToday(state);
+    var n = todayCount();
+    if (n >= DAILY_MIN || n >= DAILY_MAX) return;
+
+    var hour = new Date().getHours();
+    // Midday / evening backfill windows (local)
+    var windowOk = hour >= 11 || n <= 1;
+    if (!windowOk && n >= 2) return;
+
+    var need = Math.min(DAILY_MIN - n, DAILY_MAX - n);
+    if (need <= 0) return;
+
+    var thr = Math.max(1.5, (Number(state.cfg.thresholdPips) || 5) * 0.5);
+    var pairs = candidatePairs();
+    var made = 0;
+
+    for (var i = 0; i < pairs.length && made < need; i++) {
+      var pair = pairs[i];
+      var path = dayPathMomentum(pair);
+      if (!path) continue;
+      var useMom = Math.abs(path.momEarly) >= Math.abs(path.momLate) ? path.momEarly : path.momLate;
+      if (Math.abs(useMom) < thr && Math.abs(path.momFull) < thr) continue;
+      if (Math.abs(useMom) < thr) useMom = path.momFull;
+
+      var already = state.todaySignals.some(function (t) {
+        return t.pair === pair && t.tag === 'rattrapage';
+      });
+      if (already) continue;
+
+      var sig = createSignal(
+        { pair: pair, mom: useMom, price: path.price },
+        { activate: false, tag: 'rattrapage', status: 'manqué', at: Date.now() }
+      );
+      if (sig) made++;
+    }
+
+    if (made) {
+      save();
+      render();
+      toast(made + ' rattrapage éducatif (historique du jour)');
     }
   }
 
@@ -863,6 +1381,7 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
     try {
       var result = await fetchPrices();
       var ts = Date.now();
+      // Preserve previous non-FX extras if fetch skipped them
       state.prices = result.prices;
       state.divergence = result.divergence || {};
       state.apiSource = (result.sourceNames && result.sourceNames.length)
@@ -875,10 +1394,11 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
       state.lastError = null;
       pushHistory(result.prices, ts);
       save();
-      var sc = result.sourceCount + '/' + result.sourceTotal + ' sources';
+      var sc = result.sourceCount + '/' + result.sourceTotal + ' sources FX';
       setStatus(result.sourceCount < 2 ? 'wait' : 'ok', 'OK · ' + sc + ' · consensus médiane');
       render();
       if (fromAutoEval !== false) evaluateSignals(false);
+      else maybeCatchUp();
     } catch (e) {
       state.lastError = (e && e.message) || String(e);
       state.sourceWarning = null;
@@ -898,7 +1418,7 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
   function showError(msg) {
     var box = $('errorBox');
     box.hidden = false;
-    box.innerHTML = '<strong>Impossible de charger les cours.</strong><br>' +
+    box.innerHTML = '<strong>Impossible de charger les cours FX.</strong><br>' +
       escapeHtml(msg) +
       '<br><button type="button" class="btn-primary btn-sm" id="btnRetry" style="margin-top:0.65rem">Réessayer</button>';
     var btn = $('btnRetry');
@@ -917,37 +1437,110 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
     return side === 'buy' ? 'ACHAT' : 'VENTE';
   }
 
+  function statusBadge(st) {
+    var map = {
+      nouveau: 'nouveau',
+      copie: 'copie',
+      copié: 'copie',
+      gagné: 'gagne',
+      gagne: 'gagne',
+      perdu: 'perdu',
+      manqué: 'manque',
+      manque: 'manque'
+    };
+    var cls = map[st] || 'nouveau';
+    var label = st || 'nouveau';
+    return '<span class="badge ' + cls + '">' + escapeHtml(label) + '</span>';
+  }
+
+  function renderTickPair(pair) {
+    var price = state.prices[pair];
+    var mom = momentumPips(pair);
+    var hist = (state.history[pair] || []).length;
+    var cls = mom > 0.2 ? 'pos' : (mom < -0.2 ? 'neg' : 'muted');
+    var sign = mom > 0 ? '+' : '';
+    var divg = state.divergence && state.divergence[pair];
+    var divgHtml = '';
+    if (divg && divg.n >= 2) {
+      var spreadPips = Math.abs(divg.spread) / pipSize(pair);
+      divgHtml = '<div class="divg">divergence sources · ' +
+        spreadPips.toFixed(1) + ' pips (' + divg.n + ' src)</div>';
+    } else if (divg && divg.n === 1) {
+      divgHtml = '<div class="divg">1 seule source pour cette paire</div>';
+    }
+    var meta = assetMeta(pair);
+    return '<div class="tick">' +
+      '<div class="pair">' + escapeHtml(meta.label || pair) + '</div>' +
+      '<div class="price">' + formatPrice(pair, price) + '</div>' +
+      '<div class="delta ' + cls + '">' +
+        (hist >= 2 ? (sign + mom.toFixed(1) + ' ' + meta.unit + ' / ' + Math.min(MOMENTUM_N, hist) + ' pts') : 'historique…') +
+      '</div>' + divgHtml + '</div>';
+  }
+
   function renderTicker() {
     var html = '';
-    PAIRS.forEach(function (pair) {
-      var price = state.prices[pair];
-      var mom = momentumPips(pair);
-      var hist = (state.history[pair] || []).length;
+    FX_PAIRS.forEach(function (pair) { html += renderTickPair(pair); });
+    $('ticker').innerHTML = html || '<p class="empty">Pas encore de cours FX</p>';
+
+    // Gold
+    var gHtml = '';
+    if (state.cfg.includeGold && state.prices.XAUUSD != null) {
+      gHtml = renderTickPair('XAUUSD');
+    } else {
+      gHtml = '<p class="empty">' + escapeHtml(state.goldSource || 'Or non chargé') + '</p>';
+    }
+    $('tickerGold').innerHTML = gHtml;
+    if ($('goldHonesty')) {
+      $('goldHonesty').textContent = 'Or : ' + (state.goldSource || 'source secondaire gratuite (qualité variable, pas un tick Exness).');
+    }
+
+    // Crypto
+    var cHtml = '';
+    if (state.cfg.includeCrypto && (state.prices.BTCUSD != null || state.prices.ETHUSD != null)) {
+      CRYPTO_PAIRS.forEach(function (p) {
+        if (state.prices[p] != null) cHtml += renderTickPair(p);
+      });
+    } else {
+      cHtml = '<p class="empty">' + escapeHtml(state.cryptoSource || 'Crypto non chargée') + '</p>';
+    }
+    $('tickerCrypto').innerHTML = cHtml || '<p class="empty">Crypto non chargée</p>';
+    if ($('cryptoHonesty')) {
+      $('cryptoHonesty').textContent = 'Crypto : ' + (state.cryptoSource || 'API publiques — spot indicatif, pas Exness.');
+    }
+
+    // Indices
+    var sess = indexSessionInfo();
+    var iHtml = '';
+    INDEX_IDS.forEach(function (id) {
+      var info = sess[id];
+      var open = info.open;
+      var proxy = info.proxyPair;
+      var mom = momentumPips(id) || momentumPips(proxy);
       var cls = mom > 0.2 ? 'pos' : (mom < -0.2 ? 'neg' : 'muted');
       var sign = mom > 0 ? '+' : '';
-      var divg = state.divergence && state.divergence[pair];
-      var divgHtml = '';
-      if (divg && divg.n >= 2) {
-        var spreadPips = Math.abs(divg.spread) / pipSize(pair);
-        divgHtml = '<div class="divg">divergence sources · ' +
-          spreadPips.toFixed(1) + ' pips (' + divg.n + ' src)</div>';
-      } else if (divg && divg.n === 1) {
-        divgHtml = '<div class="divg">1 seule source pour cette paire</div>';
-      }
-      html += '<div class="tick">' +
-        '<div class="pair">' + pair + '</div>' +
-        '<div class="price">' + formatPrice(pair, price) + '</div>' +
+      iHtml += '<div class="tick">' +
+        '<div class="pair">' + escapeHtml(info.label) +
+          '<span class="session-pill ' + (open ? 'open' : 'closed') + '">' +
+          (open ? 'Session ouverte' : 'Session fermée') + '</span></div>' +
+        '<div class="price muted">proxy ' + proxy + ' · ' + formatPrice(proxy, state.prices[proxy]) + '</div>' +
         '<div class="delta ' + cls + '">' +
-          (hist >= 2 ? (sign + mom.toFixed(1) + ' pips / ' + Math.min(MOMENTUM_N, hist) + ' pts') : 'historique…') +
-        '</div>' + divgHtml + '</div>';
+          (sign + (mom || 0).toFixed(1) + ' pips proxy') +
+        '</div>' +
+        '<div class="divg">' + escapeHtml(info.note) +
+          (open ? '' : ' · signaux index secondaires en pause') + '</div></div>';
     });
-    $('ticker').innerHTML = html || '<p class="empty">Pas encore de cours</p>';
+    $('tickerIndices').innerHTML = iHtml;
+    if ($('indexHonesty')) {
+      $('indexHonesty').textContent = state.indexNote ||
+        'Pas d’API FTSE/Nikkei gratuite CORS fiable — proxy session GBP/JPY + horaires (niveaux index non affichés).';
+    }
+
     $('apiSource').textContent = state.apiSource || '—';
     var countEl = $('sourceCountLabel');
     if (countEl) {
       if (state.sourceCount != null && state.sourceTotal != null) {
         countEl.textContent = state.sourceCount + '/' + state.sourceTotal +
-          ' sources · médiane · Consensus multi-sources (écart possible vs Exness)';
+          ' sources FX · médiane · Consensus multi-sources (écart possible vs Exness)';
       } else {
         countEl.textContent = 'Consensus multi-sources (écart possible vs Exness)';
       }
@@ -966,9 +1559,17 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
     }
     if (state.lastFetchAt) {
       var d = new Date(state.lastFetchAt);
-      $('lastUpdate').textContent = 'MAJ ' + d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+      $('lastUpdate').textContent = 'MAJ ' + d.toLocaleTimeString('fr-FR', {
+        hour: '2-digit', minute: '2-digit', second: '2-digit'
+      });
     } else {
       $('lastUpdate').textContent = '—';
+    }
+
+    if ($('dailyCapNote')) {
+      $('dailyCapNote').textContent = 'Signaux du jour : ' + todayCount() + '/' + DAILY_MAX +
+        ' · objectif ≥' + DAILY_MIN + ' (seuil effectif ' + effectiveThreshold() +
+        ') · rattrapage éducatif si besoin · plafond partagé FX/or/crypto/indices.';
     }
   }
 
@@ -983,19 +1584,26 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
     active.forEach(function (s) {
       var dirCls = s.side === 'buy' ? 'buy' : 'sell';
       var dirColor = s.side === 'buy' ? 'pos' : 'neg';
+      var label = s.displayLabel || assetMeta(s.pair).label || s.pair;
+      var tagHtml = s.tag ? ' · <span class="badge rattrapage">' + escapeHtml(s.tag) + '</span>' : '';
       html += '<div class="signal-card ' + dirCls + '" data-id="' + s.id + '">' +
         '<div class="muted">' + new Date(s.createdAt).toLocaleString('fr-FR') +
-        ' · momentum ' + (s.momentum > 0 ? '+' : '') + s.momentum + ' pips' +
-        ' · <span class="rule-ver">règles v' + (s.ruleVersion || state.ruleVersion || 1) + '</span></div>' +
-        '<div class="big-dir ' + dirColor + '">' + sideLabel(s.side) + ' ' + s.pair + '</div>' +
+        ' · momentum ' + (s.momentum > 0 ? '+' : '') + s.momentum +
+        ' · <span class="rule-ver">règles v' + (s.ruleVersion || state.ruleVersion || 1) + '</span>' +
+        tagHtml + '</div>' +
+        '<div class="big-dir ' + dirColor + '">' + sideLabel(s.side) + ' ' + escapeHtml(label) + '</div>' +
         '<div class="copy-steps">' +
           '<strong>Sur Exness démo, tape :</strong>' +
           '<ol style="margin:0.4rem 0 0;padding-left:1.2rem">' +
-            '<li>Paire <strong>' + s.pair + '</strong></li>' +
+            '<li>Paire / symbole <strong>' + escapeHtml(
+              assetMeta(s.pair).cls === 'index' ? assetMeta(s.pair).proxyPair : s.pair
+            ) + '</strong>' +
+            (assetMeta(s.pair).cls === 'index' ? ' <span class="muted">(proxy index)</span>' : '') +
+            '</li>' +
             '<li>Direction <strong>' + sideLabel(s.side) + '</strong></li>' +
             '<li>Volume <strong>0.01</strong> lot (pour commencer)</li>' +
             '<li>Entrée ≈ <strong>' + formatPrice(s.pair, s.entry) + '</strong></li>' +
-            '<li>SL <strong>' + formatPrice(s.pair, s.sl) + '</strong> (' + s.slPips + ' pips)</li>' +
+            '<li>SL <strong>' + formatPrice(s.pair, s.sl) + '</strong> (' + s.slPips + ' — obligatoire)</li>' +
             '<li>TP <strong>' + formatPrice(s.pair, s.tp) + '</strong> (R:R ' + s.rr + ')</li>' +
           '</ol>' +
         '</div>' +
@@ -1010,6 +1618,44 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
       '</div>';
     });
     $('signals').innerHTML = html;
+  }
+
+  function renderToday() {
+    pruneToday(state);
+    var list = state.todaySignals.slice().sort(function (a, b) { return b.at - a.at; });
+    if ($('todayTitle')) $('todayTitle').textContent = 'Signaux du jour (' + list.length + ')';
+    if ($('todayMeta')) {
+      $('todayMeta').textContent = list.length + '/' + DAILY_MAX + ' · min ' + DAILY_MIN;
+    }
+    var el = $('todayList');
+    if (!el) return;
+    if (!list.length) {
+      el.innerHTML = '<p class="empty">Aucun signal aujourd’hui encore. Auto / Évaluer / rattrapage rempliront cette liste.</p>';
+      return;
+    }
+    var html = '';
+    list.forEach(function (t) {
+      var label = t.displayLabel || t.pair;
+      var tag = t.tag === 'rattrapage'
+        ? ' <span class="badge rattrapage">rattrapage</span>'
+        : (t.tag ? ' <span class="badge pending">' + escapeHtml(t.tag) + '</span>' : '');
+      html += '<div class="today-item" data-tid="' + t.id + '">' +
+        statusBadge(t.status) + ' ' +
+        '<span class="badge ' + (t.side === 'buy' ? 'buy' : 'sell') + '">' + sideLabel(t.side) + '</span> ' +
+        '<strong>' + escapeHtml(label) + '</strong>' + tag +
+        '<div class="muted" style="margin-top:0.25rem">' +
+          new Date(t.at).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) +
+          ' · SL ' + formatPrice(t.pair, t.sl) +
+          ' · <span class="rule-ver">v' + (t.ruleVersion || 1) + '</span>' +
+        '</div>' +
+        '<div class="today-actions">' +
+          '<button type="button" class="btn-ghost btn-sm act-today-copy" data-tid="' + t.id + '">Copié</button>' +
+          '<button type="button" class="btn-ghost btn-sm act-today-win" data-tid="' + t.id + '">Gagné</button>' +
+          '<button type="button" class="btn-ghost btn-sm act-today-loss" data-tid="' + t.id + '">Perdu</button>' +
+          '<button type="button" class="btn-ghost btn-sm act-today-miss" data-tid="' + t.id + '">Manqué</button>' +
+        '</div></div>';
+    });
+    el.innerHTML = html;
   }
 
   function renderJournal() {
@@ -1113,6 +1759,9 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
     $('cfgRr').value = state.cfg.rr;
     $('cfgRisk').value = state.cfg.riskPct;
     $('autoToggle').checked = !!state.cfg.auto;
+    if ($('toggleGold')) $('toggleGold').checked = !!state.cfg.includeGold;
+    if ($('toggleCrypto')) $('toggleCrypto').checked = !!state.cfg.includeCrypto;
+    if ($('toggleIndices')) $('toggleIndices').checked = !!state.cfg.includeIndices;
   }
 
   function readCfgFromInputs() {
@@ -1131,7 +1780,10 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
   function render() {
     renderTicker();
     renderSignals();
+    renderToday();
     renderJournal();
+    renderStats();
+    renderVersionHistory();
     syncCfgInputs();
   }
 
@@ -1142,10 +1794,18 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
     return null;
   }
 
+  function findToday(tid) {
+    for (var i = 0; i < state.todaySignals.length; i++) {
+      if (state.todaySignals[i].id === tid) return state.todaySignals[i];
+    }
+    return null;
+  }
+
   function archiveSignal(id, action) {
     var s = findSignal(id);
     if (!s || s.status !== 'active') return;
     s.status = action === 'copied' ? 'copied' : 'ignored';
+    recordToday(s, action === 'copied' ? 'copié' : 'manqué');
     state.journal.unshift({
       id: 'j_' + s.id,
       signalId: s.id,
@@ -1158,15 +1818,71 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
       outcome: null,
       at: Date.now()
     });
-    // Keep journal bounded
     if (state.journal.length > 80) state.journal.length = 80;
-    // Prune old inactive signals from list
     state.signals = state.signals.filter(function (x) {
       return x.status === 'active' || (Date.now() - x.createdAt) < 86400000;
     });
     save();
     render();
     toast(action === 'copied' ? 'Noté : copié en démo' : 'Signal ignoré');
+  }
+
+  function markToday(tid, status) {
+    var t = findToday(tid);
+    if (!t) return;
+    t.status = status;
+    if (status === 'copié') {
+      // Ensure journal entry for recalibration later
+      var has = state.journal.some(function (j) { return j.signalId === tid && j.action === 'copied' && !j.outcome; });
+      if (!has) {
+        state.journal.unshift({
+          id: 'j_' + tid,
+          signalId: tid,
+          pair: t.pair,
+          side: t.side,
+          entry: t.entry,
+          sl: t.sl,
+          tp: t.tp,
+          action: 'copied',
+          outcome: null,
+          at: Date.now()
+        });
+      }
+      var sig = findSignal(tid);
+      if (sig && sig.status === 'active') sig.status = 'copied';
+    }
+    if (status === 'gagné' || status === 'perdu') {
+      var jid = 'j_' + tid;
+      var j = null;
+      for (var i = 0; i < state.journal.length; i++) {
+        if (state.journal[i].signalId === tid || state.journal[i].id === jid) {
+          j = state.journal[i];
+          break;
+        }
+      }
+      if (!j) {
+        j = {
+          id: jid,
+          signalId: tid,
+          pair: t.pair,
+          side: t.side,
+          entry: t.entry,
+          sl: t.sl,
+          tp: t.tp,
+          action: 'copied',
+          outcome: null,
+          at: Date.now()
+        };
+        state.journal.unshift(j);
+      }
+      if (!j.outcome) {
+        setOutcome(j.id, status === 'gagné' ? 'win' : 'loss');
+        return;
+      }
+    }
+    save();
+    render();
+    toast('Statut : ' + status);
   }
 
   function setOutcome(jid, outcome) {
@@ -1179,6 +1895,9 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
     if (outcome === 'win') state.wins++;
     else state.losses++;
     j.ruleVersionAtMark = state.ruleVersion;
+    // Mirror onto today history
+    var t = findToday(j.signalId);
+    if (t) t.status = outcome === 'win' ? 'gagné' : 'perdu';
     var entry = recalibrate(outcome, j);
     j.recalibration = entry ? {
       version: entry.version,
@@ -1203,8 +1922,6 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
     var changed = false;
     var reason = 'observation';
 
-    // Soft educational recalibration — keep within safe bands
-    // Need at least 3 marked demo outcomes before adjusting
     if (total >= 3 && wr != null) {
       if (wr < 0.35) {
         state.cfg.thresholdPips = clamp(state.cfg.thresholdPips + 0.5, 3, 20, 5);
@@ -1232,8 +1949,6 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
     if (changed) {
       state.ruleVersion = (state.ruleVersion || 1) + 1;
     }
-    // Always append a version-history entry after each marked outcome
-    // so Dave can measure recalibration quality over many demo trades
     var entry = {
       version: state.ruleVersion,
       at: Date.now(),
@@ -1268,11 +1983,25 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
     toast(state.cfg.auto ? 'Auto ON' : 'Auto OFF');
     if (state.cfg.auto) evaluateSignals(false);
   };
+  function bindAssetToggle(id, key, label) {
+    var el = $(id);
+    if (!el) return;
+    el.onchange = function () {
+      state.cfg[key] = !!el.checked;
+      save();
+      toast(label + (state.cfg[key] ? ' ON' : ' OFF'));
+      refresh(true);
+    };
+  }
+  bindAssetToggle('toggleGold', 'includeGold', 'Or');
+  bindAssetToggle('toggleCrypto', 'includeCrypto', 'Crypto');
+  bindAssetToggle('toggleIndices', 'includeIndices', 'Indices');
+
   ['cfgThreshold', 'cfgSlPips', 'cfgRr', 'cfgRisk'].forEach(function (id) {
     $(id).addEventListener('change', readCfgFromInputs);
   });
   $('btnClearJournal').onclick = function () {
-    if (!confirm('Effacer journal + historique de recalibrage (démo) ? Les règles actuelles sont conservées comme nouvelle base.')) return;
+    if (!confirm('Effacer journal + historique de recalibrage (démo) ? Les règles actuelles et « Signaux du jour » sont conservés / partiels.')) return;
     state.journal = [];
     state.wins = 0;
     state.losses = 0;
@@ -1296,10 +2025,15 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
     if (!t || !t.getAttribute) return;
     var id = t.getAttribute('data-id');
     var jid = t.getAttribute('data-jid');
+    var tid = t.getAttribute('data-tid');
     if (t.classList.contains('act-copy') && id) archiveSignal(id, 'copied');
     if (t.classList.contains('act-ignore') && id) archiveSignal(id, 'ignored');
     if (t.classList.contains('act-win') && jid) setOutcome(jid, 'win');
     if (t.classList.contains('act-loss') && jid) setOutcome(jid, 'loss');
+    if (t.classList.contains('act-today-copy') && tid) markToday(tid, 'copié');
+    if (t.classList.contains('act-today-win') && tid) markToday(tid, 'gagné');
+    if (t.classList.contains('act-today-loss') && tid) markToday(tid, 'perdu');
+    if (t.classList.contains('act-today-miss') && tid) markToday(tid, 'manqué');
   });
 
   function startPoll() {
