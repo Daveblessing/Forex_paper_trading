@@ -1,0 +1,1585 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="theme-color" content="#0f1419" />
+<title>Forex Paper Trading — Mobile</title>
+<style>
+:root {
+  --bg: #0f1419;
+  --card: #1a2332;
+  --border: #2a3548;
+  --text: #e8eef7;
+  --muted: #8b9bb4;
+  --accent: #3b82f6;
+  --green: #22c55e;
+  --red: #ef4444;
+  --warn-bg: #3a2a12;
+  --warn-border: #8a6a2a;
+  --warn-text: #f0d9a0;
+  --tap: 48px;
+  --radius: 14px;
+  --safe-b: env(safe-area-inset-bottom, 0px);
+}
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.45;
+  min-height: 100dvh;
+  padding-bottom: calc(72px + var(--safe-b));
+}
+button, input, select, textarea { font: inherit; color: inherit; }
+button {
+  min-height: var(--tap);
+  border: none;
+  border-radius: 12px;
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  font-weight: 600;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+button:disabled { opacity: 0.45; cursor: not-allowed; }
+input, select, textarea {
+  width: 100%;
+  min-height: var(--tap);
+  background: #0d1218;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 0.65rem 0.85rem;
+  outline: none;
+}
+input:focus, select:focus, textarea:focus { border-color: var(--accent); }
+label { display: block; font-size: 0.8rem; color: var(--muted); margin-bottom: 0.35rem; font-weight: 500; }
+.field { margin-bottom: 0.85rem; }
+.app { max-width: 480px; margin: 0 auto; padding: 0.85rem 0.85rem 1.5rem; }
+.header h1 { margin: 0; font-size: 1.35rem; letter-spacing: -0.02em; }
+.tagline { margin: 0.25rem 0 0; color: var(--muted); font-size: 0.85rem; }
+.disclaimer {
+  background: var(--warn-bg);
+  border: 1px solid var(--warn-border);
+  color: var(--warn-text);
+  padding: 0.75rem 0.9rem;
+  border-radius: 12px;
+  margin: 0.85rem 0;
+  font-size: 0.82rem;
+}
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1rem;
+  margin-bottom: 0.85rem;
+}
+.card h2 { margin: 0 0 0.75rem; font-size: 1.05rem; }
+.card-head {
+  display: flex; justify-content: space-between; align-items: center;
+  gap: 0.5rem; margin-bottom: 0.75rem;
+}
+.card-head h2 { margin: 0; }
+.muted { color: var(--muted); font-size: 0.8rem; }
+.pos { color: var(--green); }
+.neg { color: var(--red); }
+.row { display: flex; gap: 0.5rem; }
+.row > * { flex: 1; }
+.btn-primary { background: var(--accent); color: #fff; width: 100%; }
+.btn-buy { background: #15803d; color: #fff; }
+.btn-sell { background: #b91c1c; color: #fff; }
+.btn-ghost {
+  background: transparent; border: 1px solid var(--border); color: var(--text);
+}
+.btn-danger { background: #7f1d1d; color: #fecaca; }
+.btn-sm { min-height: 40px; padding: 0.45rem 0.75rem; font-size: 0.85rem; }
+.stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.55rem;
+}
+.stat {
+  background: #0d1218;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 0.65rem 0.75rem;
+}
+.stat .lbl { font-size: 0.72rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.03em; }
+.stat .val { font-size: 1.05rem; font-weight: 700; margin-top: 0.15rem; }
+.ticker {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+}
+.tick {
+  background: #0d1218;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 0.65rem 0.7rem;
+}
+.tick .pair { font-weight: 700; font-size: 0.9rem; }
+.tick .price { font-variant-numeric: tabular-nums; font-size: 1.05rem; margin-top: 0.15rem; }
+.tick .delta { font-size: 0.75rem; margin-top: 0.1rem; }
+.seg {
+  display: flex; gap: 0.4rem; background: #0d1218; padding: 0.3rem;
+  border-radius: 12px; border: 1px solid var(--border);
+}
+.seg button {
+  flex: 1; min-height: 44px; background: transparent; color: var(--muted);
+  border-radius: 10px;
+}
+.seg button.active-buy { background: #15803d; color: #fff; }
+.seg button.active-sell { background: #b91c1c; color: #fff; }
+.sizing-box {
+  background: #0d1218;
+  border: 1px dashed var(--border);
+  border-radius: 12px;
+  padding: 0.75rem;
+  font-size: 0.85rem;
+  margin-bottom: 0.85rem;
+}
+.sizing-box .line { display: flex; justify-content: space-between; gap: 0.5rem; padding: 0.2rem 0; }
+.sizing-err { color: #fca5a5; font-size: 0.82rem; margin-bottom: 0.6rem; }
+.trade {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 0.75rem;
+  margin-bottom: 0.55rem;
+  background: #0d1218;
+}
+.trade:last-child { margin-bottom: 0; }
+.trade-top {
+  display: flex; justify-content: space-between; align-items: flex-start; gap: 0.5rem;
+}
+.badge {
+  display: inline-block;
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 0.15rem 0.45rem;
+  border-radius: 999px;
+  text-transform: uppercase;
+}
+.badge-buy { background: #14532d; color: #86efac; }
+.badge-sell { background: #7f1d1d; color: #fecaca; }
+.badge-open { background: #1e3a5f; color: #93c5fd; }
+.badge-closed { background: #334155; color: #cbd5e1; }
+.badge-auto { background: #4c1d95; color: #ddd6fe; }
+.meta { font-size: 0.78rem; color: var(--muted); margin-top: 0.35rem; }
+.nav {
+  position: fixed; left: 0; right: 0; bottom: 0;
+  background: rgba(15, 20, 25, 0.96);
+  backdrop-filter: blur(10px);
+  border-top: 1px solid var(--border);
+  display: flex;
+  padding: 0.35rem 0.25rem calc(0.35rem + var(--safe-b));
+  z-index: 50;
+  max-width: 480px;
+  margin: 0 auto;
+}
+.nav button {
+  flex: 1;
+  background: transparent;
+  color: var(--muted);
+  min-height: 52px;
+  padding: 0.35rem 0.2rem;
+  font-size: 0.68rem;
+  font-weight: 600;
+  display: flex; flex-direction: column; align-items: center; gap: 0.15rem;
+  border-radius: 10px;
+}
+.nav button.active { color: #93c5fd; background: #1e293b; }
+.nav .ico { font-size: 1.15rem; line-height: 1; }
+.panel { display: none; }
+.panel.active { display: block; }
+.modal-backdrop {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.65);
+  z-index: 100; display: none; align-items: flex-end; justify-content: center;
+  padding: 0.75rem; padding-bottom: calc(0.75rem + var(--safe-b));
+}
+.modal-backdrop.show { display: flex; }
+.modal {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 18px 18px 14px 14px;
+  width: 100%; max-width: 460px;
+  max-height: 85dvh; overflow: auto;
+  padding: 1.1rem;
+}
+.modal h3 { margin: 0 0 0.6rem; font-size: 1.1rem; }
+.modal ul { margin: 0.4rem 0 0.8rem; padding-left: 1.15rem; }
+.modal li { margin-bottom: 0.3rem; font-size: 0.88rem; }
+.version {
+  border-left: 3px solid var(--accent);
+  padding: 0.55rem 0.7rem;
+  margin-bottom: 0.55rem;
+  background: #0d1218;
+  border-radius: 0 10px 10px 0;
+}
+.equity-bars {
+  display: flex; align-items: flex-end; gap: 2px;
+  height: 56px; margin-top: 0.5rem;
+}
+.equity-bars .bar {
+  flex: 1; min-width: 2px; background: var(--accent); border-radius: 2px 2px 0 0;
+  opacity: 0.85;
+}
+.empty { text-align: center; color: var(--muted); padding: 1.25rem 0.5rem; font-size: 0.9rem; }
+.toast {
+  position: fixed; left: 50%; transform: translateX(-50%);
+  bottom: calc(78px + var(--safe-b));
+  background: #1e293b; border: 1px solid var(--border);
+  color: var(--text); padding: 0.65rem 1rem; border-radius: 12px;
+  font-size: 0.85rem; z-index: 80; display: none;
+  max-width: calc(100% - 2rem); text-align: center;
+}
+.toast.show { display: block; }
+.helper { font-size: 0.75rem; color: var(--muted); margin-top: 0.25rem; }
+.suggest {
+  background: #12203a; border: 1px solid #1e3a5f; border-radius: 10px;
+  padding: 0.55rem 0.7rem; font-size: 0.8rem; margin-bottom: 0.75rem;
+}
+/* Auto mode toggle */
+.auto-card {
+  border: 2px solid #3b82f6;
+  background: linear-gradient(160deg, #13233f 0%, #1a2332 100%);
+}
+.auto-card.on {
+  border-color: #22c55e;
+  background: linear-gradient(160deg, #0f2a1c 0%, #1a2332 100%);
+}
+.auto-toggle-row {
+  display: flex; align-items: center; justify-content: space-between; gap: 0.75rem;
+}
+.auto-toggle-row .auto-label {
+  font-size: 1.1rem; font-weight: 800; letter-spacing: -0.01em;
+}
+.auto-toggle-row .auto-sub {
+  font-size: 0.78rem; color: var(--muted); margin-top: 0.2rem;
+}
+.switch {
+  position: relative;
+  width: 64px; height: 38px;
+  flex-shrink: 0;
+}
+.switch input {
+  opacity: 0; width: 0; height: 0; position: absolute;
+}
+.switch .slider {
+  position: absolute; inset: 0;
+  background: #334155;
+  border-radius: 999px;
+  transition: 0.2s;
+  cursor: pointer;
+  border: 1px solid var(--border);
+}
+.switch .slider::before {
+  content: "";
+  position: absolute;
+  height: 30px; width: 30px;
+  left: 3px; bottom: 3px;
+  background: #fff;
+  border-radius: 50%;
+  transition: 0.2s;
+}
+.switch input:checked + .slider { background: #16a34a; border-color: #22c55e; }
+.switch input:checked + .slider::before { transform: translateX(26px); }
+.auto-status {
+  margin-top: 0.75rem;
+  background: #0d1218;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 0.7rem 0.8rem;
+  font-size: 0.85rem;
+}
+.auto-status .line { display: flex; justify-content: space-between; gap: 0.5rem; padding: 0.18rem 0; }
+.auto-status .pill {
+  display: inline-block;
+  font-size: 0.72rem; font-weight: 700;
+  padding: 0.2rem 0.55rem; border-radius: 999px;
+  text-transform: uppercase;
+}
+.pill-on { background: #14532d; color: #86efac; }
+.pill-off { background: #334155; color: #94a3b8; }
+.edu-box {
+  background: #12203a; border: 1px solid #1e3a5f; border-radius: 10px;
+  padding: 0.65rem 0.75rem; font-size: 0.78rem; color: #bfdbfe; margin-top: 0.65rem;
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="header">
+    <h1>📈 Paper Trading Forex</h1>
+    <p class="tagline">Simulation éducative · capital 10&nbsp;000&nbsp;USD</p>
+  </header>
+
+  <div class="disclaimer" role="note">
+    <strong>Avertissement :</strong> ceci est une simulation éducative avec des prix fictifs.
+    Ce n’est <em>pas</em> un conseil financier. Aucun argent réel n’est engagé.
+    Aucune promesse de gain.
+  </div>
+
+  <!-- Accueil -->
+  <section id="panel-home" class="panel active">
+    <div class="card auto-card" id="auto-card-home">
+      <div class="auto-toggle-row">
+        <div>
+          <div class="auto-label">Mode Bot auto</div>
+          <div class="auto-sub">Le bot ouvre et ferme les trades seul</div>
+        </div>
+        <label class="switch" aria-label="Mode Bot auto">
+          <input type="checkbox" id="auto-toggle-home" />
+          <span class="slider"></span>
+        </label>
+      </div>
+      <div class="auto-status" id="auto-status-home"></div>
+      <div class="edu-box">
+        Règles éducatives v1 (prix fictifs) : momentum court sur les 4 derniers ticks.
+        Hausse ≥ 5 pips (4 ticks) → ACHAT ; baisse ≥ 5 pips → VENTE. SL + TP obligatoires.
+        Max 2 positions auto. Pas de promesse de profit.
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <h2>Tableau de bord</h2>
+        <span class="muted" id="tick-ago">—</span>
+      </div>
+      <div class="stats" id="stats"></div>
+      <div class="equity-bars" id="equity-bars" aria-label="Courbe d'équité simplifiée"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <h2>Prix simulés</h2>
+        <button type="button" class="btn-ghost btn-sm" id="btn-tick">Tick</button>
+      </div>
+      <div class="ticker" id="ticker"></div>
+      <p class="helper">Les prix bougent automatiquement toutes les 2 s (mock).</p>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <h2>Bot v<span id="bot-ver">1</span></h2>
+      </div>
+      <div id="bot-summary" class="muted" style="font-size:0.88rem"></div>
+    </div>
+
+    <div class="card">
+      <button type="button" class="btn-ghost" id="btn-reset" style="width:100%">Réinitialiser le compte</button>
+    </div>
+  </section>
+
+  <!-- Trader -->
+  <section id="panel-trade" class="panel">
+    <div class="card">
+      <h2>Ouvrir un trade (manuel)</h2>
+      <div class="suggest" id="bot-suggest"></div>
+      <p class="helper" style="margin-bottom:0.75rem">Optionnel : le Mode Bot auto gère les trades tout seul. Ici vous pouvez encore trader manuellement.</p>
+
+      <div class="field">
+        <label for="f-pair">Paire</label>
+        <select id="f-pair">
+          <option value="EUR/USD">EUR/USD</option>
+          <option value="GBP/USD">GBP/USD</option>
+          <option value="USD/JPY">USD/JPY</option>
+          <option value="USD/CHF">USD/CHF</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Sens</label>
+        <div class="seg" id="f-side">
+          <button type="button" data-side="buy" class="active-buy">ACHAT</button>
+          <button type="button" data-side="sell">VENTE</button>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Prix d’entrée (simulé)</label>
+        <input id="f-entry" type="text" readonly />
+      </div>
+
+      <div class="row">
+        <div class="field">
+          <label for="f-sl">Stop-loss *</label>
+          <input id="f-sl" type="number" inputmode="decimal" step="any" required />
+        </div>
+        <div class="field">
+          <label for="f-tp">Take-profit *</label>
+          <input id="f-tp" type="number" inputmode="decimal" step="any" required />
+        </div>
+      </div>
+      <p class="helper" id="sl-tp-hint"></p>
+
+      <div class="field">
+        <label for="f-risk">Risque % (max 2 %)</label>
+        <input id="f-risk" type="number" inputmode="decimal" min="0.25" max="2" step="0.05" />
+      </div>
+
+      <div class="field">
+        <label for="f-notes">Notes (optionnel)</label>
+        <textarea id="f-notes" rows="2" placeholder="Pourquoi ce trade ?"></textarea>
+      </div>
+
+      <div class="sizing-box" id="sizing"></div>
+      <div class="sizing-err" id="sizing-err" hidden></div>
+
+      <button type="button" class="btn-primary" id="btn-open">Ouvrir le trade</button>
+    </div>
+  </section>
+
+  <!-- Positions -->
+  <section id="panel-open" class="panel">
+    <div class="card">
+      <h2>Positions ouvertes</h2>
+      <div id="open-list"></div>
+    </div>
+  </section>
+
+  <!-- Journal -->
+  <section id="panel-journal" class="panel">
+    <div class="card">
+      <h2>Journal</h2>
+      <div id="journal-list"></div>
+    </div>
+    <div class="card">
+      <h2>Derniers debriefs</h2>
+      <div id="debrief-list"></div>
+    </div>
+  </section>
+
+  <!-- Bot -->
+  <section id="panel-bot" class="panel">
+    <div class="card auto-card" id="auto-card-bot">
+      <div class="auto-toggle-row">
+        <div>
+          <div class="auto-label">Mode Bot auto</div>
+          <div class="auto-sub">ON = le bot trade et se recalibre seul</div>
+        </div>
+        <label class="switch" aria-label="Mode Bot auto">
+          <input type="checkbox" id="auto-toggle-bot" />
+          <span class="slider"></span>
+        </label>
+      </div>
+      <div class="auto-status" id="auto-status-bot"></div>
+      <div class="edu-box">
+        Logique d’entrée (éducative, prix mock) : momentum court sur 4 ticks.
+        Si le prix monte ≥ 5 pips sur 4 ticks → ACHAT ; s’il baisse ≥ 5 pips → VENTE.
+        SL = stop préféré du bot ; TP = stop × R:R. Max 2 positions auto.
+        Après chaque clôture : debrief → recalibrage → nouvelle version (auto-appliqué).
+        Aucune promesse de profit — simulation uniquement.
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Règles actuelles</h2>
+      <div id="bot-rules"></div>
+    </div>
+    <div class="card">
+      <h2>Historique des versions</h2>
+      <div id="bot-history"></div>
+    </div>
+    <div class="card">
+      <h2>Journal actions auto</h2>
+      <div id="auto-log"></div>
+    </div>
+  </section>
+</div>
+
+<nav class="nav" aria-label="Navigation">
+  <button type="button" class="active" data-panel="home"><span class="ico">🏠</span>Accueil</button>
+  <button type="button" data-panel="trade"><span class="ico">➕</span>Trader</button>
+  <button type="button" data-panel="open"><span class="ico">📂</span>Ouverts</button>
+  <button type="button" data-panel="journal"><span class="ico">📒</span>Journal</button>
+  <button type="button" data-panel="bot"><span class="ico">🤖</span>Bot</button>
+</nav>
+
+<div class="toast" id="toast"></div>
+
+<div class="modal-backdrop" id="debrief-modal" role="dialog" aria-modal="true">
+  <div class="modal">
+    <h3 id="debrief-title">Debrief</h3>
+    <div id="debrief-body"></div>
+    <button type="button" class="btn-primary" id="debrief-close" style="margin-top:0.75rem">Compris</button>
+  </div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  var PAIRS = ['EUR/USD', 'GBP/USD', 'USD/JPY', 'USD/CHF'];
+  var STARTING_CAPITAL = 10000;
+  var DEFAULT_RISK = 1;
+  var MAX_RISK = 2;
+  var MIN_RISK = 0.25;
+  var STORAGE_KEY = 'forex-paper-trading-mobile-v1';
+  var AUTO_MAX_OPEN = 2;
+  var AUTO_LOOKBACK = 4;
+  var AUTO_MOMENTUM_PIPS = 5;
+  var AUTO_HISTORY_LEN = 12;
+  var AUTO_COOLDOWN_TICKS = 3;
+  var PIP_SIZE = {
+    'EUR/USD': 0.0001,
+    'GBP/USD': 0.0001,
+    'USD/JPY': 0.01,
+    'USD/CHF': 0.0001
+  };
+  var INITIAL_PRICES = {
+    'EUR/USD': 1.0850,
+    'GBP/USD': 1.2650,
+    'USD/JPY': 149.5,
+    'USD/CHF': 0.885
+  };
+
+  function uid() {
+    return 't_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8);
+  }
+
+  function priceDecimals(pair) {
+    return pair === 'USD/JPY' ? 3 : 5;
+  }
+
+  function formatPrice(pair, price) {
+    return Number(price).toFixed(priceDecimals(pair));
+  }
+
+  function pipsBetween(pair, a, b) {
+    return Math.abs(a - b) / PIP_SIZE[pair];
+  }
+
+  function nextSimulatedPrice(pair, current) {
+    var pip = PIP_SIZE[pair];
+    var movePips = (Math.random() - 0.5) * 8;
+    return Number((current + movePips * pip).toFixed(priceDecimals(pair)));
+  }
+
+  function pipValuePerStandardLot(pair, price) {
+    if (pair === 'EUR/USD' || pair === 'GBP/USD') return 10;
+    return (100000 * PIP_SIZE[pair]) / price;
+  }
+
+  function clampRisk(r) {
+    return Math.min(MAX_RISK, Math.max(MIN_RISK, r));
+  }
+
+  function money(n) {
+    var s = Number(n).toFixed(2);
+    return (Number(n) >= 0 ? '+' : '') + s + ' USD';
+  }
+
+  function moneyAbs(n) {
+    return Number(n).toFixed(2) + ' USD';
+  }
+
+  function emptyPriceHistory() {
+    var h = {};
+    PAIRS.forEach(function (p) { h[p] = []; });
+    return h;
+  }
+
+  function defaultBotRules(now) {
+    return {
+      version: 1,
+      riskPercent: DEFAULT_RISK,
+      preferredStopPips: 20,
+      preferredRrRatio: 2,
+      maxOpenTrades: 3,
+      allowedPairs: PAIRS.slice(),
+      notes: 'Règles initiales v1 : risque 1 %, stop préféré 20 pips, R:R cible 1:2. Entrée auto = momentum court (éducatif).',
+      createdAt: now
+    };
+  }
+
+  function createInitialState() {
+    var now = new Date().toISOString();
+    var rules = defaultBotRules(now);
+    return {
+      equity: STARTING_CAPITAL,
+      startingCapital: STARTING_CAPITAL,
+      prices: Object.assign({}, INITIAL_PRICES),
+      openTrades: [],
+      closedTrades: [],
+      journal: [],
+      debriefs: [],
+      botRules: rules,
+      botHistory: [{
+        version: 1,
+        rules: rules,
+        changeSummary: 'Création initiale des règles du bot.',
+        why: "Point de départ pour la boucle d'apprentissage paper trading.",
+        createdAt: now
+      }],
+      equityCurve: [{ timestamp: now, equity: STARTING_CAPITAL }],
+      lastTickAt: now,
+      prevPrices: Object.assign({}, INITIAL_PRICES),
+      autoMode: false,
+      autoLastAction: 'Bot auto désactivé.',
+      autoLastActionAt: now,
+      autoTickCount: 0,
+      autoCooldownLeft: 0,
+      autoLog: [],
+      priceHistory: emptyPriceHistory()
+    };
+  }
+
+  function loadState() {
+    try {
+      var raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return createInitialState();
+      var parsed = JSON.parse(raw);
+      var base = createInitialState();
+      var merged = Object.assign({}, base, parsed, {
+        prices: Object.assign({}, INITIAL_PRICES, parsed.prices || {}),
+        prevPrices: Object.assign({}, INITIAL_PRICES, parsed.prevPrices || parsed.prices || {}),
+        priceHistory: Object.assign(emptyPriceHistory(), parsed.priceHistory || {}),
+        autoLog: Array.isArray(parsed.autoLog) ? parsed.autoLog : [],
+        autoMode: !!parsed.autoMode,
+        autoLastAction: parsed.autoLastAction || base.autoLastAction,
+        autoCooldownLeft: typeof parsed.autoCooldownLeft === 'number' ? parsed.autoCooldownLeft : 0,
+        autoTickCount: typeof parsed.autoTickCount === 'number' ? parsed.autoTickCount : 0
+      });
+      return merged;
+    } catch (e) {
+      return createInitialState();
+    }
+  }
+
+  function saveState(state) {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    } catch (e) { /* quota */ }
+  }
+
+  function calculatePositionSize(params) {
+    var riskPercent = clampRisk(params.riskPercent);
+    var riskAmount = (params.equity * riskPercent) / 100;
+    var stopDistancePips = pipsBetween(params.pair, params.entryPrice, params.stopLoss);
+    var rewardPips = pipsBetween(params.pair, params.entryPrice, params.takeProfit);
+
+    function fail(error) {
+      return {
+        ok: false, error: error, riskPercent: riskPercent, riskAmount: riskAmount,
+        stopDistancePips: stopDistancePips, lotSize: 0, pipValue: 0,
+        rewardPips: rewardPips, rrRatio: 0
+      };
+    }
+
+    if (!(params.stopLoss > 0) || !(params.takeProfit > 0)) {
+      return fail('SL et TP sont obligatoires.');
+    }
+    if (stopDistancePips < 1) {
+      return fail("Le stop-loss doit être à au moins 1 pip du prix d'entrée.");
+    }
+    if (params.side === 'buy') {
+      if (params.stopLoss >= params.entryPrice) {
+        return fail("Pour un ACHAT, le stop-loss doit être SOUS le prix d'entrée.");
+      }
+      if (params.takeProfit <= params.entryPrice) {
+        return fail("Pour un ACHAT, le take-profit doit être AU-DESSUS du prix d'entrée.");
+      }
+    } else {
+      if (params.stopLoss <= params.entryPrice) {
+        return fail("Pour une VENTE, le stop-loss doit être AU-DESSUS du prix d'entrée.");
+      }
+      if (params.takeProfit >= params.entryPrice) {
+        return fail("Pour une VENTE, le take-profit doit être SOUS le prix d'entrée.");
+      }
+    }
+
+    var pipValue = pipValuePerStandardLot(params.pair, params.entryPrice);
+    var lotSize = riskAmount / (stopDistancePips * pipValue);
+    var rrRatio = rewardPips / stopDistancePips;
+
+    return {
+      ok: true,
+      riskPercent: riskPercent,
+      riskAmount: riskAmount,
+      stopDistancePips: Number(stopDistancePips.toFixed(1)),
+      lotSize: Number(Math.max(0.01, lotSize).toFixed(2)),
+      pipValue: Number(pipValue.toFixed(4)),
+      rewardPips: Number(rewardPips.toFixed(1)),
+      rrRatio: Number(rrRatio.toFixed(2))
+    };
+  }
+
+  function unrealizedPnl(params) {
+    var pip = PIP_SIZE[params.pair];
+    var pips = params.side === 'buy'
+      ? (params.currentPrice - params.entryPrice) / pip
+      : (params.entryPrice - params.currentPrice) / pip;
+    var pipValue = pipValuePerStandardLot(params.pair, params.currentPrice);
+    return Number((pips * pipValue * params.lotSize).toFixed(2));
+  }
+
+  function markClose(trade, exitPrice, reason) {
+    var pnl = unrealizedPnl({
+      pair: trade.pair,
+      side: trade.side,
+      entryPrice: trade.entryPrice,
+      currentPrice: exitPrice,
+      lotSize: trade.lotSize
+    });
+    var rMultiple = trade.riskAmount > 0 ? Number((pnl / trade.riskAmount).toFixed(2)) : 0;
+    return Object.assign({}, trade, {
+      status: 'closed',
+      closedAt: new Date().toISOString(),
+      exitPrice: exitPrice,
+      closeReason: reason,
+      pnlUsd: pnl,
+      rMultiple: rMultiple
+    });
+  }
+
+  function buildDebrief(trade, rules) {
+    var won = (trade.pnlUsd || 0) > 0;
+    var r = trade.rMultiple || 0;
+    var whatWentRight = [];
+    var whatWentWrong = [];
+    var lessons = [];
+
+    if (won) {
+      whatWentRight.push('Trade gagnant : +' + (trade.pnlUsd || 0).toFixed(2) + ' USD (R = ' + r.toFixed(2) + ').');
+      if (trade.closeReason === 'take_profit') {
+        whatWentRight.push('Le take-profit a été touché — le plan de sortie a fonctionné.');
+      }
+      if (r >= rules.preferredRrRatio) {
+        whatWentRight.push('Ratio R atteint ou dépassé (cible ' + rules.preferredRrRatio + 'R).');
+      }
+      if (trade.riskPercent <= rules.riskPercent) {
+        whatWentRight.push('Risque respecté par rapport aux règles du bot.');
+      }
+    } else {
+      whatWentWrong.push('Trade perdant : ' + (trade.pnlUsd || 0).toFixed(2) + ' USD (R = ' + r.toFixed(2) + ').');
+      if (trade.closeReason === 'stop_loss') {
+        whatWentWrong.push("Le stop-loss a été touché — la perte a été limitée (c'est le but du SL).");
+        lessons.push('Vérifier si le stop était trop serré par rapport à la volatilité de la paire.');
+      }
+      if (trade.stopDistancePips < rules.preferredStopPips * 0.7) {
+        whatWentWrong.push('Stop assez serré (' + trade.stopDistancePips + ' pips vs préféré ' + rules.preferredStopPips + ').');
+      }
+    }
+
+    if (trade.rrRatio < 1.5) {
+      whatWentWrong.push('Ratio risque/récompense sous 1:1,5 — moins favorable sur le long terme.');
+      lessons.push('Viser un take-profit plus éloigné pour améliorer le R:R moyen.');
+    }
+    if (won && r < 1) {
+      lessons.push("Gain inférieur à 1R : envisager de laisser courir jusqu'au TP prévu.");
+    }
+    if (!won && Math.abs(r) >= 0.9) {
+      lessons.push('Perte proche de 1R : le dimensionnement du risque a bien fonctionné.');
+    }
+    lessons.push("Toujours définir SL et TP avant d'entrer — discipline = survie.");
+    if (trade.source === 'auto') {
+      lessons.push('Trade auto (momentum court) — règles éducatives, prix fictifs.');
+    }
+
+    var suggestedRisk = rules.riskPercent;
+    var suggestedStop = rules.preferredStopPips;
+    var suggestedRr = rules.preferredRrRatio;
+
+    if (!won && trade.closeReason === 'stop_loss') {
+      suggestedStop = Math.min(50, Math.round(rules.preferredStopPips * 1.1));
+      suggestedRisk = clampRisk(rules.riskPercent * 0.9);
+      lessons.push('Proposition : stop préféré → ' + suggestedStop + ' pips, risque → ' + suggestedRisk.toFixed(2) + ' %.');
+    } else if (won && r >= rules.preferredRrRatio) {
+      suggestedRisk = clampRisk(Math.min(MAX_RISK, rules.riskPercent * 1.05));
+      suggestedRr = Number(Math.min(3, rules.preferredRrRatio + 0.1).toFixed(1));
+      lessons.push('Proposition : risque → ' + suggestedRisk.toFixed(2) + ' %, R:R cible → ' + suggestedRr + '.');
+    } else if (!won) {
+      suggestedRisk = clampRisk(Math.max(MIN_RISK, rules.riskPercent * 0.95));
+    }
+
+    var sideLabel = trade.side === 'buy' ? 'ACHAT' : 'VENTE';
+    var summary = won
+      ? '✅ Debrief positif sur ' + trade.pair + ' (' + sideLabel + ').'
+      : '📉 Debrief à améliorer sur ' + trade.pair + ' (' + sideLabel + ').';
+
+    return {
+      tradeId: trade.id,
+      createdAt: new Date().toISOString(),
+      summary: summary,
+      whatWentRight: whatWentRight.length ? whatWentRight : ["Discipline : SL/TP définis à l'ouverture."],
+      whatWentWrong: whatWentWrong.length ? whatWentWrong : ['Rien de critique — continuer à journaliser.'],
+      lessons: lessons,
+      suggestedRiskPercent: Number(suggestedRisk.toFixed(2)),
+      suggestedStopPips: suggestedStop,
+      suggestedRrRatio: suggestedRr,
+      autoApplied: false
+    };
+  }
+
+  function recalibrateBot(current, debrief, tradeId) {
+    var nextVersion = current.version + 1;
+    var changes = [];
+    if (debrief.suggestedRiskPercent !== current.riskPercent) {
+      changes.push('risque ' + current.riskPercent + '% → ' + debrief.suggestedRiskPercent + '%');
+    }
+    if (debrief.suggestedStopPips !== current.preferredStopPips) {
+      changes.push('stop préféré ' + current.preferredStopPips + ' → ' + debrief.suggestedStopPips + ' pips');
+    }
+    if (debrief.suggestedRrRatio !== current.preferredRrRatio) {
+      changes.push('R:R cible ' + current.preferredRrRatio + ' → ' + debrief.suggestedRrRatio);
+    }
+    var changeSummary = changes.length
+      ? changes.join(' ; ')
+      : 'Aucun changement numérique — consolidation des règles.';
+    var why = debrief.summary + ' Leçons : ' + debrief.lessons.slice(0, 2).join(' ');
+    var nextRules = Object.assign({}, current, {
+      version: nextVersion,
+      riskPercent: debrief.suggestedRiskPercent,
+      preferredStopPips: debrief.suggestedStopPips,
+      preferredRrRatio: debrief.suggestedRrRatio,
+      notes: 'v' + nextVersion + ' — ' + changeSummary,
+      createdAt: new Date().toISOString()
+    });
+    return {
+      nextRules: nextRules,
+      historyEntry: {
+        version: nextVersion,
+        rules: nextRules,
+        changeSummary: changeSummary,
+        why: why,
+        createdAt: nextRules.createdAt,
+        triggeredByTradeId: tradeId
+      }
+    };
+  }
+
+  function computeMetrics(state) {
+    var closed = state.closedTrades;
+    var wins = closed.filter(function (t) { return (t.pnlUsd || 0) > 0; }).length;
+    var losses = closed.filter(function (t) { return (t.pnlUsd || 0) <= 0; }).length;
+    var closedCount = closed.length;
+    var winRate = closedCount === 0 ? 0 : (wins / closedCount) * 100;
+    var rValues = closed.map(function (t) { return t.rMultiple; }).filter(function (r) { return typeof r === 'number'; });
+    var averageR = rValues.length === 0 ? 0 : rValues.reduce(function (a, b) { return a + b; }, 0) / rValues.length;
+
+    var peak = state.startingCapital;
+    var maxDd = 0;
+    var points = state.equityCurve.length
+      ? state.equityCurve
+      : [{ timestamp: new Date().toISOString(), equity: state.startingCapital }];
+    for (var i = 0; i < points.length; i++) {
+      var p = points[i];
+      if (p.equity > peak) peak = p.equity;
+      var dd = peak - p.equity;
+      if (dd > maxDd) maxDd = dd;
+    }
+    if (state.equity > peak) peak = state.equity;
+    var currentDd = peak - state.equity;
+    if (currentDd > maxDd) maxDd = currentDd;
+
+    return {
+      equity: state.equity,
+      startingCapital: state.startingCapital,
+      totalPnl: state.equity - state.startingCapital,
+      winRate: Number(winRate.toFixed(1)),
+      wins: wins,
+      losses: losses,
+      averageR: Number(averageR.toFixed(2)),
+      maxDrawdown: Number(maxDd.toFixed(2)),
+      maxDrawdownPct: Number((peak > 0 ? (maxDd / peak) * 100 : 0).toFixed(2)),
+      closedCount: closedCount,
+      openCount: state.openTrades.length
+    };
+  }
+
+  // ——— State ———
+  var state = loadState();
+  var side = 'buy';
+  var pendingDebrief = null;
+  var autoDebriefTimer = null;
+
+  // ——— DOM ———
+  var $ = function (id) { return document.getElementById(id); };
+  var toastEl = $('toast');
+  var toastTimer = null;
+
+  function toast(msg) {
+    toastEl.textContent = msg;
+    toastEl.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { toastEl.classList.remove('show'); }, 2800);
+  }
+
+  function pushAutoLog(msg) {
+    var entry = { at: new Date().toISOString(), msg: msg };
+    state.autoLog = [entry].concat(state.autoLog).slice(0, 40);
+    state.autoLastAction = msg;
+    state.autoLastActionAt = entry.at;
+  }
+
+  function showDebrief(debrief, opts) {
+    opts = opts || {};
+    pendingDebrief = debrief;
+    $('debrief-title').textContent = debrief.summary;
+    var autoNote = debrief.autoApplied
+      ? '<p style="font-size:0.82rem;color:#86efac;margin:0 0 0.5rem"><strong>Recalibrage auto-appliqué</strong> (Mode Bot auto).</p>'
+      : '';
+    $('debrief-body').innerHTML =
+      autoNote +
+      '<p class="muted" style="font-size:0.8rem;margin:0 0 0.5rem">' +
+      new Date(debrief.createdAt).toLocaleString('fr-FR') + '</p>' +
+      '<strong>Points positifs</strong><ul>' +
+      debrief.whatWentRight.map(function (x) { return '<li>' + x + '</li>'; }).join('') +
+      '</ul><strong>À améliorer</strong><ul>' +
+      debrief.whatWentWrong.map(function (x) { return '<li>' + x + '</li>'; }).join('') +
+      '</ul><strong>Leçons</strong><ul>' +
+      debrief.lessons.map(function (x) { return '<li>' + x + '</li>'; }).join('') +
+      '</ul><p style="font-size:0.88rem;margin:0.5rem 0 0"><strong>Recalibrage :</strong> risque ' +
+      debrief.suggestedRiskPercent + ' % · stop ' + debrief.suggestedStopPips +
+      ' pips · R:R ' + debrief.suggestedRrRatio + '</p>';
+    $('debrief-modal').classList.add('show');
+
+    clearTimeout(autoDebriefTimer);
+    if (opts.autoDismiss) {
+      autoDebriefTimer = setTimeout(function () {
+        if (pendingDebrief === debrief) {
+          $('debrief-modal').classList.remove('show');
+          pendingDebrief = null;
+          $('f-risk').value = String(state.botRules.riskPercent);
+          renderAll();
+        }
+      }, 3500);
+    }
+  }
+
+  $('debrief-close').onclick = function () {
+    $('debrief-modal').classList.remove('show');
+    pendingDebrief = null;
+    clearTimeout(autoDebriefTimer);
+    $('f-risk').value = String(state.botRules.riskPercent);
+    renderAll();
+  };
+
+  // Nav
+  document.querySelectorAll('.nav button').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      document.querySelectorAll('.nav button').forEach(function (b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      document.querySelectorAll('.panel').forEach(function (p) { p.classList.remove('active'); });
+      $('panel-' + btn.getAttribute('data-panel')).classList.add('active');
+      window.scrollTo(0, 0);
+    });
+  });
+
+  // Side toggle
+  document.querySelectorAll('#f-side button').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      side = btn.getAttribute('data-side');
+      document.querySelectorAll('#f-side button').forEach(function (b) {
+        b.classList.remove('active-buy', 'active-sell');
+      });
+      btn.classList.add(side === 'buy' ? 'active-buy' : 'active-sell');
+      suggestSlTp();
+      updateSizing();
+    });
+  });
+
+  function suggestSlTp() {
+    var pair = $('f-pair').value;
+    var entry = state.prices[pair];
+    var pip = PIP_SIZE[pair];
+    var stopPips = state.botRules.preferredStopPips;
+    var rr = state.botRules.preferredRrRatio;
+    var sl, tp;
+    if (side === 'buy') {
+      sl = entry - stopPips * pip;
+      tp = entry + stopPips * rr * pip;
+    } else {
+      sl = entry + stopPips * pip;
+      tp = entry - stopPips * rr * pip;
+    }
+    $('f-entry').value = formatPrice(pair, entry);
+    $('f-sl').value = formatPrice(pair, sl);
+    $('f-tp').value = formatPrice(pair, tp);
+    $('sl-tp-hint').textContent = side === 'buy'
+      ? 'ACHAT : SL sous entrée, TP au-dessus (suggestions bot).'
+      : 'VENTE : SL au-dessus, TP en dessous (suggestions bot).';
+  }
+
+  function updateSizing() {
+    var pair = $('f-pair').value;
+    var entry = state.prices[pair];
+    $('f-entry').value = formatPrice(pair, entry);
+    var sl = parseFloat($('f-sl').value);
+    var tp = parseFloat($('f-tp').value);
+    var risk = parseFloat($('f-risk').value) || state.botRules.riskPercent;
+    var box = $('sizing');
+    var err = $('sizing-err');
+
+    if (!sl || !tp || isNaN(sl) || isNaN(tp)) {
+      box.innerHTML = '<span class="muted">Saisir SL et TP pour voir la taille de position.</span>';
+      err.hidden = true;
+      return;
+    }
+
+    var sizing = calculatePositionSize({
+      equity: state.equity,
+      riskPercent: risk,
+      pair: pair,
+      side: side,
+      entryPrice: entry,
+      stopLoss: sl,
+      takeProfit: tp
+    });
+
+    if (!sizing.ok) {
+      err.hidden = false;
+      err.textContent = sizing.error;
+      box.innerHTML = '<span class="muted">Calcul invalide.</span>';
+      return;
+    }
+    err.hidden = true;
+    box.innerHTML =
+      '<div class="line"><span>Risque</span><strong>' + sizing.riskPercent + ' % → ' + moneyAbs(sizing.riskAmount) + '</strong></div>' +
+      '<div class="line"><span>Stop</span><strong>' + sizing.stopDistancePips + ' pips</strong></div>' +
+      '<div class="line"><span>Gain potentiel</span><strong>' + sizing.rewardPips + ' pips</strong></div>' +
+      '<div class="line"><span>R:R</span><strong>1:' + sizing.rrRatio + '</strong></div>' +
+      '<div class="line"><span>Lots</span><strong>' + sizing.lotSize + '</strong></div>' +
+      '<div class="line"><span>Valeur pip / lot</span><strong>' + sizing.pipValue.toFixed(2) + ' USD</strong></div>';
+  }
+
+  ['f-pair', 'f-sl', 'f-tp', 'f-risk'].forEach(function (id) {
+    $(id).addEventListener('input', updateSizing);
+    $(id).addEventListener('change', function () {
+      if (id === 'f-pair') suggestSlTp();
+      updateSizing();
+    });
+  });
+
+  function applyCloseToState(closed, debrief, historyEntry, nextRules, equity) {
+    state.equity = equity;
+    state.openTrades = state.openTrades.filter(function (t) { return t.id !== closed.id; });
+    state.closedTrades = [closed].concat(state.closedTrades);
+    state.journal = state.journal.map(function (t) { return t.id === closed.id ? closed : t; });
+    state.debriefs = [debrief].concat(state.debriefs);
+    state.botRules = nextRules;
+    state.botHistory = [historyEntry].concat(state.botHistory);
+    state.equityCurve = state.equityCurve.concat([{ timestamp: new Date().toISOString(), equity: equity }]);
+  }
+
+  function finishClose(closed, debrief, historyEntry, nextRules, equity, opts) {
+    opts = opts || {};
+    applyCloseToState(closed, debrief, historyEntry, nextRules, equity);
+    saveState(state);
+    showDebrief(debrief, { autoDismiss: !!opts.autoDismiss });
+    renderAll();
+  }
+
+  function processClose(trade, exit, reason) {
+    var closed = markClose(trade, exit, reason);
+    var equity = Number((state.equity + (closed.pnlUsd || 0)).toFixed(2));
+    var debrief = buildDebrief(closed, state.botRules);
+    var recal = recalibrateBot(state.botRules, debrief, closed.id);
+    debrief.autoApplied = !!state.autoMode;
+    if (state.autoMode) {
+      pushAutoLog(
+        'Clôture auto ' + closed.pair + ' ' + (closed.side === 'buy' ? 'ACHAT' : 'VENTE') +
+        ' · ' + reasonLabel(reason) + ' · P&L ' + money(closed.pnlUsd) +
+        ' · recalibrage → v' + recal.nextRules.version
+      );
+    }
+    finishClose(closed, debrief, recal.historyEntry, recal.nextRules, equity, {
+      autoDismiss: !!state.autoMode
+    });
+  }
+
+  function momentumPips(pair) {
+    var hist = (state.priceHistory && state.priceHistory[pair]) || [];
+    if (hist.length < AUTO_LOOKBACK + 1) return 0;
+    var newest = hist[hist.length - 1];
+    var older = hist[hist.length - 1 - AUTO_LOOKBACK];
+    return (newest - older) / PIP_SIZE[pair];
+  }
+
+  function buildAutoLevels(pair, tradeSide) {
+    var entry = state.prices[pair];
+    var pip = PIP_SIZE[pair];
+    var stopPips = state.botRules.preferredStopPips;
+    var rr = state.botRules.preferredRrRatio;
+    var sl, tp;
+    if (tradeSide === 'buy') {
+      sl = Number((entry - stopPips * pip).toFixed(priceDecimals(pair)));
+      tp = Number((entry + stopPips * rr * pip).toFixed(priceDecimals(pair)));
+    } else {
+      sl = Number((entry + stopPips * pip).toFixed(priceDecimals(pair)));
+      tp = Number((entry - stopPips * rr * pip).toFixed(priceDecimals(pair)));
+    }
+    return { entry: entry, sl: sl, tp: tp };
+  }
+
+  function openAutoTrade(pair, tradeSide, momPips) {
+    var levels = buildAutoLevels(pair, tradeSide);
+    var risk = clampRisk(state.botRules.riskPercent);
+    var sizing = calculatePositionSize({
+      equity: state.equity,
+      riskPercent: risk,
+      pair: pair,
+      side: tradeSide,
+      entryPrice: levels.entry,
+      stopLoss: levels.sl,
+      takeProfit: levels.tp
+    });
+    if (!sizing.ok) {
+      pushAutoLog('Signal ' + pair + ' ignoré : ' + sizing.error);
+      return false;
+    }
+    if (sizing.riskAmount > state.equity * 0.05) {
+      // safety: never risk absurd amount vs capital (risk% already clamps)
+    }
+    if (state.equity < 50) {
+      pushAutoLog('Capital trop bas pour ouvrir un trade auto.');
+      return false;
+    }
+
+    var trade = {
+      id: uid(),
+      pair: pair,
+      side: tradeSide,
+      entryPrice: levels.entry,
+      stopLoss: levels.sl,
+      takeProfit: levels.tp,
+      lotSize: sizing.lotSize,
+      riskPercent: sizing.riskPercent,
+      riskAmount: Number(sizing.riskAmount.toFixed(2)),
+      pipValue: sizing.pipValue,
+      stopDistancePips: sizing.stopDistancePips,
+      rewardPips: sizing.rewardPips,
+      rrRatio: sizing.rrRatio,
+      status: 'open',
+      openedAt: new Date().toISOString(),
+      source: 'auto',
+      notes: 'AUTO momentum ' + (momPips >= 0 ? '+' : '') + momPips.toFixed(1) + ' pips / ' + AUTO_LOOKBACK + ' ticks (éducatif)'
+    };
+    state.openTrades = [trade].concat(state.openTrades);
+    state.journal = [trade].concat(state.journal);
+    state.autoCooldownLeft = AUTO_COOLDOWN_TICKS;
+    pushAutoLog(
+      'Ouverture auto ' + pair + ' ' + (tradeSide === 'buy' ? 'ACHAT' : 'VENTE') +
+      ' @ ' + formatPrice(pair, levels.entry) +
+      ' · SL ' + formatPrice(pair, levels.sl) +
+      ' · TP ' + formatPrice(pair, levels.tp) +
+      ' · risque ' + sizing.riskPercent + '% · bot v' + state.botRules.version
+    );
+    toast('🤖 Bot : ' + (tradeSide === 'buy' ? 'ACHAT' : 'VENTE') + ' ' + pair);
+    return true;
+  }
+
+  function autoEvaluate() {
+    if (!state.autoMode) return;
+
+    if (state.autoCooldownLeft > 0) {
+      state.autoCooldownLeft -= 1;
+      return;
+    }
+
+    var autoOpenCount = state.openTrades.filter(function (t) { return t.source === 'auto'; }).length;
+    var totalOpen = state.openTrades.length;
+    var maxAllowed = Math.min(AUTO_MAX_OPEN, state.botRules.maxOpenTrades || AUTO_MAX_OPEN);
+    if (autoOpenCount >= maxAllowed || totalOpen >= maxAllowed) {
+      return;
+    }
+
+    var candidates = [];
+    var allowed = state.botRules.allowedPairs || PAIRS;
+    allowed.forEach(function (pair) {
+      if (state.openTrades.some(function (t) { return t.pair === pair; })) return;
+      var mom = momentumPips(pair);
+      if (mom >= AUTO_MOMENTUM_PIPS) {
+        candidates.push({ pair: pair, side: 'buy', mom: mom, score: Math.abs(mom) });
+      } else if (mom <= -AUTO_MOMENTUM_PIPS) {
+        candidates.push({ pair: pair, side: 'sell', mom: mom, score: Math.abs(mom) });
+      }
+    });
+
+    if (!candidates.length) return;
+
+    candidates.sort(function (a, b) { return b.score - a.score; });
+    var best = candidates[0];
+    openAutoTrade(best.pair, best.side, best.mom);
+  }
+
+  function setAutoMode(on) {
+    state.autoMode = !!on;
+    if (state.autoMode) {
+      pushAutoLog('Mode Bot auto ACTIVÉ — surveillance des ticks mock.');
+      toast('Bot auto : actif');
+    } else {
+      pushAutoLog('Mode Bot auto DÉSACTIVÉ.');
+      toast('Bot auto : arrêté');
+    }
+    saveState(state);
+    syncAutoToggles();
+    renderAll();
+  }
+
+  function syncAutoToggles() {
+    var home = $('auto-toggle-home');
+    var bot = $('auto-toggle-bot');
+    if (home) home.checked = !!state.autoMode;
+    if (bot) bot.checked = !!state.autoMode;
+    var cardHome = $('auto-card-home');
+    var cardBot = $('auto-card-bot');
+    if (cardHome) cardHome.classList.toggle('on', !!state.autoMode);
+    if (cardBot) cardBot.classList.toggle('on', !!state.autoMode);
+  }
+
+  $('auto-toggle-home').addEventListener('change', function () {
+    setAutoMode(this.checked);
+  });
+  $('auto-toggle-bot').addEventListener('change', function () {
+    setAutoMode(this.checked);
+  });
+
+  function tickPrices() {
+    var prev = Object.assign({}, state.prices);
+    var prices = Object.assign({}, state.prices);
+    PAIRS.forEach(function (pair) {
+      prices[pair] = nextSimulatedPrice(pair, prices[pair]);
+    });
+    state.prevPrices = prev;
+    state.prices = prices;
+    state.lastTickAt = new Date().toISOString();
+    state.autoTickCount = (state.autoTickCount || 0) + 1;
+
+    if (!state.priceHistory) state.priceHistory = emptyPriceHistory();
+    PAIRS.forEach(function (pair) {
+      var arr = state.priceHistory[pair] || [];
+      arr = arr.concat([prices[pair]]).slice(-AUTO_HISTORY_LEN);
+      state.priceHistory[pair] = arr;
+    });
+
+    var stillOpen = [];
+    var lastDebrief = null;
+    var closedSomething = false;
+
+    state.openTrades.forEach(function (trade) {
+      var price = prices[trade.pair];
+      var hit = null;
+      var exit = price;
+      if (trade.side === 'buy') {
+        if (price <= trade.stopLoss) { hit = 'stop_loss'; exit = trade.stopLoss; }
+        else if (price >= trade.takeProfit) { hit = 'take_profit'; exit = trade.takeProfit; }
+      } else {
+        if (price >= trade.stopLoss) { hit = 'stop_loss'; exit = trade.stopLoss; }
+        else if (price <= trade.takeProfit) { hit = 'take_profit'; exit = trade.takeProfit; }
+      }
+      if (hit) {
+        var closed = markClose(trade, exit, hit);
+        state.equity = Number((state.equity + (closed.pnlUsd || 0)).toFixed(2));
+        var debrief = buildDebrief(closed, state.botRules);
+        var recal = recalibrateBot(state.botRules, debrief, closed.id);
+        debrief.autoApplied = true;
+        state.botRules = recal.nextRules;
+        state.botHistory = [recal.historyEntry].concat(state.botHistory);
+        state.debriefs = [debrief].concat(state.debriefs);
+        state.closedTrades = [closed].concat(state.closedTrades);
+        state.journal = state.journal.map(function (t) { return t.id === closed.id ? closed : t; });
+        state.equityCurve = state.equityCurve.concat([{ timestamp: new Date().toISOString(), equity: state.equity }]);
+        pushAutoLog(
+          'Clôture ' + (closed.source === 'auto' ? 'auto ' : '') + closed.pair +
+          ' · ' + reasonLabel(hit) + ' · P&L ' + money(closed.pnlUsd) +
+          ' · recalibrage auto → v' + recal.nextRules.version + ' (' + recal.historyEntry.changeSummary + ')'
+        );
+        lastDebrief = debrief;
+        closedSomething = true;
+      } else {
+        stillOpen.push(trade);
+      }
+    });
+    state.openTrades = stillOpen;
+
+    // Auto entry after SL/TP processing
+    autoEvaluate();
+
+    saveState(state);
+    if (lastDebrief && !pendingDebrief) {
+      showDebrief(lastDebrief, { autoDismiss: !!state.autoMode || closedSomething });
+    }
+    var pair = $('f-pair').value;
+    $('f-entry').value = formatPrice(pair, state.prices[pair]);
+    updateSizing();
+    renderAll();
+  }
+
+  $('btn-tick').onclick = tickPrices;
+
+  $('btn-open').onclick = function () {
+    var maxOpen = state.botRules.maxOpenTrades || 3;
+    if (state.openTrades.length >= maxOpen) {
+      toast('Maximum ' + maxOpen + ' trades ouverts (bot v' + state.botRules.version + ').');
+      return;
+    }
+    var pair = $('f-pair').value;
+    var entry = state.prices[pair];
+    var sl = parseFloat($('f-sl').value);
+    var tp = parseFloat($('f-tp').value);
+    var risk = parseFloat($('f-risk').value);
+    if (isNaN(risk)) risk = state.botRules.riskPercent;
+    risk = clampRisk(risk);
+
+    if (isNaN(sl) || isNaN(tp)) {
+      toast('SL et TP sont obligatoires.');
+      return;
+    }
+
+    var sizing = calculatePositionSize({
+      equity: state.equity,
+      riskPercent: risk,
+      pair: pair,
+      side: side,
+      entryPrice: entry,
+      stopLoss: sl,
+      takeProfit: tp
+    });
+    if (!sizing.ok) {
+      toast(sizing.error);
+      $('sizing-err').hidden = false;
+      $('sizing-err').textContent = sizing.error;
+      return;
+    }
+
+    var trade = {
+      id: uid(),
+      pair: pair,
+      side: side,
+      entryPrice: entry,
+      stopLoss: sl,
+      takeProfit: tp,
+      lotSize: sizing.lotSize,
+      riskPercent: sizing.riskPercent,
+      riskAmount: Number(sizing.riskAmount.toFixed(2)),
+      pipValue: sizing.pipValue,
+      stopDistancePips: sizing.stopDistancePips,
+      rewardPips: sizing.rewardPips,
+      rrRatio: sizing.rrRatio,
+      status: 'open',
+      openedAt: new Date().toISOString(),
+      source: 'manual',
+      notes: $('f-notes').value.trim() || undefined
+    };
+    state.openTrades = [trade].concat(state.openTrades);
+    state.journal = [trade].concat(state.journal);
+    saveState(state);
+    $('f-notes').value = '';
+    toast('Trade ouvert : ' + pair + ' ' + (side === 'buy' ? 'ACHAT' : 'VENTE'));
+    renderAll();
+    document.querySelector('.nav button[data-panel="open"]').click();
+  };
+
+  $('btn-reset').onclick = function () {
+    if (!confirm('Réinitialiser tout le compte paper (10 000 USD) ?')) return;
+    localStorage.removeItem(STORAGE_KEY);
+    state = createInitialState();
+    saveState(state);
+    $('f-risk').value = String(DEFAULT_RISK);
+    syncAutoToggles();
+    suggestSlTp();
+    updateSizing();
+    toast('Compte réinitialisé.');
+    renderAll();
+  };
+
+  function reasonLabel(r) {
+    if (r === 'stop_loss') return 'Stop-loss';
+    if (r === 'take_profit') return 'Take-profit';
+    if (r === 'manual') return 'Manuel';
+    return r || '—';
+  }
+
+  function renderAutoStatus(elId) {
+    var el = $(elId);
+    if (!el) return;
+    var on = !!state.autoMode;
+    var lastAt = state.autoLastActionAt
+      ? new Date(state.autoLastActionAt).toLocaleTimeString('fr-FR')
+      : '—';
+    el.innerHTML =
+      '<div class="line"><span>Statut</span><strong><span class="pill ' +
+      (on ? 'pill-on' : 'pill-off') + '">' +
+      (on ? 'Bot auto: actif' : 'Bot auto: off') +
+      '</span></strong></div>' +
+      '<div class="line"><span>Version règles</span><strong>v' + state.botRules.version + '</strong></div>' +
+      '<div class="line"><span>Dernière action</span><strong style="text-align:right;font-size:0.78rem;font-weight:600;max-width:62%">' +
+      (state.autoLastAction || '—') + '</strong></div>' +
+      '<div class="line"><span>Heure action</span><strong>' + lastAt + '</strong></div>' +
+      '<div class="line"><span>Cooldown auto</span><strong>' +
+      (state.autoCooldownLeft > 0 ? state.autoCooldownLeft + ' ticks' : 'prêt') +
+      '</strong></div>';
+  }
+
+  function renderTradeCard(t, opts) {
+    opts = opts || {};
+    var isOpen = t.status === 'open';
+    var pnl = isOpen
+      ? unrealizedPnl({
+          pair: t.pair,
+          side: t.side,
+          entryPrice: t.entryPrice,
+          currentPrice: state.prices[t.pair],
+          lotSize: t.lotSize
+        })
+      : (t.pnlUsd || 0);
+    var pnlClass = pnl >= 0 ? 'pos' : 'neg';
+    var html = '<div class="trade" data-id="' + t.id + '">';
+    html += '<div class="trade-top">';
+    html += '<div><span class="badge ' + (t.side === 'buy' ? 'badge-buy' : 'badge-sell') + '">' +
+      (t.side === 'buy' ? 'ACHAT' : 'VENTE') + '</span> ';
+    html += '<span class="badge ' + (isOpen ? 'badge-open' : 'badge-closed') + '">' +
+      (isOpen ? 'ouvert' : 'fermé') + '</span>';
+    if (t.source === 'auto') {
+      html += ' <span class="badge badge-auto">auto</span>';
+    }
+    html += '<div style="font-weight:700;margin-top:0.35rem">' + t.pair + '</div></div>';
+    html += '<div style="text-align:right"><div class="' + pnlClass + '" style="font-weight:700">' +
+      money(pnl) + '</div>';
+    if (!isOpen && typeof t.rMultiple === 'number') {
+      html += '<div class="muted">R = ' + t.rMultiple.toFixed(2) + '</div>';
+    }
+    html += '</div></div>';
+    html += '<div class="meta">Entrée ' + formatPrice(t.pair, t.entryPrice);
+    if (isOpen) html += ' · Actuel ' + formatPrice(t.pair, state.prices[t.pair]);
+    else if (t.exitPrice != null) html += ' · Sortie ' + formatPrice(t.pair, t.exitPrice);
+    html += '<br>SL ' + formatPrice(t.pair, t.stopLoss) + ' · TP ' + formatPrice(t.pair, t.takeProfit);
+    html += '<br>' + t.lotSize + ' lots · risque ' + t.riskPercent + '% (' + moneyAbs(t.riskAmount) + ') · R:R 1:' + t.rrRatio;
+    if (!isOpen) html += '<br>Clôture : ' + reasonLabel(t.closeReason);
+    if (t.notes) html += '<br>Note : ' + t.notes;
+    html += '</div>';
+    if (opts.closable) {
+      html += '<button type="button" class="btn-danger btn-sm" style="width:100%;margin-top:0.55rem" data-close="' +
+        t.id + '">Fermer manuellement</button>';
+    }
+    html += '</div>';
+    return html;
+  }
+
+  function renderAll() {
+    var m = computeMetrics(state);
+
+    renderAutoStatus('auto-status-home');
+    renderAutoStatus('auto-status-bot');
+    syncAutoToggles();
+
+    $('stats').innerHTML =
+      '<div class="stat"><div class="lbl">Équité</div><div class="val">' + moneyAbs(m.equity) + '</div></div>' +
+      '<div class="stat"><div class="lbl">P&L total</div><div class="val ' + (m.totalPnl >= 0 ? 'pos' : 'neg') + '">' + money(m.totalPnl) + '</div></div>' +
+      '<div class="stat"><div class="lbl">Win rate</div><div class="val">' + m.winRate + '% <span class="muted" style="font-size:0.75rem">(' + m.wins + 'W/' + m.losses + 'L)</span></div></div>' +
+      '<div class="stat"><div class="lbl">R moyen</div><div class="val">' + m.averageR + 'R</div></div>' +
+      '<div class="stat"><div class="lbl">Max drawdown</div><div class="val neg">' + moneyAbs(m.maxDrawdown) + ' <span class="muted" style="font-size:0.75rem">(' + m.maxDrawdownPct + '%)</span></div></div>' +
+      '<div class="stat"><div class="lbl">Trades</div><div class="val">' + m.openCount + ' ouv. / ' + m.closedCount + ' fermés</div></div>';
+
+    var curve = state.equityCurve.slice(-40);
+    var minE = Math.min.apply(null, curve.map(function (p) { return p.equity; }));
+    var maxE = Math.max.apply(null, curve.map(function (p) { return p.equity; }));
+    var span = Math.max(1, maxE - minE);
+    $('equity-bars').innerHTML = curve.map(function (p) {
+      var h = 8 + ((p.equity - minE) / span) * 48;
+      var color = p.equity >= state.startingCapital ? 'var(--green)' : 'var(--red)';
+      return '<div class="bar" style="height:' + h + 'px;background:' + color + '" title="' + moneyAbs(p.equity) + '"></div>';
+    }).join('');
+
+    $('ticker').innerHTML = PAIRS.map(function (pair) {
+      var price = state.prices[pair];
+      var prev = (state.prevPrices && state.prevPrices[pair]) || price;
+      var diff = price - prev;
+      var cls = diff > 0 ? 'pos' : diff < 0 ? 'neg' : 'muted';
+      var sign = diff > 0 ? '▲' : diff < 0 ? '▼' : '•';
+      return '<div class="tick"><div class="pair">' + pair + '</div><div class="price">' +
+        formatPrice(pair, price) + '</div><div class="delta ' + cls + '">' + sign + ' ' +
+        formatPrice(pair, Math.abs(diff)) + '</div></div>';
+    }).join('');
+
+    var ago = state.lastTickAt ? new Date(state.lastTickAt) : null;
+    $('tick-ago').textContent = ago ? 'tick ' + ago.toLocaleTimeString('fr-FR') : '—';
+
+    $('bot-ver').textContent = String(state.botRules.version);
+    $('bot-summary').textContent =
+      'Risque ' + state.botRules.riskPercent + '% · stop ' + state.botRules.preferredStopPips +
+      ' pips · R:R 1:' + state.botRules.preferredRrRatio + ' · max ' + state.botRules.maxOpenTrades + ' ouverts' +
+      (state.autoMode ? ' · 🤖 auto ON' : '');
+
+    $('bot-suggest').textContent =
+      'Suggestion bot v' + state.botRules.version + ' : risque ' + state.botRules.riskPercent +
+      ' %, stop ~' + state.botRules.preferredStopPips + ' pips, R:R ~1:' + state.botRules.preferredRrRatio;
+
+    if (!state.openTrades.length) {
+      $('open-list').innerHTML = '<div class="empty">Aucune position ouverte.<br>Activez le Mode Bot auto ou allez dans Trader.</div>';
+    } else {
+      $('open-list').innerHTML = state.openTrades.map(function (t) {
+        return renderTradeCard(t, { closable: true });
+      }).join('');
+      $('open-list').querySelectorAll('[data-close]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          var id = btn.getAttribute('data-close');
+          var trade = state.openTrades.find(function (t) { return t.id === id; });
+          if (!trade) return;
+          if (!confirm('Fermer ce trade au prix actuel ?')) return;
+          processClose(trade, state.prices[trade.pair], 'manual');
+        });
+      });
+    }
+
+    if (!state.journal.length) {
+      $('journal-list').innerHTML = '<div class="empty">Journal vide pour l’instant.</div>';
+    } else {
+      $('journal-list').innerHTML = state.journal.slice(0, 40).map(function (t) {
+        return renderTradeCard(t, { closable: false });
+      }).join('');
+    }
+
+    if (!state.debriefs.length) {
+      $('debrief-list').innerHTML = '<div class="empty">Les debriefs apparaissent après chaque clôture.</div>';
+    } else {
+      $('debrief-list').innerHTML = state.debriefs.slice(0, 10).map(function (d) {
+        return '<div class="version"><strong>' + d.summary + '</strong>' +
+          (d.autoApplied ? ' <span class="badge badge-auto">recalib auto</span>' : '') +
+          '<div class="muted" style="margin-top:0.25rem">' + new Date(d.createdAt).toLocaleString('fr-FR') + '</div>' +
+          '<div style="font-size:0.82rem;margin-top:0.35rem">' + d.lessons[0] + '</div></div>';
+      }).join('');
+    }
+
+    var r = state.botRules;
+    $('bot-rules').innerHTML =
+      '<div class="sizing-box">' +
+      '<div class="line"><span>Version</span><strong>v' + r.version + '</strong></div>' +
+      '<div class="line"><span>Risque</span><strong>' + r.riskPercent + ' %</strong></div>' +
+      '<div class="line"><span>Stop préféré</span><strong>' + r.preferredStopPips + ' pips</strong></div>' +
+      '<div class="line"><span>R:R cible</span><strong>1:' + r.preferredRrRatio + '</strong></div>' +
+      '<div class="line"><span>Max ouverts</span><strong>' + r.maxOpenTrades + '</strong></div>' +
+      '<div class="line"><span>Max auto</span><strong>' + AUTO_MAX_OPEN + '</strong></div>' +
+      '<p class="muted" style="margin:0.5rem 0 0;font-size:0.8rem">' + r.notes + '</p></div>';
+
+    $('bot-history').innerHTML = state.botHistory.map(function (h) {
+      return '<div class="version"><strong>v' + h.version + '</strong> — ' + h.changeSummary +
+        '<div class="muted" style="margin-top:0.25rem">' + new Date(h.createdAt).toLocaleString('fr-FR') + '</div>' +
+        '<div style="font-size:0.82rem;margin-top:0.35rem">' + h.why + '</div></div>';
+    }).join('');
+
+    if (!state.autoLog || !state.autoLog.length) {
+      $('auto-log').innerHTML = '<div class="empty">Aucune action auto pour l’instant. Activez le Mode Bot auto.</div>';
+    } else {
+      $('auto-log').innerHTML = state.autoLog.slice(0, 20).map(function (e) {
+        return '<div class="version"><div style="font-size:0.82rem">' + e.msg + '</div>' +
+          '<div class="muted" style="margin-top:0.25rem">' + new Date(e.at).toLocaleString('fr-FR') + '</div></div>';
+      }).join('');
+    }
+  }
+
+  // Init form
+  $('f-risk').value = String(state.botRules.riskPercent);
+  syncAutoToggles();
+  suggestSlTp();
+  updateSizing();
+  renderAll();
+  setInterval(tickPrices, 2000);
+})();
+</script>
+</body>
+</html>
