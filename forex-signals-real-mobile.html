@@ -113,6 +113,7 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
 .tick .pair { font-weight: 700; font-size: 0.9rem; }
 .tick .price { font-variant-numeric: tabular-nums; font-size: 1.05rem; margin-top: 0.15rem; }
 .tick .delta { font-size: 0.75rem; margin-top: 0.1rem; }
+.tick .divg { font-size: 0.68rem; margin-top: 0.15rem; color: var(--muted); }
 .status-bar {
   display: flex; justify-content: space-between; align-items: center;
   gap: 0.5rem; flex-wrap: wrap;
@@ -289,15 +290,17 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
   <div class="demo-banner" role="alert">
     <span class="big">⚠ COMPTE DÉMO UNIQUEMENT</span>
     <p>
-      Prix de marché <strong>réels</strong> (API publique) pour générer les signaux —
+      Prix <strong>réels</strong> via <strong>consensus multi-sources</strong> (médiane) pour les signaux —
       mais tu copies <strong>seulement sur Exness DÉMO</strong> (argent fictif).
       Objectif : noter Gagné/Perdu pour mesurer si le bot s’améliore après recalibrage.
       <strong>Pas d’argent réel. Pas un conseil financier. Aucune promesse de profit.</strong>
+      Le consensus améliore la robustesse mais <strong>ne peut pas</strong> coller aux ticks Exness au millimètre.
     </p>
   </div>
 
   <div class="disclaimer" role="note">
-    <strong>Rappel :</strong> écart possible vs cours Exness (« Cours de référence »).
+    <strong>Rappel :</strong> <em>Consensus multi-sources (écart possible vs Exness)</em> —
+    plusieurs API publiques mondiales, prix médian. Impossible d’égaler les ticks broker.
     Ne partage jamais ton mot de passe. Cette page ne se connecte pas à Exness.
   </div>
 
@@ -342,11 +345,16 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
       <span id="apiStatus"><span class="dot wait"></span>Chargement…</span>
       <span id="lastUpdate">—</span>
     </div>
+    <div id="consensusMeta" class="muted" style="margin-bottom:0.55rem;font-size:0.78rem;line-height:1.4">
+      <span id="sourceCountLabel">—</span>
+      <span id="sourceWarn" class="neg" hidden style="display:block;margin-top:0.25rem"></span>
+    </div>
     <div id="errorBox" class="error-box" hidden></div>
     <div class="ticker" id="ticker"></div>
     <p class="ref-note">
-      Cours de référence (pas exactement Exness) — écart possible.
-      Source : <span id="apiSource">—</span> · historique local pour le momentum.
+      <strong>Consensus multi-sources (écart possible vs Exness)</strong> —
+      médiane des API OK. Robustesse ↑, match millimétrique Exness = impossible.
+      Sources OK : <span id="apiSource">—</span> · historique local pour le momentum.
     </p>
   </section>
 
@@ -422,7 +430,8 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
       </ol>
       <p class="muted" style="margin:0.65rem 0 0;font-size:0.8rem">
         Ne partage jamais ton mot de passe. Cette page ne se connecte pas à Exness.
-        Les prix sont réels ; la copie est 100&nbsp;% démo pour juger la qualité du recalibrage.
+        Les prix sont un <strong>consensus multi-sources</strong> (médiane) — robuste, mais
+        pas un match millimétrique vs ticks Exness. La copie est 100&nbsp;% démo pour juger le recalibrage.
       </p>
     </details>
   </section>
@@ -475,6 +484,10 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
       lastSignalAt: 0,
       cfg: Object.assign({}, DEFAULTS),
       apiSource: null,
+      divergence: {},
+      sourceCount: null,
+      sourceTotal: null,
+      sourceWarning: null,
       lastFetchAt: null,
       lastError: null,
       wins: 0,
@@ -493,6 +506,10 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
     f.cfg = Object.assign({}, DEFAULTS, s.cfg || {});
     f.cfg.riskPct = Math.min(2, Math.max(0.5, Number(f.cfg.riskPct) || 1));
     f.apiSource = s.apiSource || null;
+    f.divergence = s.divergence || {};
+    f.sourceCount = s.sourceCount != null ? s.sourceCount : null;
+    f.sourceTotal = s.sourceTotal != null ? s.sourceTotal : null;
+    f.sourceWarning = s.sourceWarning || null;
     f.lastFetchAt = s.lastFetchAt || null;
     f.lastError = s.lastError || null;
     f.wins = s.wins || 0;
@@ -551,8 +568,18 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
     return side === 'buy' ? entry + d : entry - d;
   }
 
-  /* ---------- API providers (browser CORS) ---------- */
-  // Prefer open.er-api.com (CORS *, free, no key). Fallbacks: frankfurter.dev, floatrates.
+  /* ---------- API providers (browser CORS, no keys) ---------- */
+  // Parallel worldwide sources → median consensus per pair.
+  // Honest: improves robustness; CANNOT match Exness ticks exactly.
+  function median(nums) {
+    var a = nums.filter(function (n) { return n != null && isFinite(n); })
+      .slice()
+      .sort(function (x, y) { return x - y; });
+    if (!a.length) return null;
+    var mid = Math.floor(a.length / 2);
+    return a.length % 2 ? a[mid] : (a[mid - 1] + a[mid]) / 2;
+  }
+
   async function fetchOpenErApi() {
     var res = await fetch('https://open.er-api.com/v6/latest/USD', { cache: 'no-store' });
     if (!res.ok) throw new Error('open.er-api HTTP ' + res.status);
@@ -561,7 +588,7 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
     var r = data.rates;
     if (!r.EUR || !r.GBP || !r.JPY || !r.CHF) throw new Error('paires manquantes');
     return {
-      source: 'open.er-api.com',
+      source: 'open.er-api',
       prices: {
         EURUSD: 1 / r.EUR,
         GBPUSD: 1 / r.GBP,
@@ -578,17 +605,16 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
     if (!res.ok) throw new Error('frankfurter HTTP ' + res.status);
     var data = await res.json();
     var r = data.rates;
-    if (!r || !r.EUR) throw new Error('frankfurter invalide');
+    if (!r || !r.EUR || !r.GBP || !r.JPY || !r.CHF) throw new Error('frankfurter invalide');
     return {
-      source: 'frankfurter.dev (quotidien ECB)',
+      source: 'frankfurter',
       prices: {
         EURUSD: 1 / r.EUR,
         GBPUSD: 1 / r.GBP,
         USDJPY: r.JPY,
         USDCHF: r.CHF
       },
-      updated: data.date || null,
-      note: 'Taux quotidiens ECB — momentum limité'
+      updated: data.date || null
     };
   }
 
@@ -598,10 +624,10 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
     var data = await res.json();
     if (!data.eur || !data.gbp || !data.jpy || !data.chf) throw new Error('floatrates invalide');
     return {
-      source: 'floatrates.com',
+      source: 'floatrates',
       prices: {
-        EURUSD: data.eur.inverseRate,
-        GBPUSD: data.gbp.inverseRate,
+        EURUSD: Number(data.eur.inverseRate),
+        GBPUSD: Number(data.gbp.inverseRate),
         USDJPY: Number(data.jpy.rate),
         USDCHF: Number(data.chf.rate)
       },
@@ -609,17 +635,118 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
     };
   }
 
-  async function fetchPrices() {
-    var errors = [];
-    var providers = [fetchOpenErApi, fetchFrankfurter, fetchFloatRates];
-    for (var i = 0; i < providers.length; i++) {
-      try {
-        return await providers[i]();
-      } catch (e) {
-        errors.push((e && e.message) || String(e));
-      }
+  async function fetchCurrencyApi() {
+    // fawazahmed0 currency-api via jsDelivr CDN (CORS *, no key)
+    var res = await fetch(
+      'https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/usd.json',
+      { cache: 'no-store' }
+    );
+    if (!res.ok) throw new Error('currency-api HTTP ' + res.status);
+    var data = await res.json();
+    var u = data && data.usd;
+    if (!u || u.eur == null || u.gbp == null || u.jpy == null || u.chf == null) {
+      throw new Error('currency-api invalide');
     }
-    throw new Error(errors.join(' · '));
+    return {
+      source: 'currency-api',
+      prices: {
+        EURUSD: 1 / Number(u.eur),
+        GBPUSD: 1 / Number(u.gbp),
+        USDJPY: Number(u.jpy),
+        USDCHF: Number(u.chf)
+      },
+      updated: data.date || null
+    };
+  }
+
+  async function fetchBankOfCanada() {
+    // CAD cross-rates from Bank of Canada Valet API (CORS *, no key)
+    var url = 'https://www.bankofcanada.ca/valet/observations/' +
+      'FXUSDCAD,FXEURCAD,FXGBPCAD,FXJPYCAD,FXCHFCAD/json?recent=1';
+    var res = await fetch(url, { cache: 'no-store' });
+    if (!res.ok) throw new Error('banque-canada HTTP ' + res.status);
+    var data = await res.json();
+    var obs = data && data.observations && data.observations[0];
+    if (!obs) throw new Error('banque-canada vide');
+    var usd = Number(obs.FXUSDCAD && obs.FXUSDCAD.v);
+    var eur = Number(obs.FXEURCAD && obs.FXEURCAD.v);
+    var gbp = Number(obs.FXGBPCAD && obs.FXGBPCAD.v);
+    var jpy = Number(obs.FXJPYCAD && obs.FXJPYCAD.v);
+    var chf = Number(obs.FXCHFCAD && obs.FXCHFCAD.v);
+    if (![usd, eur, gbp, jpy, chf].every(isFinite) || usd === 0 || jpy === 0 || chf === 0) {
+      throw new Error('banque-canada paires manquantes');
+    }
+    return {
+      source: 'banque-canada',
+      prices: {
+        EURUSD: eur / usd,
+        GBPUSD: gbp / usd,
+        USDJPY: usd / jpy,
+        USDCHF: usd / chf
+      },
+      updated: obs.d || null
+    };
+  }
+
+  var PRICE_PROVIDERS = [
+    { id: 'open.er-api', fn: fetchOpenErApi },
+    { id: 'frankfurter', fn: fetchFrankfurter },
+    { id: 'floatrates', fn: fetchFloatRates },
+    { id: 'currency-api', fn: fetchCurrencyApi },
+    { id: 'banque-canada', fn: fetchBankOfCanada }
+  ];
+
+  async function fetchPrices() {
+    var settled = await Promise.all(PRICE_PROVIDERS.map(function (p) {
+      return p.fn().then(function (r) {
+        return { ok: true, id: p.id, result: r };
+      }).catch(function (e) {
+        return { ok: false, id: p.id, error: (e && e.message) || String(e) };
+      });
+    }));
+
+    var ok = settled.filter(function (s) { return s.ok; });
+    var failed = settled.filter(function (s) { return !s.ok; });
+    if (!ok.length) {
+      throw new Error(failed.map(function (f) { return f.id + ': ' + f.error; }).join(' · '));
+    }
+
+    var prices = {};
+    var divergence = {};
+    PAIRS.forEach(function (pair) {
+      var vals = [];
+      ok.forEach(function (s) {
+        var v = s.result.prices[pair];
+        if (v != null && isFinite(v) && v > 0) vals.push(v);
+      });
+      prices[pair] = median(vals);
+      if (vals.length) {
+        var mn = Math.min.apply(null, vals);
+        var mx = Math.max.apply(null, vals);
+        divergence[pair] = {
+          min: mn,
+          max: mx,
+          spread: mx - mn,
+          n: vals.length
+        };
+      } else {
+        divergence[pair] = null;
+      }
+    });
+
+    var names = ok.map(function (s) { return s.result.source || s.id; });
+    return {
+      prices: prices,
+      source: 'Consensus multi-sources',
+      sourceCount: ok.length,
+      sourceTotal: PRICE_PROVIDERS.length,
+      sourceNames: names,
+      failedNames: failed.map(function (f) { return f.id; }),
+      divergence: divergence,
+      warning: ok.length < 2
+        ? 'Moins de 2 sources OK — consensus fragile, écart vs Exness plus probable.'
+        : null
+    };
   }
 
   function pushHistory(prices, ts) {
@@ -737,16 +864,24 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
       var result = await fetchPrices();
       var ts = Date.now();
       state.prices = result.prices;
-      state.apiSource = result.source + (result.note ? ' — ' + result.note : '');
+      state.divergence = result.divergence || {};
+      state.apiSource = (result.sourceNames && result.sourceNames.length)
+        ? result.sourceNames.join(', ')
+        : result.source;
+      state.sourceCount = result.sourceCount;
+      state.sourceTotal = result.sourceTotal;
+      state.sourceWarning = result.warning || null;
       state.lastFetchAt = ts;
       state.lastError = null;
       pushHistory(result.prices, ts);
       save();
-      setStatus('ok', 'OK · ' + result.source);
+      var sc = result.sourceCount + '/' + result.sourceTotal + ' sources';
+      setStatus(result.sourceCount < 2 ? 'wait' : 'ok', 'OK · ' + sc + ' · consensus médiane');
       render();
       if (fromAutoEval !== false) evaluateSignals(false);
     } catch (e) {
       state.lastError = (e && e.message) || String(e);
+      state.sourceWarning = null;
       save();
       setStatus('err', 'Erreur API');
       showError(state.lastError);
@@ -790,15 +925,45 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
       var hist = (state.history[pair] || []).length;
       var cls = mom > 0.2 ? 'pos' : (mom < -0.2 ? 'neg' : 'muted');
       var sign = mom > 0 ? '+' : '';
+      var divg = state.divergence && state.divergence[pair];
+      var divgHtml = '';
+      if (divg && divg.n >= 2) {
+        var spreadPips = Math.abs(divg.spread) / pipSize(pair);
+        divgHtml = '<div class="divg">divergence sources · ' +
+          spreadPips.toFixed(1) + ' pips (' + divg.n + ' src)</div>';
+      } else if (divg && divg.n === 1) {
+        divgHtml = '<div class="divg">1 seule source pour cette paire</div>';
+      }
       html += '<div class="tick">' +
         '<div class="pair">' + pair + '</div>' +
         '<div class="price">' + formatPrice(pair, price) + '</div>' +
         '<div class="delta ' + cls + '">' +
           (hist >= 2 ? (sign + mom.toFixed(1) + ' pips / ' + Math.min(MOMENTUM_N, hist) + ' pts') : 'historique…') +
-        '</div></div>';
+        '</div>' + divgHtml + '</div>';
     });
     $('ticker').innerHTML = html || '<p class="empty">Pas encore de cours</p>';
     $('apiSource').textContent = state.apiSource || '—';
+    var countEl = $('sourceCountLabel');
+    if (countEl) {
+      if (state.sourceCount != null && state.sourceTotal != null) {
+        countEl.textContent = state.sourceCount + '/' + state.sourceTotal +
+          ' sources · médiane · Consensus multi-sources (écart possible vs Exness)';
+      } else {
+        countEl.textContent = 'Consensus multi-sources (écart possible vs Exness)';
+      }
+    }
+    var warnEl = $('sourceWarn');
+    if (warnEl) {
+      if (state.sourceWarning) {
+        warnEl.hidden = false;
+        warnEl.style.display = 'block';
+        warnEl.textContent = '⚠ ' + state.sourceWarning;
+      } else {
+        warnEl.hidden = true;
+        warnEl.style.display = 'none';
+        warnEl.textContent = '';
+      }
+    }
     if (state.lastFetchAt) {
       var d = new Date(state.lastFetchAt);
       $('lastUpdate').textContent = 'MAJ ' + d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
