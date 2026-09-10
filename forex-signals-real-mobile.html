@@ -1,0 +1,1153 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="theme-color" content="#0f1419" />
+<title>Signaux FX Démo — Dave (éducatif)</title>
+<style>
+:root {
+  --bg: #0f1419;
+  --card: #1a2332;
+  --border: #2a3548;
+  --text: #e8eef7;
+  --muted: #8b9bb4;
+  --accent: #3b82f6;
+  --green: #22c55e;
+  --red: #ef4444;
+  --warn-bg: #3a2a12;
+  --warn-border: #8a6a2a;
+  --warn-text: #f0d9a0;
+  --tap: 48px;
+  --radius: 14px;
+  --safe-b: env(safe-area-inset-bottom, 0px);
+}
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.45;
+  min-height: 100dvh;
+  padding-bottom: calc(1rem + var(--safe-b));
+}
+button, input, select { font: inherit; color: inherit; }
+button {
+  min-height: var(--tap);
+  border: none;
+  border-radius: 12px;
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  font-weight: 600;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+button:disabled { opacity: 0.45; cursor: not-allowed; }
+.app { max-width: 480px; margin: 0 auto; padding: 0.85rem 0.85rem 1.5rem; }
+.header h1 { margin: 0; font-size: 1.25rem; letter-spacing: -0.02em; }
+.tagline { margin: 0.25rem 0 0; color: var(--muted); font-size: 0.85rem; }
+.disclaimer {
+  background: var(--warn-bg);
+  border: 1px solid var(--warn-border);
+  color: var(--warn-text);
+  padding: 0.75rem 0.9rem;
+  border-radius: 12px;
+  margin: 0.85rem 0;
+  font-size: 0.82rem;
+}
+.checklist {
+  display: flex; flex-wrap: wrap; gap: 0.4rem;
+  margin: 0.5rem 0 0.85rem;
+}
+.chip {
+  background: #0d1218;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 0.35rem 0.7rem;
+  font-size: 0.72rem;
+  color: var(--muted);
+  font-weight: 600;
+}
+.chip.ok { border-color: #166534; color: #86efac; }
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1rem;
+  margin-bottom: 0.85rem;
+}
+.card h2 { margin: 0 0 0.75rem; font-size: 1.05rem; }
+.card-head {
+  display: flex; justify-content: space-between; align-items: center;
+  gap: 0.5rem; margin-bottom: 0.75rem;
+}
+.card-head h2 { margin: 0; }
+.muted { color: var(--muted); font-size: 0.8rem; }
+.pos { color: var(--green); }
+.neg { color: var(--red); }
+.row { display: flex; gap: 0.5rem; }
+.row > * { flex: 1; }
+.btn-primary { background: var(--accent); color: #fff; width: 100%; }
+.btn-buy { background: #15803d; color: #fff; }
+.btn-sell { background: #b91c1c; color: #fff; }
+.btn-ghost {
+  background: transparent; border: 1px solid var(--border); color: var(--text);
+}
+.btn-sm { min-height: 40px; padding: 0.45rem 0.75rem; font-size: 0.85rem; }
+.btn-ok { background: #14532d; color: #bbf7d0; }
+.btn-ignore { background: #1e293b; color: #cbd5e1; border: 1px solid var(--border); }
+.ticker {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+}
+.tick {
+  background: #0d1218;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 0.65rem 0.7rem;
+}
+.tick .pair { font-weight: 700; font-size: 0.9rem; }
+.tick .price { font-variant-numeric: tabular-nums; font-size: 1.05rem; margin-top: 0.15rem; }
+.tick .delta { font-size: 0.75rem; margin-top: 0.1rem; }
+.status-bar {
+  display: flex; justify-content: space-between; align-items: center;
+  gap: 0.5rem; flex-wrap: wrap;
+  font-size: 0.78rem; color: var(--muted); margin-bottom: 0.65rem;
+}
+.dot {
+  display: inline-block; width: 8px; height: 8px; border-radius: 50%;
+  background: var(--muted); margin-right: 0.35rem; vertical-align: middle;
+}
+.dot.ok { background: var(--green); }
+.dot.err { background: var(--red); }
+.dot.wait { background: #eab308; }
+.toggle-row {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 0.75rem; padding: 0.35rem 0;
+}
+.switch {
+  position: relative; width: 52px; height: 30px; flex-shrink: 0;
+}
+.switch input { opacity: 0; width: 0; height: 0; }
+.slider {
+  position: absolute; inset: 0; background: #334155; border-radius: 999px;
+  transition: 0.2s;
+}
+.slider::before {
+  content: ""; position: absolute; height: 24px; width: 24px;
+  left: 3px; top: 3px; background: #fff; border-radius: 50%; transition: 0.2s;
+}
+.switch input:checked + .slider { background: var(--accent); }
+.switch input:checked + .slider::before { transform: translateX(22px); }
+.error-box {
+  background: #3f1212; border: 1px solid #7f1d1d; color: #fecaca;
+  padding: 0.75rem; border-radius: 12px; font-size: 0.85rem; margin-bottom: 0.65rem;
+}
+.signal-card {
+  border: 2px solid var(--accent);
+  border-radius: var(--radius);
+  padding: 1rem;
+  margin-bottom: 0.75rem;
+  background: linear-gradient(180deg, #1e2a3d 0%, #1a2332 100%);
+}
+.signal-card.buy { border-color: #22c55e; }
+.signal-card.sell { border-color: #ef4444; }
+.signal-card .big-dir {
+  font-size: 1.6rem; font-weight: 800; letter-spacing: 0.02em;
+  margin: 0.25rem 0 0.5rem;
+}
+.copy-steps {
+  background: #0d1218;
+  border-radius: 12px;
+  padding: 0.75rem 0.85rem;
+  margin: 0.65rem 0;
+  font-size: 0.9rem;
+}
+.copy-steps li { margin: 0.35rem 0; }
+.copy-steps strong { color: #fff; }
+.meta-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 0.4rem;
+  font-size: 0.82rem; margin-top: 0.5rem;
+}
+.meta-grid span { color: var(--muted); }
+.journal-item {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 0.7rem;
+  margin-bottom: 0.5rem;
+  font-size: 0.85rem;
+  background: #0d1218;
+}
+.toast {
+  position: fixed; left: 50%; bottom: calc(1.25rem + var(--safe-b));
+  transform: translateX(-50%) translateY(120%);
+  background: #1e293b; border: 1px solid var(--border); color: var(--text);
+  padding: 0.7rem 1rem; border-radius: 12px; font-size: 0.85rem;
+  z-index: 50; transition: transform 0.25s ease; max-width: 90vw;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+}
+.toast.show { transform: translateX(-50%) translateY(0); }
+.ref-note {
+  font-size: 0.75rem; color: var(--warn-text);
+  background: var(--warn-bg); border: 1px dashed var(--warn-border);
+  border-radius: 10px; padding: 0.55rem 0.7rem; margin-top: 0.65rem;
+}
+.settings-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 0.55rem;
+}
+.settings-grid label { display: block; font-size: 0.72rem; color: var(--muted); margin-bottom: 0.25rem; }
+.settings-grid input {
+  width: 100%; min-height: 40px; background: #0d1218;
+  border: 1px solid var(--border); border-radius: 10px; padding: 0.4rem 0.6rem;
+}
+.empty {
+  text-align: center; color: var(--muted); padding: 1rem 0.5rem; font-size: 0.9rem;
+}
+.badge {
+  display: inline-block; font-size: 0.7rem; font-weight: 700;
+  padding: 0.15rem 0.45rem; border-radius: 6px; vertical-align: middle;
+}
+.badge.buy { background: #14532d; color: #86efac; }
+.badge.sell { background: #7f1d1d; color: #fca5a5; }
+.badge.pending { background: #1e3a5f; color: #93c5fd; }
+details.help summary {
+  cursor: pointer; color: var(--muted); font-size: 0.85rem; font-weight: 600;
+  list-style: none;
+}
+details.help summary::-webkit-details-marker { display: none; }
+details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
+
+.demo-banner {
+  background: linear-gradient(135deg, #7f1d1d 0%, #991b1b 40%, #9a3412 100%);
+  border: 2px solid #fca5a5;
+  color: #fff;
+  padding: 0.9rem 1rem;
+  border-radius: 14px;
+  margin: 0.85rem 0;
+  text-align: center;
+  box-shadow: 0 0 0 3px rgba(239,68,68,0.25);
+}
+.demo-banner .big {
+  display: block;
+  font-size: 1.35rem;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: 0.35rem;
+}
+.demo-banner p { margin: 0; font-size: 0.82rem; line-height: 1.4; opacity: 0.95; }
+.stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.55rem;
+}
+.stat {
+  background: #0d1218;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 0.65rem 0.75rem;
+}
+.stat .lbl { font-size: 0.72rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.03em; }
+.stat .val { font-size: 1.1rem; font-weight: 700; margin-top: 0.15rem; font-variant-numeric: tabular-nums; }
+.stat.wide { grid-column: 1 / -1; }
+.rule-ver {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  color: #93c5fd;
+}
+.version-item {
+  border-left: 3px solid var(--accent);
+  background: #0d1218;
+  border-radius: 0 12px 12px 0;
+  padding: 0.65rem 0.75rem;
+  margin-bottom: 0.5rem;
+  font-size: 0.82rem;
+}
+.version-item .ver-head {
+  display: flex; justify-content: space-between; gap: 0.5rem; flex-wrap: wrap;
+  font-weight: 700; margin-bottom: 0.25rem;
+}
+.version-item .chg { color: #fde68a; margin-top: 0.25rem; }
+.version-item .unchanged { color: var(--muted); }
+.goal-note {
+  font-size: 0.8rem; color: #bfdbfe;
+  background: #0c1a2e; border: 1px solid #1e3a5f;
+  border-radius: 12px; padding: 0.7rem 0.85rem; margin: 0.5rem 0 0.85rem;
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="header">
+    <h1>📡 Signaux FX — labo recalibrage</h1>
+    <p class="tagline">Cours réels · copie Exness DÉMO · mesurer la qualité du bot</p>
+  </header>
+
+  <div class="demo-banner" role="alert">
+    <span class="big">⚠ COMPTE DÉMO UNIQUEMENT</span>
+    <p>
+      Prix de marché <strong>réels</strong> (API publique) pour générer les signaux —
+      mais tu copies <strong>seulement sur Exness DÉMO</strong> (argent fictif).
+      Objectif : noter Gagné/Perdu pour mesurer si le bot s’améliore après recalibrage.
+      <strong>Pas d’argent réel. Pas un conseil financier. Aucune promesse de profit.</strong>
+    </p>
+  </div>
+
+  <div class="disclaimer" role="note">
+    <strong>Rappel :</strong> écart possible vs cours Exness (« Cours de référence »).
+    Ne partage jamais ton mot de passe. Cette page ne se connecte pas à Exness.
+  </div>
+
+  <div class="checklist" aria-label="Rappels sécurité">
+    <span class="chip ok">✓ Toujours SL</span>
+    <span class="chip ok">✓ Démo seulement</span>
+    <span class="chip ok">✓ Ne pas me donner de mot de passe</span>
+  </div>
+
+  <p class="goal-note">
+    <strong>But du labo :</strong> beaucoup de résultats démo (G/P) → le bot ajuste seuil &amp; SL
+    (versions de règles) → tu vois win rate et historique des changements. Qualité du recalibrage, pas du cash.
+  </p>
+
+  <section class="card" id="statsCard">
+    <div class="card-head">
+      <h2>Stats &amp; règles</h2>
+      <span class="rule-ver" id="ruleVersionLabel">v1</span>
+    </div>
+    <div class="stats" id="statsPanel">
+      <div class="stat"><div class="lbl">Gagnés (démo)</div><div class="val pos" id="statWins">0</div></div>
+      <div class="stat"><div class="lbl">Perdus (démo)</div><div class="val neg" id="statLosses">0</div></div>
+      <div class="stat"><div class="lbl">Win rate</div><div class="val" id="statWr">—</div></div>
+      <div class="stat"><div class="lbl">Résultats notés</div><div class="val" id="statTotal">0</div></div>
+      <div class="stat wide">
+        <div class="lbl">Règles actuelles (v<span id="statVerNum">1</span>)</div>
+        <div class="val" style="font-size:0.95rem" id="statRules">seuil — · SL — · R:R —</div>
+      </div>
+      <div class="stat wide">
+        <div class="lbl">Dernier changement</div>
+        <div class="val" style="font-size:0.85rem;font-weight:500" id="statLastChange">Aucune recalibrage encore</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="card-head">
+      <h2>Cours</h2>
+      <button type="button" class="btn-ghost btn-sm" id="btnRefresh">Actualiser</button>
+    </div>
+    <div class="status-bar">
+      <span id="apiStatus"><span class="dot wait"></span>Chargement…</span>
+      <span id="lastUpdate">—</span>
+    </div>
+    <div id="errorBox" class="error-box" hidden></div>
+    <div class="ticker" id="ticker"></div>
+    <p class="ref-note">
+      Cours de référence (pas exactement Exness) — écart possible.
+      Source : <span id="apiSource">—</span> · historique local pour le momentum.
+    </p>
+  </section>
+
+  <section class="card">
+    <div class="card-head">
+      <h2>Auto-signaux</h2>
+      <label class="switch" title="Mode auto">
+        <input type="checkbox" id="autoToggle" />
+        <span class="slider"></span>
+      </label>
+    </div>
+    <p class="muted" style="margin-top:0">
+      Quand ON : évalue à chaque mise à jour réussie. Max 2 signaux actifs · cooldown entre nouveaux.
+    </p>
+    <div class="settings-grid" style="margin-top:0.75rem">
+      <div>
+        <label for="cfgThreshold">Seuil momentum (pips)</label>
+        <input type="number" id="cfgThreshold" min="1" max="50" step="0.5" />
+      </div>
+      <div>
+        <label for="cfgSlPips">SL (pips)</label>
+        <input type="number" id="cfgSlPips" min="5" max="100" step="1" />
+      </div>
+      <div>
+        <label for="cfgRr">R:R (TP)</label>
+        <input type="number" id="cfgRr" min="0.5" max="5" step="0.1" />
+      </div>
+      <div>
+        <label for="cfgRisk">Risque %</label>
+        <input type="number" id="cfgRisk" min="0.5" max="2" step="0.5" />
+      </div>
+    </div>
+    <button type="button" class="btn-ghost btn-sm" id="btnEval" style="width:100%;margin-top:0.75rem">
+      Évaluer maintenant
+    </button>
+  </section>
+
+  <section class="card">
+    <div class="card-head">
+      <h2>Signaux actifs</h2>
+      <span class="muted" id="slotCount">0 / 2</span>
+    </div>
+    <div id="signals"></div>
+  </section>
+
+  <section class="card">
+    <div class="card-head">
+      <h2>Historique recalibrage</h2>
+      <span class="muted">après chaque G/P</span>
+    </div>
+    <div id="versionHistory"></div>
+  </section>
+
+  <section class="card">
+    <div class="card-head">
+      <h2>Journal (démo)</h2>
+      <button type="button" class="btn-ghost btn-sm" id="btnClearJournal">Effacer</button>
+    </div>
+    <div id="journal"></div>
+    <p class="muted" id="calibNote" style="margin-top:0.65rem"></p>
+  </section>
+
+  <section class="card">
+    <details class="help">
+      <summary>ℹ️ Comment l’utiliser sur Exness démo</summary>
+      <ol class="muted" style="padding-left:1.1rem;margin:0;font-size:0.85rem">
+        <li>Ouvre Exness (app) → compte <strong>Démo</strong>.</li>
+        <li>Cherche la paire du signal.</li>
+        <li>Tape ACHAT ou VENTE selon la carte.</li>
+        <li>Volume : commence par <strong>0.01</strong> lot.</li>
+        <li>Renseigne le SL (et TP) indiqués — toujours un SL.</li>
+        <li>Marque « Copié en démo » ici, puis plus tard Gagné / Perdu.</li>
+      </ol>
+      <p class="muted" style="margin:0.65rem 0 0;font-size:0.8rem">
+        Ne partage jamais ton mot de passe. Cette page ne se connecte pas à Exness.
+        Les prix sont réels ; la copie est 100&nbsp;% démo pour juger la qualité du recalibrage.
+      </p>
+    </details>
+  </section>
+</div>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+(function () {
+  'use strict';
+
+  var STORAGE_KEY = 'fx_signals_real_v1';
+  var PAIRS = ['EURUSD', 'GBPUSD', 'USDJPY', 'USDCHF'];
+  var POLL_MS = 45000;
+  var HISTORY_MAX = 40;
+  var MOMENTUM_N = 6;
+  var MAX_SLOTS = 2;
+  var COOLDOWN_MS = 3 * 60 * 1000;
+  var DEFAULTS = {
+    thresholdPips: 5,
+    slPips: 18,
+    rr: 1.5,
+    riskPct: 1,
+    auto: false
+  };
+
+  var state = loadState();
+  var pollTimer = null;
+  var fetching = false;
+
+  var $ = function (id) { return document.getElementById(id); };
+
+  function loadState() {
+    try {
+      var raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return freshState();
+      var s = JSON.parse(raw);
+      return normalize(s);
+    } catch (e) {
+      return freshState();
+    }
+  }
+
+  function freshState() {
+    return {
+      prices: {},
+      history: {},
+      signals: [],
+      journal: [],
+      lastSignalAt: 0,
+      cfg: Object.assign({}, DEFAULTS),
+      apiSource: null,
+      lastFetchAt: null,
+      lastError: null,
+      wins: 0,
+      losses: 0
+    };
+  }
+
+  function normalize(s) {
+    var f = freshState();
+    s = s || {};
+    f.prices = s.prices || {};
+    f.history = s.history || {};
+    f.signals = Array.isArray(s.signals) ? s.signals : [];
+    f.journal = Array.isArray(s.journal) ? s.journal : [];
+    f.lastSignalAt = s.lastSignalAt || 0;
+    f.cfg = Object.assign({}, DEFAULTS, s.cfg || {});
+    f.cfg.riskPct = Math.min(2, Math.max(0.5, Number(f.cfg.riskPct) || 1));
+    f.apiSource = s.apiSource || null;
+    f.lastFetchAt = s.lastFetchAt || null;
+    f.lastError = s.lastError || null;
+    f.wins = s.wins || 0;
+    f.losses = s.losses || 0;
+    f.ruleVersion = s.ruleVersion || 1;
+    f.ruleHistory = Array.isArray(s.ruleHistory) && s.ruleHistory.length
+      ? s.ruleHistory
+      : [{
+          version: f.ruleVersion,
+          at: Date.now(),
+          trigger: 'migrated',
+          outcome: null,
+          winRate: null,
+          before: null,
+          after: snapshotRules(f.cfg),
+          changes: ['État migré / règles actuelles']
+        }];
+    return f;
+  }
+
+  function save() {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    } catch (e) { /* quota */ }
+  }
+
+  function toast(msg) {
+    var el = $('toast');
+    el.textContent = msg;
+    el.classList.add('show');
+    clearTimeout(toast._t);
+    toast._t = setTimeout(function () { el.classList.remove('show'); }, 2800);
+  }
+
+  function pipSize(pair) {
+    return pair.indexOf('JPY') >= 0 ? 0.01 : 0.0001;
+  }
+
+  function formatPrice(pair, price) {
+    if (price == null || !isFinite(price)) return '—';
+    var digits = pair.indexOf('JPY') >= 0 ? 3 : 5;
+    return Number(price).toFixed(digits);
+  }
+
+  function pipsBetween(pair, a, b) {
+    return (b - a) / pipSize(pair);
+  }
+
+  function priceFromPips(pair, entry, side, pips) {
+    var d = pips * pipSize(pair);
+    return side === 'buy' ? entry - d : entry + d;
+  }
+
+  function tpFromPips(pair, entry, side, pips) {
+    var d = pips * pipSize(pair);
+    return side === 'buy' ? entry + d : entry - d;
+  }
+
+  /* ---------- API providers (browser CORS) ---------- */
+  // Prefer open.er-api.com (CORS *, free, no key). Fallbacks: frankfurter.dev, floatrates.
+  async function fetchOpenErApi() {
+    var res = await fetch('https://open.er-api.com/v6/latest/USD', { cache: 'no-store' });
+    if (!res.ok) throw new Error('open.er-api HTTP ' + res.status);
+    var data = await res.json();
+    if (data.result !== 'success' || !data.rates) throw new Error('open.er-api invalide');
+    var r = data.rates;
+    if (!r.EUR || !r.GBP || !r.JPY || !r.CHF) throw new Error('paires manquantes');
+    return {
+      source: 'open.er-api.com',
+      prices: {
+        EURUSD: 1 / r.EUR,
+        GBPUSD: 1 / r.GBP,
+        USDJPY: r.JPY,
+        USDCHF: r.CHF
+      },
+      updated: data.time_last_update_utc || null
+    };
+  }
+
+  async function fetchFrankfurter() {
+    var url = 'https://api.frankfurter.dev/v1/latest?from=USD&to=EUR,GBP,JPY,CHF';
+    var res = await fetch(url, { cache: 'no-store' });
+    if (!res.ok) throw new Error('frankfurter HTTP ' + res.status);
+    var data = await res.json();
+    var r = data.rates;
+    if (!r || !r.EUR) throw new Error('frankfurter invalide');
+    return {
+      source: 'frankfurter.dev (quotidien ECB)',
+      prices: {
+        EURUSD: 1 / r.EUR,
+        GBPUSD: 1 / r.GBP,
+        USDJPY: r.JPY,
+        USDCHF: r.CHF
+      },
+      updated: data.date || null,
+      note: 'Taux quotidiens ECB — momentum limité'
+    };
+  }
+
+  async function fetchFloatRates() {
+    var res = await fetch('https://www.floatrates.com/daily/usd.json', { cache: 'no-store' });
+    if (!res.ok) throw new Error('floatrates HTTP ' + res.status);
+    var data = await res.json();
+    if (!data.eur || !data.gbp || !data.jpy || !data.chf) throw new Error('floatrates invalide');
+    return {
+      source: 'floatrates.com',
+      prices: {
+        EURUSD: data.eur.inverseRate,
+        GBPUSD: data.gbp.inverseRate,
+        USDJPY: Number(data.jpy.rate),
+        USDCHF: Number(data.chf.rate)
+      },
+      updated: data.eur.date || null
+    };
+  }
+
+  async function fetchPrices() {
+    var errors = [];
+    var providers = [fetchOpenErApi, fetchFrankfurter, fetchFloatRates];
+    for (var i = 0; i < providers.length; i++) {
+      try {
+        return await providers[i]();
+      } catch (e) {
+        errors.push((e && e.message) || String(e));
+      }
+    }
+    throw new Error(errors.join(' · '));
+  }
+
+  function pushHistory(prices, ts) {
+    PAIRS.forEach(function (pair) {
+      var p = prices[pair];
+      if (p == null || !isFinite(p)) return;
+      if (!state.history[pair]) state.history[pair] = [];
+      var arr = state.history[pair];
+      // Avoid duplicate identical samples within 20s
+      var last = arr[arr.length - 1];
+      if (last && (ts - last.t) < 20000 && Math.abs(last.p - p) < pipSize(pair) * 0.1) {
+        return;
+      }
+      arr.push({ t: ts, p: p });
+      if (arr.length > HISTORY_MAX) arr.splice(0, arr.length - HISTORY_MAX);
+    });
+  }
+
+  function momentumPips(pair) {
+    var arr = state.history[pair] || [];
+    if (arr.length < 2) return 0;
+    var n = Math.min(MOMENTUM_N, arr.length);
+    var recent = arr.slice(-n);
+    var first = recent[0].p;
+    var last = recent[recent.length - 1].p;
+    return pipsBetween(pair, first, last);
+  }
+
+  function uid() {
+    return 'sig_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 7);
+  }
+
+  function activeCount() {
+    return state.signals.filter(function (s) { return s.status === 'active'; }).length;
+  }
+
+  function evaluateSignals(manual) {
+    var threshold = Number(state.cfg.thresholdPips) || DEFAULTS.thresholdPips;
+    var slPips = Number(state.cfg.slPips) || DEFAULTS.slPips;
+    var rr = Number(state.cfg.rr) || DEFAULTS.rr;
+    var risk = Math.min(2, Math.max(0.5, Number(state.cfg.riskPct) || 1));
+
+    if (!manual && !state.cfg.auto) return;
+    if (activeCount() >= MAX_SLOTS) return;
+    if (!manual && state.lastSignalAt && (Date.now() - state.lastSignalAt) < COOLDOWN_MS) return;
+
+    // Rank pairs by absolute momentum
+    var candidates = [];
+    PAIRS.forEach(function (pair) {
+      var price = state.prices[pair];
+      if (price == null) return;
+      var mom = momentumPips(pair);
+      if (Math.abs(mom) < threshold) return;
+      // Skip if already active on this pair
+      var exists = state.signals.some(function (s) {
+        return s.status === 'active' && s.pair === pair;
+      });
+      if (exists) return;
+      candidates.push({ pair: pair, mom: mom, price: price });
+    });
+
+    candidates.sort(function (a, b) {
+      return Math.abs(b.mom) - Math.abs(a.mom);
+    });
+
+    if (!candidates.length) {
+      if (manual) toast('Aucun momentum ≥ ' + threshold + ' pips');
+      return;
+    }
+
+    var slotsLeft = MAX_SLOTS - activeCount();
+    var created = 0;
+    for (var i = 0; i < candidates.length && created < slotsLeft; i++) {
+      if (!manual && created > 0) break; // auto: one new signal per cycle
+      var c = candidates[i];
+      var side = c.mom > 0 ? 'buy' : 'sell';
+      var tpPips = slPips * rr;
+      var entry = c.price;
+      var sl = priceFromPips(c.pair, entry, side, slPips);
+      var tp = tpFromPips(c.pair, entry, side, tpPips);
+
+      state.signals.unshift({
+        id: uid(),
+        pair: c.pair,
+        side: side,
+        entry: entry,
+        sl: sl,
+        tp: tp,
+        slPips: slPips,
+        tpPips: tpPips,
+        rr: rr,
+        riskPct: risk,
+        momentum: Math.round(c.mom * 10) / 10,
+        createdAt: Date.now(),
+        status: 'active',
+        ruleVersion: state.ruleVersion || 1
+      });
+      created++;
+      state.lastSignalAt = Date.now();
+    }
+
+    if (created) {
+      save();
+      render();
+      toast(created + ' signal(s) · copie sur démo Exness');
+    }
+  }
+
+  async function refresh(fromAutoEval) {
+    if (fetching) return;
+    fetching = true;
+    setStatus('wait', 'Mise à jour…');
+    $('errorBox').hidden = true;
+    try {
+      var result = await fetchPrices();
+      var ts = Date.now();
+      state.prices = result.prices;
+      state.apiSource = result.source + (result.note ? ' — ' + result.note : '');
+      state.lastFetchAt = ts;
+      state.lastError = null;
+      pushHistory(result.prices, ts);
+      save();
+      setStatus('ok', 'OK · ' + result.source);
+      render();
+      if (fromAutoEval !== false) evaluateSignals(false);
+    } catch (e) {
+      state.lastError = (e && e.message) || String(e);
+      save();
+      setStatus('err', 'Erreur API');
+      showError(state.lastError);
+      renderTicker();
+    } finally {
+      fetching = false;
+    }
+  }
+
+  function setStatus(kind, text) {
+    $('apiStatus').innerHTML = '<span class="dot ' + kind + '"></span>' + text;
+  }
+
+  function showError(msg) {
+    var box = $('errorBox');
+    box.hidden = false;
+    box.innerHTML = '<strong>Impossible de charger les cours.</strong><br>' +
+      escapeHtml(msg) +
+      '<br><button type="button" class="btn-primary btn-sm" id="btnRetry" style="margin-top:0.65rem">Réessayer</button>';
+    var btn = $('btnRetry');
+    if (btn) btn.onclick = function () { refresh(true); };
+  }
+
+  function escapeHtml(s) {
+    return String(s)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  function sideLabel(side) {
+    return side === 'buy' ? 'ACHAT' : 'VENTE';
+  }
+
+  function renderTicker() {
+    var html = '';
+    PAIRS.forEach(function (pair) {
+      var price = state.prices[pair];
+      var mom = momentumPips(pair);
+      var hist = (state.history[pair] || []).length;
+      var cls = mom > 0.2 ? 'pos' : (mom < -0.2 ? 'neg' : 'muted');
+      var sign = mom > 0 ? '+' : '';
+      html += '<div class="tick">' +
+        '<div class="pair">' + pair + '</div>' +
+        '<div class="price">' + formatPrice(pair, price) + '</div>' +
+        '<div class="delta ' + cls + '">' +
+          (hist >= 2 ? (sign + mom.toFixed(1) + ' pips / ' + Math.min(MOMENTUM_N, hist) + ' pts') : 'historique…') +
+        '</div></div>';
+    });
+    $('ticker').innerHTML = html || '<p class="empty">Pas encore de cours</p>';
+    $('apiSource').textContent = state.apiSource || '—';
+    if (state.lastFetchAt) {
+      var d = new Date(state.lastFetchAt);
+      $('lastUpdate').textContent = 'MAJ ' + d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    } else {
+      $('lastUpdate').textContent = '—';
+    }
+  }
+
+  function renderSignals() {
+    var active = state.signals.filter(function (s) { return s.status === 'active'; });
+    $('slotCount').textContent = active.length + ' / ' + MAX_SLOTS;
+    if (!active.length) {
+      $('signals').innerHTML = '<p class="empty">Aucun signal actif. Active l’auto ou appuie sur « Évaluer ».</p>';
+      return;
+    }
+    var html = '';
+    active.forEach(function (s) {
+      var dirCls = s.side === 'buy' ? 'buy' : 'sell';
+      var dirColor = s.side === 'buy' ? 'pos' : 'neg';
+      html += '<div class="signal-card ' + dirCls + '" data-id="' + s.id + '">' +
+        '<div class="muted">' + new Date(s.createdAt).toLocaleString('fr-FR') +
+        ' · momentum ' + (s.momentum > 0 ? '+' : '') + s.momentum + ' pips' +
+        ' · <span class="rule-ver">règles v' + (s.ruleVersion || state.ruleVersion || 1) + '</span></div>' +
+        '<div class="big-dir ' + dirColor + '">' + sideLabel(s.side) + ' ' + s.pair + '</div>' +
+        '<div class="copy-steps">' +
+          '<strong>Sur Exness démo, tape :</strong>' +
+          '<ol style="margin:0.4rem 0 0;padding-left:1.2rem">' +
+            '<li>Paire <strong>' + s.pair + '</strong></li>' +
+            '<li>Direction <strong>' + sideLabel(s.side) + '</strong></li>' +
+            '<li>Volume <strong>0.01</strong> lot (pour commencer)</li>' +
+            '<li>Entrée ≈ <strong>' + formatPrice(s.pair, s.entry) + '</strong></li>' +
+            '<li>SL <strong>' + formatPrice(s.pair, s.sl) + '</strong> (' + s.slPips + ' pips)</li>' +
+            '<li>TP <strong>' + formatPrice(s.pair, s.tp) + '</strong> (R:R ' + s.rr + ')</li>' +
+          '</ol>' +
+        '</div>' +
+        '<div class="meta-grid">' +
+          '<div><span>Risque</span><br>≤ ' + s.riskPct + '% (max 2%)</div>' +
+          '<div><span>Note lot</span><br>sur Exness démo mets 0.01 pour commencer</div>' +
+        '</div>' +
+        '<div class="row" style="margin-top:0.75rem">' +
+          '<button type="button" class="btn-ok btn-sm act-copy" data-id="' + s.id + '">✓ Copié en démo</button>' +
+          '<button type="button" class="btn-ignore btn-sm act-ignore" data-id="' + s.id + '">Ignoré</button>' +
+        '</div>' +
+      '</div>';
+    });
+    $('signals').innerHTML = html;
+  }
+
+  function renderJournal() {
+    if (!state.journal.length) {
+      $('journal').innerHTML = '<p class="empty">Pas encore d’entrées.</p>';
+    } else {
+      var html = '';
+      state.journal.slice(0, 30).forEach(function (j) {
+        var badge = j.side === 'buy' ? 'buy' : 'sell';
+        var outcome = '';
+        if (j.outcome === 'win') outcome = ' <span class="pos">· Gagné</span>';
+        else if (j.outcome === 'loss') outcome = ' <span class="neg">· Perdu</span>';
+        else if (j.action === 'copied') {
+          outcome = ' <span class="badge pending">en cours</span>' +
+            ' <button type="button" class="btn-ghost btn-sm act-win" data-jid="' + j.id + '" style="min-height:32px;padding:0.25rem 0.5rem;margin-left:0.25rem">Gagné</button>' +
+            ' <button type="button" class="btn-ghost btn-sm act-loss" data-jid="' + j.id + '" style="min-height:32px;padding:0.25rem 0.5rem">Perdu</button>';
+        } else {
+          outcome = ' <span class="muted">· ignoré</span>';
+        }
+        html += '<div class="journal-item">' +
+          '<span class="badge ' + badge + '">' + sideLabel(j.side) + '</span> ' +
+          '<strong>' + j.pair + '</strong> @ ' + formatPrice(j.pair, j.entry) +
+          outcome +
+          '<div class="muted" style="margin-top:0.25rem">' +
+            new Date(j.at).toLocaleString('fr-FR') +
+            ' · SL ' + formatPrice(j.pair, j.sl) +
+          '</div></div>';
+      });
+      $('journal').innerHTML = html;
+    }
+
+    var total = state.wins + state.losses;
+    var note = 'Marque Gagné/Perdu après chaque copie démo. Le labo enregistre une entrée d’historique à chaque fois (version de règles + ce qui a changé).';
+    if (total < 3) {
+      note += ' Encore ' + (3 - total) + ' résultat(s) avant le premier ajustement auto.';
+    }
+    $('calibNote').textContent = note;
+  }
+
+  function renderStats() {
+    var total = state.wins + state.losses;
+    var wr = total ? Math.round((state.wins / total) * 100) : null;
+    $('statWins').textContent = String(state.wins);
+    $('statLosses').textContent = String(state.losses);
+    $('statTotal').textContent = String(total);
+    $('statWr').textContent = wr == null ? '—' : (wr + '%');
+    $('statWr').className = 'val' + (wr == null ? '' : (wr >= 50 ? ' pos' : ' neg'));
+    $('statVerNum').textContent = String(state.ruleVersion || 1);
+    $('ruleVersionLabel').textContent = 'v' + (state.ruleVersion || 1);
+    $('statRules').textContent = formatRules(snapshotRules(state.cfg));
+    var hist = state.ruleHistory || [];
+    var lastAdj = null;
+    for (var i = 0; i < hist.length; i++) {
+      if (hist[i].adjusted || hist[i].trigger === 'recalibrate') { lastAdj = hist[i]; break; }
+    }
+    if (lastAdj) {
+      $('statLastChange').textContent = 'v' + lastAdj.version + ' · ' + (lastAdj.changes || []).join(' · ') +
+        ' · ' + new Date(lastAdj.at).toLocaleString('fr-FR');
+    } else if (hist.length && hist[0].trigger !== 'init') {
+      $('statLastChange').textContent = 'Dernier marquage : ' + (hist[0].changes || []).join(' · ') +
+        ' (pas d’ajustement fort)';
+    } else {
+      $('statLastChange').textContent = 'Aucune recalibrage encore — marque des G/P démo';
+    }
+  }
+
+  function renderVersionHistory() {
+    var el = $('versionHistory');
+    if (!el) return;
+    var hist = state.ruleHistory || [];
+    var rows = hist.filter(function (h) { return h.trigger !== 'init' && h.trigger !== 'migrated'; });
+    if (!rows.length) {
+      el.innerHTML = '<p class="empty">Après chaque Gagné/Perdu démo, la version des règles et les changements apparaissent ici.</p>';
+      return;
+    }
+    var html = '';
+    rows.slice(0, 25).forEach(function (h) {
+      var wr = h.winRate != null ? Math.round(h.winRate * 100) + '%' : '—';
+      var oc = h.outcome === 'win' ? '<span class="pos">Gagné</span>' :
+               (h.outcome === 'loss' ? '<span class="neg">Perdu</span>' : '—');
+      var chgCls = h.adjusted ? 'chg' : 'unchanged';
+      html += '<div class="version-item">' +
+        '<div class="ver-head">' +
+          '<span class="rule-ver">v' + h.version + (h.adjusted ? ' ✎' : '') + '</span>' +
+          '<span class="muted">' + new Date(h.at).toLocaleString('fr-FR') + '</span>' +
+        '</div>' +
+        '<div>' + oc +
+          (h.pair ? (' · ' + sideLabel(h.side) + ' ' + h.pair) : '') +
+          ' · WR ' + wr + ' (' + (h.wins || 0) + 'G/' + (h.losses || 0) + 'P)</div>' +
+        '<div class="muted" style="margin-top:0.2rem">' + escapeHtml(h.reason || '') + '</div>' +
+        '<div class="' + chgCls + '">' + escapeHtml((h.changes || []).join(' · ')) + '</div>' +
+        '<div class="muted" style="margin-top:0.2rem">Après : ' + escapeHtml(formatRules(h.after)) + '</div>' +
+      '</div>';
+    });
+    el.innerHTML = html;
+  }
+
+  function syncCfgInputs() {
+    $('cfgThreshold').value = state.cfg.thresholdPips;
+    $('cfgSlPips').value = state.cfg.slPips;
+    $('cfgRr').value = state.cfg.rr;
+    $('cfgRisk').value = state.cfg.riskPct;
+    $('autoToggle').checked = !!state.cfg.auto;
+  }
+
+  function readCfgFromInputs() {
+    state.cfg.thresholdPips = clamp(Number($('cfgThreshold').value), 1, 50, DEFAULTS.thresholdPips);
+    state.cfg.slPips = clamp(Number($('cfgSlPips').value), 5, 100, DEFAULTS.slPips);
+    state.cfg.rr = clamp(Number($('cfgRr').value), 0.5, 5, DEFAULTS.rr);
+    state.cfg.riskPct = clamp(Number($('cfgRisk').value), 0.5, 2, DEFAULTS.riskPct);
+    save();
+  }
+
+  function clamp(n, min, max, fallback) {
+    if (!isFinite(n)) return fallback;
+    return Math.min(max, Math.max(min, n));
+  }
+
+  function render() {
+    renderTicker();
+    renderSignals();
+    renderJournal();
+    syncCfgInputs();
+  }
+
+  function findSignal(id) {
+    for (var i = 0; i < state.signals.length; i++) {
+      if (state.signals[i].id === id) return state.signals[i];
+    }
+    return null;
+  }
+
+  function archiveSignal(id, action) {
+    var s = findSignal(id);
+    if (!s || s.status !== 'active') return;
+    s.status = action === 'copied' ? 'copied' : 'ignored';
+    state.journal.unshift({
+      id: 'j_' + s.id,
+      signalId: s.id,
+      pair: s.pair,
+      side: s.side,
+      entry: s.entry,
+      sl: s.sl,
+      tp: s.tp,
+      action: action,
+      outcome: null,
+      at: Date.now()
+    });
+    // Keep journal bounded
+    if (state.journal.length > 80) state.journal.length = 80;
+    // Prune old inactive signals from list
+    state.signals = state.signals.filter(function (x) {
+      return x.status === 'active' || (Date.now() - x.createdAt) < 86400000;
+    });
+    save();
+    render();
+    toast(action === 'copied' ? 'Noté : copié en démo' : 'Signal ignoré');
+  }
+
+  function setOutcome(jid, outcome) {
+    var j = null;
+    for (var i = 0; i < state.journal.length; i++) {
+      if (state.journal[i].id === jid) { j = state.journal[i]; break; }
+    }
+    if (!j || j.outcome) return;
+    j.outcome = outcome;
+    if (outcome === 'win') state.wins++;
+    else state.losses++;
+    j.ruleVersionAtMark = state.ruleVersion;
+    var entry = recalibrate(outcome, j);
+    j.recalibration = entry ? {
+      version: entry.version,
+      changes: entry.changes.slice(),
+      after: entry.after
+    } : null;
+    save();
+    render();
+    if (entry && entry.changes && entry.changes[0].indexOf('Aucun') !== 0 && entry.trigger === 'recalibrate') {
+      toast('Démo notée → règles v' + entry.version + ' · ' + entry.changes[0]);
+    } else if (entry) {
+      toast('Démo notée → historique v' + entry.version + ' (labo recalibrage)');
+    } else {
+      toast(outcome === 'win' ? 'Gagné (démo) noté' : 'Perdu (démo) noté');
+    }
+  }
+
+  function recalibrate(outcome, journalEntry) {
+    var before = snapshotRules(state.cfg);
+    var total = state.wins + state.losses;
+    var wr = total ? state.wins / total : null;
+    var changed = false;
+    var reason = 'observation';
+
+    // Soft educational recalibration — keep within safe bands
+    // Need at least 3 marked demo outcomes before adjusting
+    if (total >= 3 && wr != null) {
+      if (wr < 0.35) {
+        state.cfg.thresholdPips = clamp(state.cfg.thresholdPips + 0.5, 3, 20, 5);
+        state.cfg.slPips = clamp(state.cfg.slPips + 1, 12, 30, 18);
+        changed = true;
+        reason = 'win rate faible (' + Math.round(wr * 100) + '%) → filtre plus strict + SL un peu plus large';
+      } else if (wr > 0.55) {
+        state.cfg.thresholdPips = clamp(state.cfg.thresholdPips - 0.5, 3, 20, 5);
+        changed = true;
+        reason = 'win rate correct (' + Math.round(wr * 100) + '%) → seuil un peu plus sensible';
+      } else {
+        reason = 'win rate moyen (' + Math.round(wr * 100) + '%) → pas d’ajustement fort';
+      }
+    } else {
+      reason = 'moins de 3 résultats démo — pas d’ajustement encore (mesure en cours)';
+    }
+
+    state.cfg.thresholdPips = Math.round(state.cfg.thresholdPips * 2) / 2;
+    state.cfg.slPips = Math.round(state.cfg.slPips);
+    state.cfg.rr = Math.round(Number(state.cfg.rr) * 10) / 10;
+    state.cfg.riskPct = Math.min(2, Math.max(0.5, Number(state.cfg.riskPct) || 1));
+
+    var after = snapshotRules(state.cfg);
+    var changes = describeChanges(before, after);
+    if (changed) {
+      state.ruleVersion = (state.ruleVersion || 1) + 1;
+    }
+    // Always append a version-history entry after each marked outcome
+    // so Dave can measure recalibration quality over many demo trades
+    var entry = {
+      version: state.ruleVersion,
+      at: Date.now(),
+      trigger: changed ? 'recalibrate' : 'outcome',
+      outcome: outcome,
+      pair: journalEntry ? journalEntry.pair : null,
+      side: journalEntry ? journalEntry.side : null,
+      winRate: wr,
+      wins: state.wins,
+      losses: state.losses,
+      reason: reason,
+      before: before,
+      after: after,
+      changes: changes,
+      adjusted: changed
+    };
+    if (!state.ruleHistory) state.ruleHistory = [];
+    state.ruleHistory.unshift(entry);
+    if (state.ruleHistory.length > 60) state.ruleHistory.length = 60;
+    return entry;
+  }
+
+  // Events
+  $('btnRefresh').onclick = function () { refresh(true); };
+  $('btnEval').onclick = function () {
+    readCfgFromInputs();
+    evaluateSignals(true);
+  };
+  $('autoToggle').onchange = function () {
+    state.cfg.auto = !!$('autoToggle').checked;
+    save();
+    toast(state.cfg.auto ? 'Auto ON' : 'Auto OFF');
+    if (state.cfg.auto) evaluateSignals(false);
+  };
+  ['cfgThreshold', 'cfgSlPips', 'cfgRr', 'cfgRisk'].forEach(function (id) {
+    $(id).addEventListener('change', readCfgFromInputs);
+  });
+  $('btnClearJournal').onclick = function () {
+    if (!confirm('Effacer journal + historique de recalibrage (démo) ? Les règles actuelles sont conservées comme nouvelle base.')) return;
+    state.journal = [];
+    state.wins = 0;
+    state.losses = 0;
+    state.ruleHistory = [{
+      version: state.ruleVersion || 1,
+      at: Date.now(),
+      trigger: 'reset',
+      outcome: null,
+      winRate: null,
+      before: null,
+      after: snapshotRules(state.cfg),
+      changes: ['Journal réinitialisé — base v' + (state.ruleVersion || 1)],
+      adjusted: false
+    }];
+    save();
+    render();
+  };
+
+  document.addEventListener('click', function (ev) {
+    var t = ev.target;
+    if (!t || !t.getAttribute) return;
+    var id = t.getAttribute('data-id');
+    var jid = t.getAttribute('data-jid');
+    if (t.classList.contains('act-copy') && id) archiveSignal(id, 'copied');
+    if (t.classList.contains('act-ignore') && id) archiveSignal(id, 'ignored');
+    if (t.classList.contains('act-win') && jid) setOutcome(jid, 'win');
+    if (t.classList.contains('act-loss') && jid) setOutcome(jid, 'loss');
+  });
+
+  function startPoll() {
+    if (pollTimer) clearInterval(pollTimer);
+    pollTimer = setInterval(function () { refresh(true); }, POLL_MS);
+  }
+
+  // Boot
+  render();
+  if (state.lastError && !state.lastFetchAt) showError(state.lastError);
+  refresh(true);
+  startPoll();
+})();
+</script>
+</body>
+</html>
