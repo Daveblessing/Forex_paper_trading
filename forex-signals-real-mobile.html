@@ -310,6 +310,57 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
   font-size: 0.78rem; color: #bfdbfe; background: #0c1a2e;
   border: 1px solid #1e3a5f; border-radius: 10px; padding: 0.55rem 0.7rem; margin-top: 0.55rem;
 }
+/* === STUDY UPGRADE CSS === */
+
+.study-panel { border: 2px solid #1e3a5f; background: linear-gradient(180deg,#0c1a2e 0%,#1a2332 100%); }
+.study-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.55rem; margin-top: 0.5rem; }
+.study-grid .stat.wide { grid-column: 1 / -1; }
+.progress {
+  height: 10px; background: #0d1218; border-radius: 999px; overflow: hidden;
+  border: 1px solid var(--border); margin-top: 0.35rem;
+}
+.progress > span {
+  display: block; height: 100%; background: var(--accent); border-radius: 999px;
+  transition: width 0.35s ease; min-width: 0;
+}
+.progress > span.ok { background: var(--green); }
+.progress > span.warn { background: #eab308; }
+.study-date-row {
+  display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: flex-end; margin: 0.5rem 0;
+}
+.study-date-row label { font-size: 0.72rem; color: var(--muted); display: block; margin-bottom: 0.2rem; }
+.study-date-row input[type="date"] {
+  min-height: 40px; background: #0d1218; border: 1px solid var(--border);
+  border-radius: 10px; padding: 0.35rem 0.55rem; color: var(--text);
+}
+.badge.conf-fort { background: #14532d; color: #86efac; }
+.badge.conf-moyen { background: #1e3a5f; color: #93c5fd; }
+.badge.conf-faible { background: #713f12; color: #fde68a; }
+.badge.filtered { background: #7f1d1d; color: #fecaca; }
+.filter-note {
+  font-size: 0.8rem; color: #fecaca; background: #3f1212;
+  border: 1px solid #7f1d1d; border-radius: 10px; padding: 0.55rem 0.7rem; margin-top: 0.55rem;
+}
+.checklist-card {
+  background: #0d1218; border: 1px solid #334155; border-radius: 12px;
+  padding: 0.75rem 0.85rem; margin: 0.65rem 0;
+}
+.checklist-card .chk-title { font-weight: 700; margin-bottom: 0.4rem; font-size: 0.9rem; }
+.checklist-card ol { margin: 0.35rem 0 0.65rem; padding-left: 1.2rem; font-size: 0.88rem; }
+.checklist-card li { margin: 0.28rem 0; }
+.copy-bar { display: flex; gap: 0.45rem; flex-wrap: wrap; }
+.before-after {
+  font-size: 0.78rem; margin-top: 0.35rem; line-height: 1.4;
+  background: #0c1a2e; border-radius: 8px; padding: 0.45rem 0.55rem; color: #bfdbfe;
+}
+.weekly-block .wk-row {
+  display: flex; justify-content: space-between; gap: 0.5rem;
+  padding: 0.35rem 0; border-bottom: 1px solid var(--border); font-size: 0.85rem;
+}
+.weekly-block .wk-row:last-child { border-bottom: none; }
+.session-pref {
+  font-size: 0.7rem; color: #a5f3fc; margin-top: 0.2rem;
+}
 </style>
 </head>
 <body>
@@ -346,6 +397,57 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
     <strong>But du labo :</strong> beaucoup de résultats démo (G/P) → le bot ajuste seuil &amp; SL
     (versions de règles) → tu vois win rate et historique des changements. Qualité du recalibrage, pas du cash.
   </p>
+
+
+  <section class="card study-panel" id="studyCard">
+    <div class="card-head">
+      <h2>Étude 14 jours — Démo Exness</h2>
+      <span class="rule-ver" id="studyDayLabel">Jour —/14</span>
+    </div>
+    <p class="muted" style="margin:0;font-size:0.78rem">
+      Calibration éducative uniquement · argent fictif · pas de suggestion d’argent réel.
+      Cible : ≥5 signaux/jour · ≥20 résultats G/P notés · puis éventuellement ~$10 micro réel plus tard (hors de cet outil).
+    </p>
+    <div class="study-date-row">
+      <div style="flex:1;min-width:140px">
+        <label for="studyStartInput">Date de début</label>
+        <input type="date" id="studyStartInput" />
+      </div>
+      <button type="button" class="btn-ghost btn-sm" id="btnStudyResetStart" style="flex:0 0 auto">Aujourd’hui</button>
+    </div>
+    <div class="study-grid" id="studyProgress">
+      <div class="stat wide">
+        <div class="lbl">Signaux aujourd’hui (cible ≥5)</div>
+        <div class="val" id="studySigToday">0 / 5</div>
+        <div class="progress" aria-hidden="true"><span id="barSigToday" style="width:0%"></span></div>
+      </div>
+      <div class="stat wide">
+        <div class="lbl">Résultats notés (cible ≥20)</div>
+        <div class="val" id="studyOutcomes">0 / 20</div>
+        <div class="progress" aria-hidden="true"><span id="barOutcomes" style="width:0%"></span></div>
+      </div>
+      <div class="stat">
+        <div class="lbl">Win rate (démo)</div>
+        <div class="val" id="studyWr">—</div>
+        <div class="progress" aria-hidden="true"><span id="barWr" style="width:0%"></span></div>
+      </div>
+      <div class="stat">
+        <div class="lbl">Version règles</div>
+        <div class="val rule-ver" id="studyRuleVer">v1</div>
+      </div>
+    </div>
+    <p class="muted" id="studyHint" style="margin:0.65rem 0 0;font-size:0.75rem"></p>
+  </section>
+
+  <section class="card weekly-block" id="weeklyCard">
+    <div class="card-head">
+      <h2>Résumé 7 jours</h2>
+      <span class="muted">auto</span>
+    </div>
+    <div id="weeklySummary">
+      <p class="empty">Pas encore assez de données sur 7 jours.</p>
+    </div>
+  </section>
 
   <section class="card" id="statsCard">
     <div class="card-head">
@@ -483,6 +585,7 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
       <h2>Signaux actifs</h2>
       <span class="muted" id="slotCount">0 / 2</span>
     </div>
+    <div id="filterNote" class="filter-note" hidden></div>
     <div id="signals"></div>
   </section>
 
@@ -552,6 +655,14 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
     includeCrypto: true,
     includeIndices: true
   };
+  var STUDY_DAYS = 14;
+  var STUDY_TARGET_SIGNALS = 5;
+  var STUDY_TARGET_OUTCOMES = 20;
+  var MIN_SAMPLE_SOFT = 5;   // min G/P before any param tweak
+  var MIN_SAMPLE_BIG = 10;   // min G/P before larger moves
+  var DIVG_FILTER_PIPS = 8;  // FX multi-source spread above → filter
+  var DIVG_WARN_PIPS = 5;
+  var lastFilterMsg = null;
 
   var state = loadState();
   var pollTimer = null;
@@ -624,7 +735,9 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
       goldSource: null,
       cryptoSource: null,
       indexNote: null,
-      extraMeta: {}
+      extraMeta: {},
+      studyStart: null,
+      filteredLog: []
     };
   }
 
@@ -656,6 +769,8 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
     f.cryptoSource = s.cryptoSource || null;
     f.indexNote = s.indexNote || null;
     f.extraMeta = s.extraMeta || {};
+    f.studyStart = s.studyStart || null;
+    f.filteredLog = Array.isArray(s.filteredLog) ? s.filteredLog.slice(0, 20) : [];
     f.ruleHistory = Array.isArray(s.ruleHistory) && s.ruleHistory.length
       ? s.ruleHistory
       : [{
@@ -1015,6 +1130,155 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
     return utc >= 0 && utc < 6;
   }
 
+  function nySessionOpen(d) {
+    d = d || new Date();
+    var utc = d.getUTCHours() + d.getUTCMinutes() / 60;
+    var day = d.getUTCDay();
+    if (day === 0 || day === 6) return false;
+    // Approx NY cash / FX overlap: 13:00–21:00 UTC (winter) — broad 12:30–21:00
+    return utc >= 12.5 && utc < 21;
+  }
+
+  function fxSessionPrefer(pair) {
+    var now = new Date();
+    var london = londonSessionOpen(now);
+    var tokyo = tokyoSessionOpen(now);
+    var ny = nySessionOpen(now);
+    if (pair === 'EURUSD' || pair === 'GBPUSD') {
+      return { preferred: london || ny, label: london ? 'Londres' : (ny ? 'New York' : 'hors session L/NY'), session: london ? 'london' : (ny ? 'ny' : 'off') };
+    }
+    if (pair === 'USDJPY') {
+      return { preferred: tokyo || ny, label: tokyo ? 'Tokyo' : (ny ? 'New York' : 'hors session T/NY'), session: tokyo ? 'tokyo' : (ny ? 'ny' : 'off') };
+    }
+    if (pair === 'USDCHF') {
+      return { preferred: london || ny, label: london ? 'Londres' : (ny ? 'New York' : 'hors session L/NY'), session: london ? 'london' : (ny ? 'ny' : 'off') };
+    }
+    if (pair === 'FTSE100' || pair === 'XAUUSD') {
+      return { preferred: london || ny, label: london ? 'Londres' : (ny ? 'New York' : 'hors session'), session: london ? 'london' : (ny ? 'ny' : 'off') };
+    }
+    if (pair === 'NIKKEI225') {
+      return { preferred: tokyo, label: tokyo ? 'Tokyo' : 'hors session Tokyo', session: tokyo ? 'tokyo' : 'off' };
+    }
+    // crypto 24/7
+    return { preferred: true, label: '24/7', session: 'crypto' };
+  }
+
+  function divergencePips(pair) {
+    var divg = state.divergence && state.divergence[pair];
+    if (!divg || divg.n < 2 || divg.spread == null) return null;
+    return Math.abs(divg.spread) / pipSize(pair);
+  }
+
+  function isDivergenceTooHigh(pair) {
+    var meta = assetMeta(pair);
+    if (meta.cls !== 'fx') return false; // filter mainly FX multi-source
+    var dp = divergencePips(pair);
+    if (dp == null) return false;
+    return dp >= DIVG_FILTER_PIPS;
+  }
+
+  function scoreConfidence(pair, mom, threshold) {
+    var score = 0;
+    var absMom = Math.abs(mom || 0);
+    var thr = threshold || effectiveThreshold();
+    if (absMom >= thr * 1.8) score += 2;
+    else if (absMom >= thr * 1.15) score += 1;
+    var dp = divergencePips(pair);
+    if (dp != null) {
+      if (dp < DIVG_WARN_PIPS * 0.6) score += 1;
+      else if (dp >= DIVG_FILTER_PIPS) score -= 2;
+      else if (dp >= DIVG_WARN_PIPS) score -= 1;
+    } else {
+      score += 0; // unknown
+    }
+    var sess = fxSessionPrefer(pair);
+    if (sess.preferred) score += 1;
+    else score -= 1;
+    var histLen = (state.history[pair] || []).length;
+    if (histLen >= 5) score += 1;
+    if (score >= 3) return 'fort';
+    if (score >= 1) return 'moyen';
+    return 'faible';
+  }
+
+  function ensureStudyStart() {
+    if (!state.studyStart) {
+      state.studyStart = todayKey();
+      save();
+    }
+    return state.studyStart;
+  }
+
+  function studyDayNumber() {
+    var start = ensureStudyStart();
+    var parts = start.split('-');
+    var s = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
+    var now = new Date();
+    var today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    var diff = Math.floor((today - s) / 86400000) + 1;
+    if (diff < 1) diff = 1;
+    if (diff > STUDY_DAYS) diff = STUDY_DAYS;
+    return { day: diff, start: start, total: STUDY_DAYS };
+  }
+
+  function recentOutcomes(days) {
+    days = days || 7;
+    var cutoff = Date.now() - days * 86400000;
+    return (state.journal || []).filter(function (j) {
+      return j.outcome && j.at && j.at >= cutoff;
+    });
+  }
+
+  function estimateAvgR(outcomes) {
+    if (!outcomes.length) return null;
+    var sum = 0;
+    var n = 0;
+    outcomes.forEach(function (j) {
+      var rr = Number(state.cfg.rr) || DEFAULTS.rr;
+      // Prefer signal/today stored rr if present
+      var t = findToday(j.signalId);
+      if (t && t.rr) rr = Number(t.rr);
+      var sig = findSignal(j.signalId);
+      if (sig && sig.rr) rr = Number(sig.rr);
+      if (j.outcome === 'win') { sum += rr; n++; }
+      else if (j.outcome === 'loss') { sum -= 1; n++; }
+    });
+    if (!n) return null;
+    return Math.round((sum / n) * 100) / 100;
+  }
+
+  function topMistakesNote(outcomes) {
+    if (!outcomes.length) return 'Pas encore assez de G/P sur 7 jours pour diagnostiquer.';
+    var losses = outcomes.filter(function (j) { return j.outcome === 'loss'; });
+    var wins = outcomes.filter(function (j) { return j.outcome === 'win'; });
+    var notes = [];
+    if (losses.length >= wins.length && losses.length >= 2) {
+      notes.push('Plus de pertes que de gains récents — privilégier confiance « fort » et sessions L/T/NY.');
+    }
+    var offSessLoss = 0;
+    losses.forEach(function (j) {
+      var pref = fxSessionPrefer(j.pair);
+      if (!pref.preferred) offSessLoss++;
+    });
+    if (offSessLoss >= 2) {
+      notes.push(offSessLoss + ' pertes hors fenêtre de session préférée.');
+    }
+    var weak = losses.filter(function (j) {
+      return j.confidence === 'faible' || (j.recalibration && false);
+    }).length;
+    // Check todaySignals tags
+    var filteredLossHint = (state.filteredLog || []).length >= 3;
+    if (filteredLossHint) {
+      notes.push('Plusieurs signaux filtrés pour divergence — bien : ne pas forcer.');
+    }
+    if (!notes.length) {
+      if (wins.length > losses.length) notes.push('Tendance correcte — continuer à noter chaque G/P démo.');
+      else notes.push('Échantillon mince — viser ≥20 résultats notés avant conclusions.');
+    }
+    notes.push('Rappel : jamais d’argent réel via cet outil — démo uniquement.');
+    return notes.join(' ');
+  }
+
   function indexSessionInfo() {
     var now = new Date();
     return {
@@ -1183,7 +1447,10 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
       status: status || 'nouveau',
       tag: tag || sig.tag || null,
       assetClass: assetMeta(sig.pair).cls,
-      displayLabel: sig.displayLabel || assetMeta(sig.pair).label
+      displayLabel: sig.displayLabel || assetMeta(sig.pair).label,
+      confidence: sig.confidence || null,
+      sessionLabel: sig.sessionLabel || null,
+      sessionOk: sig.sessionOk
     };
     state.todaySignals.unshift(row);
     return row;
@@ -1205,6 +1472,9 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
     if (meta.cls === 'index') {
       displayLabel = meta.label + ' · proxy ' + meta.proxyPair;
     }
+    var thr = effectiveThreshold();
+    var conf = opts.confidence || scoreConfidence(c.pair, c.mom, thr);
+    var sess = fxSessionPrefer(c.pair);
     var sig = {
       id: uid(opts.rattrapage ? 'rat' : 'sig'),
       pair: displayPair,
@@ -1222,7 +1492,11 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
       ruleVersion: state.ruleVersion || 1,
       tag: opts.tag || null,
       displayLabel: displayLabel,
-      assetClass: meta.cls
+      assetClass: meta.cls,
+      confidence: conf,
+      sessionLabel: sess.label,
+      sessionOk: !!sess.preferred,
+      divergencePips: divergencePips(c.pair)
     };
     if (opts.activate !== false && activeCount() < MAX_SLOTS) {
       state.signals.unshift(sig);
@@ -1257,6 +1531,7 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
     }
 
     var candidates = [];
+    var filteredMsgs = [];
     candidatePairs().forEach(function (pair) {
       var price = state.prices[pair];
       if (price == null) return;
@@ -1265,6 +1540,16 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
       // Slightly softer for secondary assets when catching up
       if (soft && assetMeta(pair).cls !== 'fx') thr = Math.max(1.5, thr * 0.85);
       if (Math.abs(mom) < thr) return;
+      if (isDivergenceTooHigh(pair)) {
+        var dp = divergencePips(pair);
+        var msg = 'divergence trop forte — signal filtré (' + pair + ' · ' +
+          (dp != null ? dp.toFixed(1) + ' pips' : '?') + ')';
+        filteredMsgs.push(msg);
+        state.filteredLog = state.filteredLog || [];
+        state.filteredLog.unshift({ at: Date.now(), pair: pair, msg: msg, dp: dp });
+        if (state.filteredLog.length > 20) state.filteredLog.length = 20;
+        return;
+      }
       var exists = state.signals.some(function (s) {
         return s.status === 'active' && s.pair === pair;
       });
@@ -1275,13 +1560,39 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
         return t.pair === pair && t.side === sideGuess && (Date.now() - t.at) < 90 * 60 * 1000;
       });
       if (dup) return;
-      candidates.push({ pair: pair, mom: mom, price: price });
+      var sess = fxSessionPrefer(pair);
+      var conf = scoreConfidence(pair, mom, thr);
+      candidates.push({
+        pair: pair, mom: mom, price: price,
+        sessionOk: sess.preferred, confidence: conf, sessLabel: sess.label
+      });
     });
 
-    candidates.sort(function (a, b) { return Math.abs(b.mom) - Math.abs(a.mom); });
+    // Prefer preferred-session + stronger confidence, then |momentum|
+    candidates.sort(function (a, b) {
+      var sa = (a.sessionOk ? 2 : 0) + (a.confidence === 'fort' ? 2 : a.confidence === 'moyen' ? 1 : 0);
+      var sb = (b.sessionOk ? 2 : 0) + (b.confidence === 'fort' ? 2 : b.confidence === 'moyen' ? 1 : 0);
+      if (sb !== sa) return sb - sa;
+      return Math.abs(b.mom) - Math.abs(a.mom);
+    });
+
+    if (filteredMsgs.length) {
+      lastFilterMsg = filteredMsgs[0];
+      var fn = $('filterNote');
+      if (fn) {
+        fn.hidden = false;
+        fn.textContent = '⚠ ' + filteredMsgs[0] +
+          (filteredMsgs.length > 1 ? ' (+' + (filteredMsgs.length - 1) + ')' : '');
+      }
+    } else {
+      lastFilterMsg = null;
+    }
 
     if (!candidates.length) {
-      if (manual) toast('Aucun momentum ≥ ' + threshold + ' (seuil effectif' + (soft ? ' assoupli' : '') + ')');
+      if (manual) {
+        if (filteredMsgs.length) toast('divergence trop forte — signal filtré');
+        else toast('Aucun momentum ≥ ' + threshold + ' (seuil effectif' + (soft ? ' assoupli' : '') + ')');
+      }
       maybeCatchUp();
       return;
     }
@@ -1296,7 +1607,8 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
       var activate = slotsLeft > 0;
       var sig = createSignal(c, {
         activate: activate,
-        tag: soft && assetMeta(c.pair).cls !== 'fx' ? 'secondaire' : null
+        tag: soft && assetMeta(c.pair).cls !== 'fx' ? 'secondaire' : null,
+        confidence: c.confidence
       });
       if (sig) {
         created++;
@@ -1348,6 +1660,7 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
 
     for (var i = 0; i < pairs.length && made < need; i++) {
       var pair = pairs[i];
+      if (isDivergenceTooHigh(pair)) continue;
       var path = dayPathMomentum(pair);
       if (!path) continue;
       var useMom = Math.abs(path.momEarly) >= Math.abs(path.momLate) ? path.momEarly : path.momLate;
@@ -1359,9 +1672,10 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
       });
       if (already) continue;
 
+      var conf = scoreConfidence(pair, useMom, thr);
       var sig = createSignal(
         { pair: pair, mom: useMom, price: path.price },
-        { activate: false, tag: 'rattrapage', status: 'manqué', at: Date.now() }
+        { activate: false, tag: 'rattrapage', status: 'manqué', at: Date.now(), confidence: conf }
       );
       if (sig) made++;
     }
@@ -1573,9 +1887,35 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
     }
   }
 
+  function copyTextForSignal(s) {
+    var sym = assetMeta(s.pair).cls === 'index' ? assetMeta(s.pair).proxyPair : s.pair;
+    return [
+      'Exness DÉMO uniquement',
+      'Paire: ' + sym,
+      'Direction: ' + sideLabel(s.side),
+      'Volume: 0.01 lot',
+      'Entrée ≈ ' + formatPrice(s.pair, s.entry),
+      'SL: ' + formatPrice(s.pair, s.sl) + ' (' + s.slPips + ')',
+      'TP: ' + formatPrice(s.pair, s.tp) + ' (R:R ' + s.rr + ')',
+      'Confiance: ' + (s.confidence || '—') + ' · Session: ' + (s.sessionLabel || '—'),
+      'Règles v' + (s.ruleVersion || state.ruleVersion || 1)
+    ].join('\n');
+  }
+
+  function confBadge(c) {
+    c = c || 'moyen';
+    var cls = c === 'fort' ? 'conf-fort' : (c === 'faible' ? 'conf-faible' : 'conf-moyen');
+    return '<span class="badge ' + cls + '">confiance ' + escapeHtml(c) + '</span>';
+  }
+
   function renderSignals() {
     var active = state.signals.filter(function (s) { return s.status === 'active'; });
     $('slotCount').textContent = active.length + ' / ' + MAX_SLOTS;
+    var fn = $('filterNote');
+    if (fn && !lastFilterMsg) {
+      // keep last filter visible briefly only if set during eval; else hide if empty
+      if (!fn.textContent) fn.hidden = true;
+    }
     if (!active.length) {
       $('signals').innerHTML = '<p class="empty">Aucun signal actif. Active l’auto ou appuie sur « Évaluer ».</p>';
       return;
@@ -1586,34 +1926,38 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
       var dirColor = s.side === 'buy' ? 'pos' : 'neg';
       var label = s.displayLabel || assetMeta(s.pair).label || s.pair;
       var tagHtml = s.tag ? ' · <span class="badge rattrapage">' + escapeHtml(s.tag) + '</span>' : '';
+      var sym = assetMeta(s.pair).cls === 'index' ? assetMeta(s.pair).proxyPair : s.pair;
+      var conf = s.confidence || scoreConfidence(s.pair, s.momentum, effectiveThreshold());
       html += '<div class="signal-card ' + dirCls + '" data-id="' + s.id + '">' +
         '<div class="muted">' + new Date(s.createdAt).toLocaleString('fr-FR') +
         ' · momentum ' + (s.momentum > 0 ? '+' : '') + s.momentum +
         ' · <span class="rule-ver">règles v' + (s.ruleVersion || state.ruleVersion || 1) + '</span>' +
         tagHtml + '</div>' +
+        '<div style="margin:0.35rem 0">' + confBadge(conf) +
+          (s.sessionLabel ? ' <span class="session-pill ' + (s.sessionOk ? 'open' : 'closed') + '">' +
+            escapeHtml(s.sessionLabel) + '</span>' : '') +
+        '</div>' +
         '<div class="big-dir ' + dirColor + '">' + sideLabel(s.side) + ' ' + escapeHtml(label) + '</div>' +
-        '<div class="copy-steps">' +
-          '<strong>Sur Exness démo, tape :</strong>' +
-          '<ol style="margin:0.4rem 0 0;padding-left:1.2rem">' +
-            '<li>Paire / symbole <strong>' + escapeHtml(
-              assetMeta(s.pair).cls === 'index' ? assetMeta(s.pair).proxyPair : s.pair
-            ) + '</strong>' +
-            (assetMeta(s.pair).cls === 'index' ? ' <span class="muted">(proxy index)</span>' : '') +
-            '</li>' +
+        '<div class="checklist-card">' +
+          '<div class="chk-title">Checklist Exness DÉMO (un tap)</div>' +
+          '<ol>' +
+            '<li>Paire <strong>' + escapeHtml(sym) + '</strong>' +
+              (assetMeta(s.pair).cls === 'index' ? ' <span class="muted">(proxy index)</span>' : '') + '</li>' +
             '<li>Direction <strong>' + sideLabel(s.side) + '</strong></li>' +
-            '<li>Volume <strong>0.01</strong> lot (pour commencer)</li>' +
+            '<li>Volume <strong>0.01</strong> lot</li>' +
             '<li>Entrée ≈ <strong>' + formatPrice(s.pair, s.entry) + '</strong></li>' +
-            '<li>SL <strong>' + formatPrice(s.pair, s.sl) + '</strong> (' + s.slPips + ' — obligatoire)</li>' +
+            '<li>SL <strong>' + formatPrice(s.pair, s.sl) + '</strong> (obligatoire)</li>' +
             '<li>TP <strong>' + formatPrice(s.pair, s.tp) + '</strong> (R:R ' + s.rr + ')</li>' +
           '</ol>' +
+          '<div class="copy-bar">' +
+            '<button type="button" class="btn-primary btn-sm act-clipboard" data-id="' + s.id + '">Copié</button>' +
+            '<button type="button" class="btn-ok btn-sm act-copy" data-id="' + s.id + '">✓ Marqué copié en démo</button>' +
+            '<button type="button" class="btn-ignore btn-sm act-ignore" data-id="' + s.id + '">Ignoré</button>' +
+          '</div>' +
         '</div>' +
         '<div class="meta-grid">' +
-          '<div><span>Risque</span><br>≤ ' + s.riskPct + '% (max 2%)</div>' +
-          '<div><span>Note lot</span><br>sur Exness démo mets 0.01 pour commencer</div>' +
-        '</div>' +
-        '<div class="row" style="margin-top:0.75rem">' +
-          '<button type="button" class="btn-ok btn-sm act-copy" data-id="' + s.id + '">✓ Copié en démo</button>' +
-          '<button type="button" class="btn-ignore btn-sm act-ignore" data-id="' + s.id + '">Ignoré</button>' +
+          '<div><span>Risque</span><br>≤ ' + s.riskPct + '% (labo ≤1.5% auto)</div>' +
+          '<div><span>Note</span><br>Compte DÉMO seulement — pas d’argent réel</div>' +
         '</div>' +
       '</div>';
     });
@@ -1643,6 +1987,7 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
         statusBadge(t.status) + ' ' +
         '<span class="badge ' + (t.side === 'buy' ? 'buy' : 'sell') + '">' + sideLabel(t.side) + '</span> ' +
         '<strong>' + escapeHtml(label) + '</strong>' + tag +
+        (t.confidence ? ' ' + confBadge(t.confidence) : '') +
         '<div class="muted" style="margin-top:0.25rem">' +
           new Date(t.at).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) +
           ' · SL ' + formatPrice(t.pair, t.sl) +
@@ -1689,10 +2034,81 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
 
     var total = state.wins + state.losses;
     var note = 'Marque Gagné/Perdu après chaque copie démo. Le labo enregistre une entrée d’historique à chaque fois (version de règles + ce qui a changé).';
-    if (total < 3) {
-      note += ' Encore ' + (3 - total) + ' résultat(s) avant le premier ajustement auto.';
+    if (total < MIN_SAMPLE_SOFT) {
+      note += ' Encore ' + (MIN_SAMPLE_SOFT - total) + ' résultat(s) avant le premier ajustement (min ' + MIN_SAMPLE_SOFT + '). Gros changements après ' + MIN_SAMPLE_BIG + '.';
+    } else if (total < MIN_SAMPLE_BIG) {
+      note += ' Ajustements doux possibles · gros changements après ' + MIN_SAMPLE_BIG + ' G/P. Démo seulement.';
     }
     $('calibNote').textContent = note;
+  }
+
+  function setBar(id, pct, okAt) {
+    var el = $(id);
+    if (!el) return;
+    pct = Math.max(0, Math.min(100, pct || 0));
+    el.style.width = pct + '%';
+    el.className = '';
+    if (okAt != null && pct >= okAt) el.classList.add('ok');
+    else if (pct >= 40) el.classList.add('warn');
+  }
+
+  function renderStudyPanel() {
+    ensureStudyStart();
+    var info = studyDayNumber();
+    if ($('studyDayLabel')) $('studyDayLabel').textContent = 'Jour ' + info.day + '/' + info.total;
+    var inp = $('studyStartInput');
+    if (inp && document.activeElement !== inp) inp.value = state.studyStart || info.start;
+
+    var sigToday = todayCount();
+    var outcomes = state.wins + state.losses;
+    var wr = outcomes ? Math.round((state.wins / outcomes) * 100) : null;
+
+    if ($('studySigToday')) $('studySigToday').textContent = sigToday + ' / ' + STUDY_TARGET_SIGNALS;
+    if ($('studyOutcomes')) $('studyOutcomes').textContent = outcomes + ' / ' + STUDY_TARGET_OUTCOMES;
+    if ($('studyWr')) {
+      $('studyWr').textContent = wr == null ? '—' : (wr + '%');
+      $('studyWr').className = 'val' + (wr == null ? '' : (wr >= 50 ? ' pos' : ' neg'));
+    }
+    if ($('studyRuleVer')) $('studyRuleVer').textContent = 'v' + (state.ruleVersion || 1);
+
+    setBar('barSigToday', (sigToday / STUDY_TARGET_SIGNALS) * 100, 100);
+    setBar('barOutcomes', (outcomes / STUDY_TARGET_OUTCOMES) * 100, 100);
+    setBar('barWr', wr == null ? 0 : wr, 50);
+
+    var hint = $('studyHint');
+    if (hint) {
+      var leftDays = Math.max(0, STUDY_DAYS - info.day);
+      hint.textContent = 'Jour ' + info.day + '/' + STUDY_DAYS +
+        ' · reste ~' + leftDays + ' j · règles v' + (state.ruleVersion || 1) +
+        ' · cible étude : discipline G/P démo, pas le cash. Aucune suggestion d’argent réel ici.';
+    }
+  }
+
+  function renderWeeklySummary() {
+    var el = $('weeklySummary');
+    if (!el) return;
+    var outcomes = recentOutcomes(7);
+    if (!outcomes.length) {
+      el.innerHTML = '<p class="empty">Pas encore de G/P sur les 7 derniers jours. Note des résultats démo pour remplir ce bloc.</p>';
+      return;
+    }
+    var w = outcomes.filter(function (j) { return j.outcome === 'win'; }).length;
+    var l = outcomes.filter(function (j) { return j.outcome === 'loss'; }).length;
+    var tot = w + l;
+    var wr = tot ? Math.round((w / tot) * 100) : null;
+    var avgR = estimateAvgR(outcomes);
+    var mistakes = topMistakesNote(outcomes);
+    el.innerHTML =
+      '<div class="wk-row"><span>Win rate 7j</span><strong class="' + (wr >= 50 ? 'pos' : 'neg') + '">' +
+        (wr == null ? '—' : wr + '%') + '</strong></div>' +
+      '<div class="wk-row"><span>Résultats 7j</span><strong>' + w + 'G / ' + l + 'P</strong></div>' +
+      '<div class="wk-row"><span>R moyen estimé</span><strong>' +
+        (avgR == null ? '—' : ((avgR > 0 ? '+' : '') + avgR + ' R')) +
+        '</strong></div>' +
+      '<div class="wk-row" style="flex-direction:column;align-items:flex-start">' +
+        '<span class="muted">Notes / erreurs fréquentes</span>' +
+        '<span style="margin-top:0.25rem">' + escapeHtml(mistakes) + '</span></div>' +
+      '<p class="muted" style="margin:0.55rem 0 0;font-size:0.72rem">Estimations éducatives · démo seulement · pas un conseil financier.</p>';
   }
 
   function renderStats() {
@@ -1747,7 +2163,9 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
           ' · WR ' + wr + ' (' + (h.wins || 0) + 'G/' + (h.losses || 0) + 'P)</div>' +
         '<div class="muted" style="margin-top:0.2rem">' + escapeHtml(h.reason || '') + '</div>' +
         '<div class="' + chgCls + '">' + escapeHtml((h.changes || []).join(' · ')) + '</div>' +
-        '<div class="muted" style="margin-top:0.2rem">Après : ' + escapeHtml(formatRules(h.after)) + '</div>' +
+        (h.before && h.after ? ('<div class="before-after">Avant : ' + escapeHtml(formatRules(h.before)) +
+          '<br>Après : ' + escapeHtml(formatRules(h.after)) + '</div>') :
+          ('<div class="muted" style="margin-top:0.2rem">Après : ' + escapeHtml(formatRules(h.after)) + '</div>')) +
       '</div>';
     });
     el.innerHTML = html;
@@ -1784,6 +2202,8 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
     renderJournal();
     renderStats();
     renderVersionHistory();
+    renderStudyPanel();
+    renderWeeklySummary();
     syncCfgInputs();
   }
 
@@ -1816,7 +2236,10 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
       tp: s.tp,
       action: action,
       outcome: null,
-      at: Date.now()
+      at: Date.now(),
+      confidence: s.confidence || null,
+      rr: s.rr,
+      sessionOk: s.sessionOk
     });
     if (state.journal.length > 80) state.journal.length = 80;
     state.signals = state.signals.filter(function (x) {
@@ -1845,7 +2268,10 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
           tp: t.tp,
           action: 'copied',
           outcome: null,
-          at: Date.now()
+          at: Date.now(),
+          confidence: t.confidence || null,
+          rr: t.rr,
+          sessionOk: t.sessionOk
         });
       }
       var sig = findSignal(tid);
@@ -1871,7 +2297,10 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
           tp: t.tp,
           action: 'copied',
           outcome: null,
-          at: Date.now()
+          at: Date.now(),
+          confidence: t.confidence || null,
+          rr: t.rr,
+          sessionOk: t.sessionOk
         };
         state.journal.unshift(j);
       }
@@ -1906,10 +2335,11 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
     } : null;
     save();
     render();
-    if (entry && entry.changes && entry.changes[0].indexOf('Aucun') !== 0 && entry.trigger === 'recalibrate') {
-      toast('Démo notée → règles v' + entry.version + ' · ' + entry.changes[0]);
+    if (entry && entry.adjusted && entry.trigger === 'recalibrate') {
+      toast('Démo → v' + entry.version + ' · ' + (entry.changes[0] || entry.reason));
     } else if (entry) {
-      toast('Démo notée → historique v' + entry.version + ' (labo recalibrage)');
+      toast((outcome === 'win' ? 'Gagné' : 'Perdu') + ' (démo) · hist v' + entry.version + ' · ' +
+        (entry.reason ? entry.reason.slice(0, 80) : 'labo'));
     } else {
       toast(outcome === 'win' ? 'Gagné (démo) noté' : 'Perdu (démo) noté');
     }
@@ -1920,34 +2350,73 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
     var total = state.wins + state.losses;
     var wr = total ? state.wins / total : null;
     var changed = false;
+    var bigChange = false;
     var reason = 'observation';
+    var recent = recentOutcomes(7);
+    var recentWins = recent.filter(function (j) { return j.outcome === 'win'; }).length;
+    var recentLosses = recent.filter(function (j) { return j.outcome === 'loss'; }).length;
+    var recentTotal = recentWins + recentLosses;
+    var recentWr = recentTotal ? recentWins / recentTotal : null;
 
-    if (total >= 3 && wr != null) {
-      if (wr < 0.35) {
+    // Never suggest real-money — DEMO lab only
+    if (total < MIN_SAMPLE_SOFT || wr == null) {
+      reason = 'échantillon < ' + MIN_SAMPLE_SOFT + ' G/P démo — mesure en cours, aucun changement de règles';
+    } else if (total < MIN_SAMPLE_BIG) {
+      // Soft tweaks only (±0.5 seuil or ±1 SL), one knob at a time
+      if (wr < 0.40) {
         state.cfg.thresholdPips = clamp(state.cfg.thresholdPips + 0.5, 3, 20, 5);
-        state.cfg.slPips = clamp(state.cfg.slPips + 1, 12, 30, 18);
         changed = true;
-        reason = 'win rate faible (' + Math.round(wr * 100) + '%) → filtre plus strict + SL un peu plus large';
-      } else if (wr > 0.55) {
+        reason = 'WR démo ' + Math.round(wr * 100) + '% (n=' + total + ') → seuil +0.5 (filtre un peu plus strict). Démo seulement.';
+      } else if (wr > 0.60 && recentWr != null && recentWr >= 0.55) {
         state.cfg.thresholdPips = clamp(state.cfg.thresholdPips - 0.5, 3, 20, 5);
         changed = true;
-        reason = 'win rate correct (' + Math.round(wr * 100) + '%) → seuil un peu plus sensible';
+        reason = 'WR démo ' + Math.round(wr * 100) + '% stable → seuil −0.5 (un peu plus de signaux). Démo seulement.';
+      } else if (recentLosses >= 3 && recentWins === 0) {
+        state.cfg.slPips = clamp(state.cfg.slPips + 1, 12, 35, 18);
+        changed = true;
+        reason = 'série de pertes récentes (7j) → SL +1 pip (marge). Démo seulement.';
       } else {
-        reason = 'win rate moyen (' + Math.round(wr * 100) + '%) → pas d’ajustement fort';
+        reason = 'WR démo ' + Math.round(wr * 100) + '% (n=' + total + ') — zone neutre, pas d’ajustement. Continuer à noter G/P.';
       }
     } else {
-      reason = 'moins de 3 résultats démo — pas d’ajustement encore (mesure en cours)';
+      // Big-sample regime: clearer multi-knob logic, still capped
+      if (wr < 0.35 || (recentWr != null && recentWr < 0.30 && recentTotal >= 5)) {
+        state.cfg.thresholdPips = clamp(state.cfg.thresholdPips + 1, 3, 20, 5);
+        state.cfg.slPips = clamp(state.cfg.slPips + 2, 12, 35, 18);
+        if (state.cfg.rr > 1.2) state.cfg.rr = clamp(state.cfg.rr - 0.1, 0.8, 3, 1.5);
+        changed = true;
+        bigChange = true;
+        reason = 'WR faible ' + Math.round(wr * 100) + '% (n≥' + MIN_SAMPLE_BIG + ') → filtre +1, SL +2, R:R légèrement ↓. Labo démo — pas d’argent réel.';
+      } else if (wr < 0.45) {
+        state.cfg.thresholdPips = clamp(state.cfg.thresholdPips + 0.5, 3, 20, 5);
+        state.cfg.slPips = clamp(state.cfg.slPips + 1, 12, 35, 18);
+        changed = true;
+        reason = 'WR sous 45% → seuil +0.5 et SL +1. Démo seulement.';
+      } else if (wr > 0.58 && recentWr != null && recentWr >= 0.5) {
+        state.cfg.thresholdPips = clamp(state.cfg.thresholdPips - 0.5, 3, 20, 5);
+        if (wr > 0.65 && state.cfg.rr < 2) {
+          state.cfg.rr = clamp(state.cfg.rr + 0.1, 0.8, 3, 1.5);
+        }
+        changed = true;
+        reason = 'WR solide ' + Math.round(wr * 100) + '% → seuil un peu plus sensible' +
+          (wr > 0.65 ? ' + R:R ↑' : '') + '. Démo seulement.';
+      } else {
+        reason = 'WR ' + Math.round(wr * 100) + '% (n=' + total + ') en bande neutre — règles maintenues. Démo seulement.';
+      }
     }
 
+    // Risk never auto-raised above 1.5 in lab; never suggest real money
+    state.cfg.riskPct = Math.min(1.5, Math.max(0.5, Number(state.cfg.riskPct) || 1));
     state.cfg.thresholdPips = Math.round(state.cfg.thresholdPips * 2) / 2;
     state.cfg.slPips = Math.round(state.cfg.slPips);
     state.cfg.rr = Math.round(Number(state.cfg.rr) * 10) / 10;
-    state.cfg.riskPct = Math.min(2, Math.max(0.5, Number(state.cfg.riskPct) || 1));
 
     var after = snapshotRules(state.cfg);
     var changes = describeChanges(before, after);
     if (changed) {
       state.ruleVersion = (state.ruleVersion || 1) + 1;
+      // Prepend explicit before→after line
+      changes = ['avant → après : ' + formatRules(before) + '  ⇒  ' + formatRules(after)].concat(changes);
     }
     var entry = {
       version: state.ruleVersion,
@@ -1963,7 +2432,11 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
       before: before,
       after: after,
       changes: changes,
-      adjusted: changed
+      adjusted: changed,
+      bigChange: bigChange,
+      sampleSize: total,
+      minRequired: changed ? (bigChange ? MIN_SAMPLE_BIG : MIN_SAMPLE_SOFT) : MIN_SAMPLE_SOFT,
+      demoOnly: true
     };
     if (!state.ruleHistory) state.ruleHistory = [];
     state.ruleHistory.unshift(entry);
@@ -2020,12 +2493,32 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
     render();
   };
 
+  function copyChecklistToClipboard(sigId) {
+    var s = findSignal(sigId);
+    if (!s) {
+      // also allow from today history inactive
+      var t = findToday(sigId);
+      if (!t) { toast('Signal introuvable'); return; }
+      s = t;
+    }
+    var text = copyTextForSignal(s);
+    function ok() { toast('Checklist copiée — colle dans ta note / Exness démo'); }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(ok).catch(function () {
+        window.prompt('Copie manuelle :', text);
+      });
+    } else {
+      window.prompt('Copie manuelle :', text);
+    }
+  }
+
   document.addEventListener('click', function (ev) {
     var t = ev.target;
     if (!t || !t.getAttribute) return;
     var id = t.getAttribute('data-id');
     var jid = t.getAttribute('data-jid');
     var tid = t.getAttribute('data-tid');
+    if (t.classList.contains('act-clipboard') && id) copyChecklistToClipboard(id);
     if (t.classList.contains('act-copy') && id) archiveSignal(id, 'copied');
     if (t.classList.contains('act-ignore') && id) archiveSignal(id, 'ignored');
     if (t.classList.contains('act-win') && jid) setOutcome(jid, 'win');
@@ -2036,12 +2529,32 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
     if (t.classList.contains('act-today-miss') && tid) markToday(tid, 'manqué');
   });
 
+  if ($('studyStartInput')) {
+    $('studyStartInput').addEventListener('change', function () {
+      var v = $('studyStartInput').value;
+      if (!v) return;
+      state.studyStart = v;
+      save();
+      renderStudyPanel();
+      toast('Début étude : ' + v);
+    });
+  }
+  if ($('btnStudyResetStart')) {
+    $('btnStudyResetStart').onclick = function () {
+      state.studyStart = todayKey();
+      save();
+      renderStudyPanel();
+      toast('Début étude remis à aujourd’hui');
+    };
+  }
+
   function startPoll() {
     if (pollTimer) clearInterval(pollTimer);
     pollTimer = setInterval(function () { refresh(true); }, POLL_MS);
   }
 
   // Boot
+  ensureStudyStart();
   render();
   if (state.lastError && !state.lastFetchAt) showError(state.lastError);
   refresh(true);
