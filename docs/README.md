@@ -68,3 +68,12 @@ Aucun `git push` n’est fait ici ; à publier ensuite.
 ## Hors-ligne
 
 Le **shell** (UI) peut se réouvrir sans réseau. Les **cours** restent en network-first : sans API, les prix ne se mettent pas à jour (message d’erreur habituel). Aucune donnée broker, aucun mot de passe.
+
+## Nouveautés toolkit (démo)
+
+- **Suivi copies** — « Copié » ouvre un tracker (Gagné / Perdu / Fermé) qui alimente le recalibrage.
+- **RSI (14) + EMA (20/50)** — historique local ; carte signal + panneau Indicateurs ; boost léger de confiance si alignement.
+- **Calendrier éco** — modèle high-impact semaine + liens ForexFactory / Investing ; filtre ±30 min optionnel.
+- **Astuces notif Android** — arrière-plan, batterie, notifications ; 24/7 écran éteint = serveur plus tard.
+- Honnêteté inchangée : DÉMO only · pas de Play Store · pas d’API broker.
+

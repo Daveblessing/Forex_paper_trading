@@ -5,7 +5,7 @@
    while the lab can still run. True 24/7 screen-off push needs a server later. */
 'use strict';
 
-var CACHE = 'fx-lab-shell-v1';
+var CACHE = 'fx-lab-shell-v2';
 var SHELL = [
   './',
   './index.html',

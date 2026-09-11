@@ -406,6 +406,45 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
 }
 .changelog-fr li { margin: 0.25rem 0; }
 
+/* === DEMO toolkit gaps: suivi / indicateurs / calendrier / android tips === */
+.suivi-card { border: 2px solid #0e7490; background: linear-gradient(180deg,#082f3a 0%,#1a2332 100%); }
+.suivi-item {
+  border: 1px solid var(--border); border-radius: 12px;
+  padding: 0.7rem; margin-bottom: 0.5rem; font-size: 0.85rem; background: #0d1218;
+}
+.suivi-item.open { border-color: #22d3ee; }
+.suivi-item.closed { opacity: 0.72; }
+.badge.ferme { background: #44403c; color: #d6d3d1; }
+.ind-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 0.3rem;
+  font-size: 0.78rem; margin-top: 0.35rem; font-variant-numeric: tabular-nums;
+}
+.ind-grid .fl { background: #0c1a2e; border-radius: 8px; padding: 0.3rem 0.45rem; }
+.ind-grid .fl.align { border: 1px solid #14532d; color: #86efac; }
+.ind-grid .fl.warn { border: 1px solid #a16207; color: #fde68a; }
+.badge.rsi-ok { background: #14532d; color: #86efac; }
+.badge.rsi-ext { background: #713f12; color: #fde68a; }
+.badge.ema-up { background: #14532d; color: #86efac; }
+.badge.ema-dn { background: #7f1d1d; color: #fca5a5; }
+.eco-card { border: 2px solid #7c3aed; background: linear-gradient(180deg,#1a1030 0%,#1a2332 100%); }
+.eco-event {
+  display: flex; justify-content: space-between; gap: 0.5rem; flex-wrap: wrap;
+  border-bottom: 1px solid var(--border); padding: 0.45rem 0; font-size: 0.82rem;
+}
+.eco-event:last-child { border-bottom: none; }
+.eco-event .when { color: #c4b5fd; font-variant-numeric: tabular-nums; font-size: 0.75rem; }
+.eco-event .hit { color: #fca5a5; font-weight: 700; }
+.eco-links a { color: #93c5fd; }
+.android-tips {
+  border: 2px solid #334155; background: #0d1218;
+  border-radius: 12px; padding: 0.7rem 0.85rem; margin-top: 0.65rem;
+  font-size: 0.8rem; line-height: 1.45;
+}
+.android-tips h3 { margin: 0 0 0.4rem; font-size: 0.88rem; color: #e2e8f0; }
+.android-tips ol { margin: 0.25rem 0 0; padding-left: 1.15rem; }
+.android-tips li { margin: 0.28rem 0; }
+.btn-ferme { background: #44403c; color: #e7e5e4; }
+
 /* === PWA install + alertes === */
 .pwa-card {
   border: 2px solid #2563eb;
@@ -478,6 +517,16 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
       Pour la vraie PWA : GitHub Pages, ex.
       <code>https://daveblessing.github.io/…/fx-lab-app/</code>.
     </p>
+
+    <div class="android-tips" id="androidTipsCard">
+      <h3>📱 Astuces notifications Android (Infinix / Chrome)</h3>
+      <ol>
+        <li>Garde l’appli <strong>FX Lab Démo</strong> en arrière-plan (ne force pas l’arrêt).</li>
+        <li>Paramètres Android → Apps → <strong>Chrome</strong> (ou l’appli installée) → Batterie → <strong>Sans restriction</strong> / désactive l’optimisation batterie.</li>
+        <li>Autorise les <strong>notifications</strong> pour Chrome / l’appli (tu as déjà eu la 1ʳᵉ — garde-les ON).</li>
+        <li>Écran verrouillé 24h/24 sans serveur : Chrome peut endormir la page. Un vrai push éteint = <em>serveur plus tard</em> — honnêteté inchangée.</li>
+      </ol>
+    </div>
   </section>
 
   <div class="disclaimer" role="note">
@@ -583,7 +632,37 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
         </ul>
         <p class="muted" style="margin:0.45rem 0 0">Éducation seulement — aucune promesse de résultat.</p>
       </div>
+      <div class="pro-block" id="proIndBlock">
+        <h3>6. Indicateurs — RSI (14) + EMA (20/50)</h3>
+        <p class="muted" style="margin:0 0 0.35rem">Calculés sur l’historique local de prix (pas un feed broker). RSI extrême (&lt;30 / &gt;70) = prudence. Alignement momentum + RSI non extrême + prix vs EMA peut légèrement renforcer la confiance affichée.</p>
+        <div id="proIndLive" class="muted">Actualise les cours pour voir RSI / EMA sur la paire active.</div>
+      </div>
     </div>
+  </section>
+
+
+  <section class="card eco-card" id="ecoCard">
+    <div class="card-head">
+      <h2>Calendrier éco</h2>
+      <span class="muted">haute impact · éducatif</span>
+    </div>
+    <p class="muted" style="margin:0;font-size:0.78rem">
+      Pas d’API calendrier CORS gratuite fiable ici — liste modèle high-impact (USD/EUR/GBP/JPY) pour la semaine en cours + liens externes.
+      <strong>Vérifier avant news high-impact.</strong>
+    </p>
+    <div class="eco-links muted" style="margin:0.45rem 0;font-size:0.8rem">
+      Liens : <a href="https://www.forexfactory.com/calendar" target="_blank" rel="noopener">ForexFactory</a>
+      · <a href="https://www.investing.com/economic-calendar/" target="_blank" rel="noopener">Investing.com</a>
+    </div>
+    <div class="toggle-row">
+      <span>Éviter signaux ±30 min avant news majeures</span>
+      <label class="switch" title="Filtre news">
+        <input type="checkbox" id="toggleAvoidNews" checked />
+        <span class="slider"></span>
+      </label>
+    </div>
+    <div id="ecoList" style="margin-top:0.55rem"></div>
+    <p class="muted" id="ecoNote" style="margin:0.55rem 0 0;font-size:0.75rem"></p>
   </section>
 
   <section class="card weekly-block" id="weeklyCard">
@@ -744,6 +823,19 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
     <div id="versionHistory"></div>
   </section>
 
+
+  <section class="card suivi-card" id="suiviCard">
+    <div class="card-head">
+      <h2>Suivi copies (démo)</h2>
+      <span class="muted" id="suiviMeta">ouverts 0</span>
+    </div>
+    <p class="muted" style="margin:0;font-size:0.78rem">
+      Quand tu tapes <strong>Copié</strong>, une entrée ouverte est créée (paire, direction, entrée, SL, TP, heure, version règles).
+      Marque ensuite <strong>Gagné</strong> / <strong>Perdu</strong> (alimente le recalibrage) ou <strong>Fermé</strong> (clôture sans G/P).
+    </p>
+    <div id="suiviList" style="margin-top:0.65rem"></div>
+  </section>
+
   <section class="card">
     <div class="card-head">
       <h2>Journal (démo)</h2>
@@ -774,15 +866,13 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
 
   <section class="card" id="changelogCard">
     <details class="help" open>
-      <summary>📋 Changelog (FR) — PWA + étude 30 j + boîte pro</summary>
+      <summary>📋 Changelog (FR) — Suivi copies · RSI/EMA · calendrier · tips Android</summary>
       <ul class="changelog-fr">
-        <li><strong>PWA (cette version)</strong> : appli installable (manifest + icônes + service worker), bouton « Installer l’appli », « Activer les alertes », notification locale (paire · ACHAT/VENTE · rappel SL · « Ouvrir pour copier en démo »). Si les notifications sont refusées : toast + vibreur / bip. Pas de Play Store. htmlpreview GitHub ≠ PWA — utiliser GitHub Pages. Alertes 24/7 écran éteint = serveur plus tard ; ici l’alerte part quand la page/appli peut tourner.</li>
-        <li>Étude passée de <strong>14 → 30 jours</strong> (Jour N/30) ; cible résultats notés <strong>≥40</strong> (signaux/jour ≥5 inchangé).</li>
-        <li>Nouvelle <strong>Boîte à outils pro</strong> : Fibonacci (retracements/extensions), structure (swing/tendance), risque style légendes, carte signal enrichie, École des légendes (PTJ / Seykota / Turtles / Fib).</li>
-        <li>Signaux : niveaux Fib, R:R, confiance, session, divergence ; tag « poche d’or » si confluence 50–61.8.</li>
-        <li>Après 3 pertes consécutives : risque % temporairement abaissé (esprit Turtle) — démo seulement.</li>
-        <li>Conservé : multi-sources FX, or, crypto, Londres/Japon, filtres qualité, recalibrage, checklist copie, bannières DÉMO.</li>
-        <li>Rappel : méthodes documentées · Fib pas magique · pas de garantie · pas d’argent réel.</li>
+        <li><strong>Suivi copies</strong> : taper « Copié » crée une entrée ouverte (paire, direction, entrée, SL, TP, heure, version règles) ; Gagné / Perdu / Fermé depuis la liste ; G/P alimentent le recalibrage.</li>
+        <li><strong>RSI (14) + EMA (20/50)</strong> depuis l’historique local : affichés sur la carte signal + panneau « Indicateurs » ; boost léger de confiance si momentum aligné, RSI non extrême et prix vs EMA cohérents.</li>
+        <li><strong>Calendrier éco</strong> : événements majeurs de la semaine (modèle high-impact USD/EUR/GBP/JPY) + liens ForexFactory / Investing ; note FR « vérifier avant news high-impact » ; toggle « éviter signaux ±30 min avant news majeures ».</li>
+        <li><strong>Astuces notif Android</strong> : garder l’appli en arrière-plan, désactiver l’optimisation batterie Chrome/PWA, autoriser notifications ; 24/7 écran éteint = serveur plus tard.</li>
+        <li>Conservé : PWA + alertes locales, étude 30 j, Fib/structure/légendes, multi-sources, DÉMO only, honnêteté inchangée. Pas de Play Store · pas d’API broker.</li>
       </ul>
     </details>
   </section>
@@ -801,8 +891,12 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
   var INDEX_IDS = ['FTSE100', 'NIKKEI225'];
   var PAIRS = FX_PAIRS.slice(); // FX consensus pairs (baby) — never mixed into median math
   var POLL_MS = 45000;
-  var HISTORY_MAX = 40;
+  var HISTORY_MAX = 64;
   var MOMENTUM_N = 6;
+  var RSI_PERIOD = 14;
+  var EMA_FAST = 20;
+  var EMA_SLOW = 50;
+  var NEWS_BUFFER_MS = 30 * 60 * 1000;
   var MAX_SLOTS = 2;
   var COOLDOWN_MS = 3 * 60 * 1000;
   var DAILY_MIN = 5;
@@ -815,7 +909,8 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
     auto: false,
     includeGold: true,
     includeCrypto: true,
-    includeIndices: true
+    includeIndices: true,
+    avoidNews: true
   };
   var STUDY_DAYS = 30;
   var STUDY_TARGET_SIGNALS = 5;
@@ -899,7 +994,8 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
       indexNote: null,
       extraMeta: {},
       studyStart: null,
-      filteredLog: []
+      filteredLog: [],
+      openCopies: []
     };
   }
 
@@ -917,6 +1013,7 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
     if (f.cfg.includeGold == null) f.cfg.includeGold = true;
     if (f.cfg.includeCrypto == null) f.cfg.includeCrypto = true;
     if (f.cfg.includeIndices == null) f.cfg.includeIndices = true;
+    if (f.cfg.avoidNews == null) f.cfg.avoidNews = true;
     f.apiSource = s.apiSource || null;
     f.divergence = s.divergence || {};
     f.sourceCount = s.sourceCount != null ? s.sourceCount : null;
@@ -933,6 +1030,7 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
     f.extraMeta = s.extraMeta || {};
     f.studyStart = s.studyStart || null;
     f.filteredLog = Array.isArray(s.filteredLog) ? s.filteredLog.slice(0, 20) : [];
+    f.openCopies = Array.isArray(s.openCopies) ? s.openCopies.slice(0, 60) : [];
     f.ruleHistory = Array.isArray(s.ruleHistory) && s.ruleHistory.length
       ? s.ruleHistory
       : [{
@@ -1245,6 +1343,27 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
         (streak >= 3 ? ' → risque réduit (Turtle)' : '') +
         ' · risque effectif : ' + eff + '% (cfg ' + (state.cfg.riskPct || 1) + '%) · R:R cfg ' +
         (state.cfg.rr || 1.5) + ' · démo seulement.';
+    }
+    var indEl = $('proIndLive');
+    if (indEl) {
+      var ind = computeIndicators(pair);
+      if (!ind || (ind.rsi == null && ind.ema20 == null)) {
+        indEl.innerHTML = '<span class="muted">Historique insuffisant pour ' + escapeHtml(pair) +
+          ' (RSI14 / EMA20·50). Laisse tourner quelques cycles.</span>';
+      } else {
+        var rows = '';
+        rows += '<div class="fl' + (ind.rsiExtreme ? ' warn' : (ind.alignBoost ? ' align' : '')) +
+          '">RSI 14 · ' + (ind.rsi != null ? ind.rsi : '—') +
+          (ind.rsiExtreme ? ' · extrême' : '') + '</div>';
+        rows += '<div class="fl">pts hist · ' + ind.n + '</div>';
+        rows += '<div class="fl">EMA20 · ' + (ind.ema20 != null ? formatPrice(pair, ind.ema20) : '—') + '</div>';
+        rows += '<div class="fl">EMA50 · ' + (ind.ema50 != null ? formatPrice(pair, ind.ema50) : '—') + '</div>';
+        indEl.innerHTML =
+          '<div><strong>' + escapeHtml(assetMeta(pair).label || pair) + '</strong> · ' +
+          formatIndLine(pair, ind) + '</div>' +
+          '<div class="ind-grid">' + rows + '</div>' +
+          '<p class="muted" style="margin:0.4rem 0 0">Indicateurs locaux éducatifs — pas un tick Exness. Alignement peut booster légèrement la confiance.</p>';
+      }
     }
   }
 
@@ -1574,9 +1693,167 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
     else score -= 1;
     var histLen = (state.history[pair] || []).length;
     if (histLen >= 5) score += 1;
+    // Optional soft boost: momentum + RSI not extreme + price vs EMA alignment
+    var ind = computeIndicators(pair);
+    if (ind && ind.alignBoost) score += 1;
     if (score >= 3) return 'fort';
     if (score >= 1) return 'moyen';
     return 'faible';
+  }
+
+  function historyPrices(pair) {
+    return (state.history[pair] || []).map(function (x) { return x.p; });
+  }
+
+  function computeEMA(prices, period) {
+    if (!prices || prices.length < period) return null;
+    var k = 2 / (period + 1);
+    var ema = prices[0];
+    for (var i = 1; i < prices.length; i++) {
+      ema = prices[i] * k + ema * (1 - k);
+    }
+    return ema;
+  }
+
+  function computeRSI(prices, period) {
+    period = period || RSI_PERIOD;
+    if (!prices || prices.length < period + 1) return null;
+    var gains = 0, losses = 0;
+    var i;
+    for (i = 1; i <= period; i++) {
+      var d = prices[i] - prices[i - 1];
+      if (d >= 0) gains += d;
+      else losses -= d;
+    }
+    var avgGain = gains / period;
+    var avgLoss = losses / period;
+    for (i = period + 1; i < prices.length; i++) {
+      var ch = prices[i] - prices[i - 1];
+      var g = ch > 0 ? ch : 0;
+      var l = ch < 0 ? -ch : 0;
+      avgGain = (avgGain * (period - 1) + g) / period;
+      avgLoss = (avgLoss * (period - 1) + l) / period;
+    }
+    if (avgLoss === 0) return 100;
+    var rs = avgGain / avgLoss;
+    return Math.round((100 - (100 / (1 + rs))) * 10) / 10;
+  }
+
+  function computeIndicators(pair) {
+    var prices = historyPrices(pair);
+    var price = state.prices[pair];
+    if (price == null && prices.length) price = prices[prices.length - 1];
+    var rsi = computeRSI(prices, RSI_PERIOD);
+    var ema20 = computeEMA(prices, EMA_FAST);
+    var ema50 = computeEMA(prices, EMA_SLOW);
+    var mom = momentumPips(pair);
+    var rsiExtreme = rsi != null && (rsi <= 30 || rsi >= 70);
+    var rsiNotExtreme = rsi != null && rsi > 30 && rsi < 70;
+    var emaBias = null;
+    if (price != null && ema20 != null && ema50 != null) {
+      if (price >= ema20 && ema20 >= ema50) emaBias = 'up';
+      else if (price <= ema20 && ema20 <= ema50) emaBias = 'down';
+      else emaBias = 'mixed';
+    }
+    var alignBoost = false;
+    if (rsiNotExtreme && emaBias) {
+      if (mom > 0 && emaBias === 'up') alignBoost = true;
+      if (mom < 0 && emaBias === 'down') alignBoost = true;
+    }
+    return {
+      rsi: rsi,
+      ema20: ema20,
+      ema50: ema50,
+      price: price,
+      rsiExtreme: rsiExtreme,
+      rsiNotExtreme: rsiNotExtreme,
+      emaBias: emaBias,
+      alignBoost: alignBoost,
+      n: prices.length
+    };
+  }
+
+  function indicatorsSnapshot(pair) {
+    var ind = computeIndicators(pair);
+    if (!ind) return null;
+    return {
+      rsi: ind.rsi,
+      ema20: ind.ema20,
+      ema50: ind.ema50,
+      emaBias: ind.emaBias,
+      alignBoost: !!ind.alignBoost,
+      rsiExtreme: !!ind.rsiExtreme
+    };
+  }
+
+  /* High-impact news template (weekday 0=Sun … 6=Sat, hour/min UTC).
+     No free CORS calendar API — educational model for USD/EUR/GBP/JPY week. */
+  var NEWS_TEMPLATE = [
+    { weekday: 1, hour: 8, minute: 0, title: 'EUR — PMI / données zone euro', ccy: ['EUR', 'USD'] },
+    { weekday: 1, hour: 12, minute: 30, title: 'USD — PMI manufacturier / ISM (si publié)', ccy: ['USD'] },
+    { weekday: 2, hour: 12, minute: 30, title: 'USD — CPI / données prix (si publié)', ccy: ['USD', 'EUR'] },
+    { weekday: 3, hour: 18, minute: 0, title: 'USD — FOMC / minutes / discours Fed (si jour)', ccy: ['USD', 'JPY'] },
+    { weekday: 4, hour: 11, minute: 0, title: 'GBP — BoE / PIB / emploi (si publié)', ccy: ['GBP', 'USD'] },
+    { weekday: 4, hour: 12, minute: 30, title: 'USD — claims / PIB / durable goods', ccy: ['USD'] },
+    { weekday: 5, hour: 12, minute: 30, title: 'USD — NFP / emploi (1er vendredi type)', ccy: ['USD', 'EUR', 'JPY', 'GBP'] },
+    { weekday: 5, hour: 0, minute: 30, title: 'JPY — Tokyo / BoJ (fenêtre Asie)', ccy: ['JPY', 'USD'] }
+  ];
+
+  function startOfWeekMonday(d) {
+    d = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+    var day = d.getDay(); // 0 Sun
+    var diff = day === 0 ? -6 : 1 - day;
+    d.setDate(d.getDate() + diff);
+    d.setHours(0, 0, 0, 0);
+    return d;
+  }
+
+  function weekEcoEvents() {
+    var monday = startOfWeekMonday(new Date());
+    var events = [];
+    NEWS_TEMPLATE.forEach(function (t, idx) {
+      var dt = new Date(monday);
+      // weekday in template: 1=Mon … 5=Fri; convert offset from Monday
+      var offset = t.weekday === 0 ? 6 : (t.weekday - 1);
+      dt.setDate(monday.getDate() + offset);
+      dt.setUTCHours(t.hour, t.minute, 0, 0);
+      events.push({
+        id: 'eco_' + idx + '_' + dt.toISOString().slice(0, 10),
+        at: dt.getTime(),
+        title: t.title,
+        ccy: t.ccy.slice()
+      });
+    });
+    events.sort(function (a, b) { return a.at - b.at; });
+    return events;
+  }
+
+  function pairTouchesNews(pair, ev) {
+    if (!ev || !ev.ccy || !pair) return false;
+    var p = String(pair).toUpperCase();
+    for (var i = 0; i < ev.ccy.length; i++) {
+      if (p.indexOf(ev.ccy[i]) >= 0) return true;
+    }
+    // Gold / indices often USD-sensitive
+    if (assetMeta(pair).cls === 'metal' && ev.ccy.indexOf('USD') >= 0) return true;
+    if (assetMeta(pair).cls === 'index') {
+      if (pair === 'FTSE100' && (ev.ccy.indexOf('GBP') >= 0 || ev.ccy.indexOf('USD') >= 0)) return true;
+      if (pair === 'NIKKEI225' && (ev.ccy.indexOf('JPY') >= 0 || ev.ccy.indexOf('USD') >= 0)) return true;
+    }
+    return false;
+  }
+
+  function newsBlockNear(pair, nowMs) {
+    if (!state.cfg.avoidNews) return null;
+    nowMs = nowMs || Date.now();
+    var list = weekEcoEvents();
+    for (var i = 0; i < list.length; i++) {
+      var ev = list[i];
+      if (!pairTouchesNews(pair, ev)) continue;
+      var delta = ev.at - nowMs;
+      if (Math.abs(delta) <= NEWS_BUFFER_MS) return ev;
+    }
+    return null;
   }
 
   function ensureStudyStart() {
@@ -1905,7 +2182,8 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
       divergencePips: divergencePips(c.pair),
       fib: fibSnapshot,
       pocheOr: !!fibPack.poche,
-      structure: fibPack.structure ? fibPack.structure.label : null
+      structure: fibPack.structure ? fibPack.structure.label : null,
+      indicators: indicatorsSnapshot(c.pair)
     };
     if (opts.activate !== false && activeCount() < MAX_SLOTS) {
       state.signals.unshift(sig);
@@ -1959,6 +2237,15 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
         filteredMsgs.push(msg);
         state.filteredLog = state.filteredLog || [];
         state.filteredLog.unshift({ at: Date.now(), pair: pair, msg: msg, dp: dp });
+        if (state.filteredLog.length > 20) state.filteredLog.length = 20;
+        return;
+      }
+      var newsHit = newsBlockNear(pair);
+      if (newsHit) {
+        var nmsg = 'news high-impact proche — signal filtré (' + pair + ' · ' + newsHit.title + ')';
+        filteredMsgs.push(nmsg);
+        state.filteredLog = state.filteredLog || [];
+        state.filteredLog.unshift({ at: Date.now(), pair: pair, msg: nmsg });
         if (state.filteredLog.length > 20) state.filteredLog.length = 20;
         return;
       }
@@ -2073,6 +2360,7 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
     for (var i = 0; i < pairs.length && made < need; i++) {
       var pair = pairs[i];
       if (isDivergenceTooHigh(pair)) continue;
+      if (newsBlockNear(pair)) continue;
       var path = dayPathMomentum(pair);
       if (!path) continue;
       var useMom = Math.abs(path.momEarly) >= Math.abs(path.momLate) ? path.momEarly : path.momLate;
@@ -2168,9 +2456,12 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
       nouveau: 'nouveau',
       copie: 'copie',
       copié: 'copie',
+      ouvert: 'copie',
       gagné: 'gagne',
       gagne: 'gagne',
       perdu: 'perdu',
+      fermé: 'ferme',
+      ferme: 'ferme',
       manqué: 'manque',
       manque: 'manque'
     };
@@ -2321,6 +2612,15 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
         'Fib ext 127.2/161.8: ' + formatPrice(s.pair, s.fib.ext.e1272) + ' / ' + formatPrice(s.pair, s.fib.ext.e1618)
       );
     }
+    var ind = s.indicators || computeIndicators(s.pair);
+    if (ind && (ind.rsi != null || ind.ema20 != null)) {
+      lines.push(
+        'RSI(14): ' + (ind.rsi != null ? ind.rsi : '—') +
+        ' · EMA20/50: ' + (ind.ema20 != null ? formatPrice(s.pair, ind.ema20) : '—') +
+        ' / ' + (ind.ema50 != null ? formatPrice(s.pair, ind.ema50) : '—') +
+        (ind.alignBoost ? ' · alignement OK' : '')
+      );
+    }
     return lines.join('\n');
   }
 
@@ -2328,6 +2628,200 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
     c = c || 'moyen';
     var cls = c === 'fort' ? 'conf-fort' : (c === 'faible' ? 'conf-faible' : 'conf-moyen');
     return '<span class="badge ' + cls + '">confiance ' + escapeHtml(c) + '</span>';
+  }
+
+  function findOpenCopy(cid) {
+    for (var i = 0; i < (state.openCopies || []).length; i++) {
+      if (state.openCopies[i].id === cid) return state.openCopies[i];
+    }
+    return null;
+  }
+
+  function trackOpenCopy(src, sourceTag) {
+    if (!src || !src.pair) return null;
+    state.openCopies = state.openCopies || [];
+    // Avoid duplicate open row for same signal id
+    var sid = src.id || src.signalId || null;
+    if (sid) {
+      for (var i = 0; i < state.openCopies.length; i++) {
+        var oc = state.openCopies[i];
+        if (oc.signalId === sid && oc.status === 'ouvert') {
+          return oc;
+        }
+      }
+    }
+    var row = {
+      id: uid('cpy'),
+      signalId: sid,
+      pair: src.pair,
+      side: src.side,
+      entry: src.entry,
+      sl: src.sl,
+      tp: src.tp,
+      slPips: src.slPips,
+      tpPips: src.tpPips,
+      rr: src.rr,
+      riskPct: src.riskPct,
+      ruleVersion: src.ruleVersion || state.ruleVersion || 1,
+      at: Date.now(),
+      status: 'ouvert',
+      displayLabel: src.displayLabel || assetMeta(src.pair).label,
+      confidence: src.confidence || null,
+      source: sourceTag || 'copié',
+      journalId: null
+    };
+    state.openCopies.unshift(row);
+    if (state.openCopies.length > 60) state.openCopies.length = 60;
+    // Ensure journal entry for recalibration feed
+    ensureJournalFromCopy(row);
+    return row;
+  }
+
+  function ensureJournalFromCopy(row) {
+    if (!row) return null;
+    var jid = row.journalId || (row.signalId ? ('j_' + row.signalId) : ('j_' + row.id));
+    var j = null;
+    for (var i = 0; i < state.journal.length; i++) {
+      if (state.journal[i].id === jid || (row.signalId && state.journal[i].signalId === row.signalId && state.journal[i].action === 'copied' && !state.journal[i].outcome)) {
+        j = state.journal[i];
+        break;
+      }
+    }
+    if (!j) {
+      j = {
+        id: jid,
+        signalId: row.signalId || row.id,
+        pair: row.pair,
+        side: row.side,
+        entry: row.entry,
+        sl: row.sl,
+        tp: row.tp,
+        action: 'copied',
+        outcome: null,
+        at: row.at || Date.now(),
+        confidence: row.confidence || null,
+        rr: row.rr,
+        sessionOk: row.sessionOk,
+        ruleVersion: row.ruleVersion,
+        openCopyId: row.id
+      };
+      state.journal.unshift(j);
+      if (state.journal.length > 80) state.journal.length = 80;
+    }
+    row.journalId = j.id;
+    return j;
+  }
+
+  function closeOpenCopy(cid, result) {
+    // result: 'win' | 'loss' | 'closed'
+    var row = findOpenCopy(cid);
+    if (!row || row.status !== 'ouvert') return;
+    if (result === 'closed') {
+      row.status = 'fermé';
+      row.closedAt = Date.now();
+      if (row.signalId) {
+        var t = findToday(row.signalId);
+        if (t && (t.status === 'copié' || t.status === 'nouveau' || t.status === 'ouvert')) t.status = 'fermé';
+      }
+      save();
+      render();
+      toast('Copie fermée (sans G/P) — pas de recalibrage');
+      return;
+    }
+    var j = ensureJournalFromCopy(row);
+    if (j && !j.outcome) {
+      row.status = result === 'win' ? 'gagné' : 'perdu';
+      row.closedAt = Date.now();
+      setOutcome(j.id, result);
+      return;
+    }
+    row.status = result === 'win' ? 'gagné' : 'perdu';
+    row.closedAt = Date.now();
+    save();
+    render();
+  }
+
+  function formatIndLine(pair, ind) {
+    if (!ind) ind = computeIndicators(pair);
+    if (!ind || (ind.rsi == null && ind.ema20 == null)) {
+      return '<span class="muted">RSI/EMA : historique insuffisant (besoin ~' + (EMA_SLOW) + ' pts)</span>';
+    }
+    var rsiCls = ind.rsiExtreme ? 'rsi-ext' : 'rsi-ok';
+    var emaCls = ind.emaBias === 'up' ? 'ema-up' : (ind.emaBias === 'down' ? 'ema-dn' : 'pending');
+    var bits = [];
+    if (ind.rsi != null) bits.push('<span class="badge ' + rsiCls + '">RSI 14 · ' + ind.rsi + '</span>');
+    if (ind.ema20 != null) bits.push('<span class="badge ' + emaCls + '">EMA20 ' + formatPrice(pair, ind.ema20) + '</span>');
+    if (ind.ema50 != null) bits.push('<span class="badge ' + emaCls + '">EMA50 ' + formatPrice(pair, ind.ema50) + '</span>');
+    if (ind.alignBoost) bits.push('<span class="badge conf-fort">alignement ↑</span>');
+    return bits.join(' ');
+  }
+
+  function renderSuivi() {
+    var el = $('suiviList');
+    var meta = $('suiviMeta');
+    if (!el) return;
+    var list = (state.openCopies || []).slice();
+    var openN = list.filter(function (x) { return x.status === 'ouvert'; }).length;
+    if (meta) meta.textContent = 'ouverts ' + openN + ' · total ' + list.length;
+    if (!list.length) {
+      el.innerHTML = '<p class="empty">Aucune copie suivie. Tape « Copié » sur un signal pour démarrer le suivi.</p>';
+      return;
+    }
+    var html = '';
+    list.slice(0, 25).forEach(function (c) {
+      var open = c.status === 'ouvert';
+      html += '<div class="suivi-item ' + (open ? 'open' : 'closed') + '" data-cid="' + c.id + '">' +
+        statusBadge(c.status) + ' ' +
+        '<span class="badge ' + (c.side === 'buy' ? 'buy' : 'sell') + '">' + sideLabel(c.side) + '</span> ' +
+        '<strong>' + escapeHtml(c.displayLabel || c.pair) + '</strong>' +
+        ' <span class="rule-ver">v' + (c.ruleVersion || 1) + '</span>' +
+        '<div class="muted" style="margin-top:0.3rem">' +
+          new Date(c.at).toLocaleString('fr-FR') +
+          ' · entrée ' + formatPrice(c.pair, c.entry) +
+          ' · SL ' + formatPrice(c.pair, c.sl) +
+          ' · TP ' + formatPrice(c.pair, c.tp) +
+        '</div>';
+      if (open) {
+        html += '<div class="today-actions">' +
+          '<button type="button" class="btn-ok btn-sm act-suivi-win" data-cid="' + c.id + '">Gagné</button>' +
+          '<button type="button" class="btn-ignore btn-sm act-suivi-loss" data-cid="' + c.id + '">Perdu</button>' +
+          '<button type="button" class="btn-ferme btn-sm act-suivi-close" data-cid="' + c.id + '">Fermé</button>' +
+        '</div>';
+      }
+      html += '</div>';
+    });
+    el.innerHTML = html;
+  }
+
+  function renderEcoCalendar() {
+    var el = $('ecoList');
+    var note = $('ecoNote');
+    if (!el) return;
+    var events = weekEcoEvents();
+    var now = Date.now();
+    var html = '';
+    events.forEach(function (ev) {
+      var near = Math.abs(ev.at - now) <= NEWS_BUFFER_MS;
+      var past = ev.at < now - NEWS_BUFFER_MS;
+      html += '<div class="eco-event">' +
+        '<div><strong>' + escapeHtml(ev.title) + '</strong>' +
+        '<div class="muted" style="font-size:0.72rem">' + escapeHtml(ev.ccy.join('/')) +
+        (near ? ' · <span class="hit">fenêtre ±30 min</span>' : '') +
+        (past ? ' · passé' : '') + '</div></div>' +
+        '<div class="when">' + new Date(ev.at).toLocaleString('fr-FR', {
+          weekday: 'short', day: '2-digit', month: 'short',
+          hour: '2-digit', minute: '2-digit', timeZone: 'UTC'
+        }) + ' UTC</div></div>';
+    });
+    el.innerHTML = html || '<p class="empty">Aucun événement modèle cette semaine.</p>';
+    if (note) {
+      note.textContent = (state.cfg.avoidNews
+        ? 'Filtre ON : pas de nouveau signal ±30 min avant une news du modèle touchant la paire. '
+        : 'Filtre OFF : les news du modèle n’interrompent pas les signaux. ') +
+        'Toujours vérifier ForexFactory / Investing avant un high-impact réel.';
+    }
+    var tg = $('toggleAvoidNews');
+    if (tg && document.activeElement !== tg) tg.checked = !!state.cfg.avoidNews;
   }
 
   function renderSignals() {
@@ -2393,6 +2887,8 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
         '</div>' +
         '<div class="big-dir ' + dirColor + '">' + sideLabel(s.side) + ' ' + escapeHtml(label) + '</div>' +
         fibHtml +
+        '<div class="sig-pro-meta" style="margin-top:0.35rem"><strong>Indicateurs</strong> ' +
+          formatIndLine(s.pair, s.indicators) + '</div>' +
         '<div class="checklist-card">' +
           '<div class="chk-title">Checklist Exness DÉMO (un tap)</div>' +
           '<ol>' +
@@ -2635,6 +3131,7 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
     if ($('toggleGold')) $('toggleGold').checked = !!state.cfg.includeGold;
     if ($('toggleCrypto')) $('toggleCrypto').checked = !!state.cfg.includeCrypto;
     if ($('toggleIndices')) $('toggleIndices').checked = !!state.cfg.includeIndices;
+    if ($('toggleAvoidNews')) $('toggleAvoidNews').checked = !!state.cfg.avoidNews;
   }
 
   function readCfgFromInputs() {
@@ -2654,6 +3151,8 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
     renderTicker();
     renderSignals();
     renderToday();
+    renderSuivi();
+    renderEcoCalendar();
     renderJournal();
     renderStats();
     renderVersionHistory();
@@ -2682,28 +3181,32 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
     if (!s || s.status !== 'active') return;
     s.status = action === 'copied' ? 'copied' : 'ignored';
     recordToday(s, action === 'copied' ? 'copié' : 'manqué');
-    state.journal.unshift({
-      id: 'j_' + s.id,
-      signalId: s.id,
-      pair: s.pair,
-      side: s.side,
-      entry: s.entry,
-      sl: s.sl,
-      tp: s.tp,
-      action: action,
-      outcome: null,
-      at: Date.now(),
-      confidence: s.confidence || null,
-      rr: s.rr,
-      sessionOk: s.sessionOk
-    });
-    if (state.journal.length > 80) state.journal.length = 80;
+    if (action === 'copied') {
+      trackOpenCopy(s, 'marqué');
+    } else {
+      state.journal.unshift({
+        id: 'j_' + s.id,
+        signalId: s.id,
+        pair: s.pair,
+        side: s.side,
+        entry: s.entry,
+        sl: s.sl,
+        tp: s.tp,
+        action: action,
+        outcome: null,
+        at: Date.now(),
+        confidence: s.confidence || null,
+        rr: s.rr,
+        sessionOk: s.sessionOk
+      });
+      if (state.journal.length > 80) state.journal.length = 80;
+    }
     state.signals = state.signals.filter(function (x) {
       return x.status === 'active' || (Date.now() - x.createdAt) < 86400000;
     });
     save();
     render();
-    toast(action === 'copied' ? 'Noté : copié en démo' : 'Signal ignoré');
+    toast(action === 'copied' ? 'Noté : copié en démo · suivi ouvert' : 'Signal ignoré');
   }
 
   function markToday(tid, status) {
@@ -2711,25 +3214,7 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
     if (!t) return;
     t.status = status;
     if (status === 'copié') {
-      // Ensure journal entry for recalibration later
-      var has = state.journal.some(function (j) { return j.signalId === tid && j.action === 'copied' && !j.outcome; });
-      if (!has) {
-        state.journal.unshift({
-          id: 'j_' + tid,
-          signalId: tid,
-          pair: t.pair,
-          side: t.side,
-          entry: t.entry,
-          sl: t.sl,
-          tp: t.tp,
-          action: 'copied',
-          outcome: null,
-          at: Date.now(),
-          confidence: t.confidence || null,
-          rr: t.rr,
-          sessionOk: t.sessionOk
-        });
-      }
+      trackOpenCopy(t, 'aujourd’hui');
       var sig = findSignal(tid);
       if (sig && sig.status === 'active') sig.status = 'copied';
     }
@@ -2783,6 +3268,16 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
     // Mirror onto today history
     var t = findToday(j.signalId);
     if (t) t.status = outcome === 'win' ? 'gagné' : 'perdu';
+    // Mirror onto openCopies
+    (state.openCopies || []).forEach(function (oc) {
+      if (oc.status !== 'ouvert') return;
+      if ((j.openCopyId && oc.id === j.openCopyId) ||
+          (oc.journalId && oc.journalId === j.id) ||
+          (j.signalId && oc.signalId === j.signalId)) {
+        oc.status = outcome === 'win' ? 'gagné' : 'perdu';
+        oc.closedAt = Date.now();
+      }
+    });
     var entry = recalibrate(outcome, j);
     j.recalibration = entry ? {
       version: entry.version,
@@ -2932,6 +3427,7 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
   $('btnClearJournal').onclick = function () {
     if (!confirm('Effacer journal + historique de recalibrage (démo) ? Les règles actuelles et « Signaux du jour » sont conservés / partiels.')) return;
     state.journal = [];
+    state.openCopies = [];
     state.wins = 0;
     state.losses = 0;
     state.ruleHistory = [{
@@ -2958,13 +3454,19 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
       s = t;
     }
     var text = copyTextForSignal(s);
-    function ok() { toast('Checklist copiée — colle dans ta note / Exness démo'); }
+    trackOpenCopy(s, 'copié');
+    recordToday(s, 'copié');
+    save();
+    render();
+    function ok() { toast('Checklist + suivi copie — colle dans ta note / Exness démo'); }
     if (navigator.clipboard && navigator.clipboard.writeText) {
       navigator.clipboard.writeText(text).then(ok).catch(function () {
         window.prompt('Copie manuelle :', text);
+        ok();
       });
     } else {
       window.prompt('Copie manuelle :', text);
+      ok();
     }
   }
 
@@ -2983,7 +3485,20 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
     if (t.classList.contains('act-today-win') && tid) markToday(tid, 'gagné');
     if (t.classList.contains('act-today-loss') && tid) markToday(tid, 'perdu');
     if (t.classList.contains('act-today-miss') && tid) markToday(tid, 'manqué');
+    var cid = t.getAttribute('data-cid');
+    if (t.classList.contains('act-suivi-win') && cid) closeOpenCopy(cid, 'win');
+    if (t.classList.contains('act-suivi-loss') && cid) closeOpenCopy(cid, 'loss');
+    if (t.classList.contains('act-suivi-close') && cid) closeOpenCopy(cid, 'closed');
   });
+
+  if ($('toggleAvoidNews')) {
+    $('toggleAvoidNews').onchange = function () {
+      state.cfg.avoidNews = !!$('toggleAvoidNews').checked;
+      save();
+      renderEcoCalendar();
+      toast(state.cfg.avoidNews ? 'Filtre news ON (±30 min)' : 'Filtre news OFF');
+    };
+  }
 
   if ($('studyStartInput')) {
     $('studyStartInput').addEventListener('change', function () {
