@@ -361,6 +361,42 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
 .session-pref {
   font-size: 0.7rem; color: #a5f3fc; margin-top: 0.2rem;
 }
+
+/* === PRO TOOLKIT CSS === */
+.pro-toolkit { border: 2px solid #3b2f1a; background: linear-gradient(180deg,#1a1408 0%,#1a2332 100%); }
+.pro-honesty {
+  font-size: 0.78rem; color: var(--warn-text);
+  background: var(--warn-bg); border: 1px solid var(--warn-border);
+  border-radius: 10px; padding: 0.55rem 0.7rem; margin: 0.35rem 0 0.75rem; line-height: 1.4;
+}
+.pro-grid { display: grid; gap: 0.65rem; }
+.pro-block {
+  background: #0d1218; border: 1px solid var(--border);
+  border-radius: 12px; padding: 0.7rem 0.8rem;
+}
+.pro-block h3 { margin: 0 0 0.4rem; font-size: 0.92rem; color: #fde68a; }
+.pro-block ul { margin: 0; padding-left: 1.1rem; font-size: 0.82rem; color: var(--text); }
+.pro-block li { margin: 0.22rem 0; }
+.pro-block .muted { font-size: 0.75rem; }
+.fib-levels {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 0.3rem;
+  font-size: 0.78rem; margin-top: 0.4rem; font-variant-numeric: tabular-nums;
+}
+.fib-levels .fl { background: #0c1a2e; border-radius: 8px; padding: 0.3rem 0.45rem; }
+.fib-levels .fl.gold { border: 1px solid #a16207; color: #fde68a; }
+.badge.poche { background: #713f12; color: #fde68a; }
+.badge.struct-up { background: #14532d; color: #86efac; }
+.badge.struct-dn { background: #7f1d1d; color: #fca5a5; }
+.badge.struct-rg { background: #334155; color: #cbd5e1; }
+.sig-pro-meta {
+  font-size: 0.8rem; margin: 0.45rem 0; line-height: 1.45;
+  background: #0c1a2e; border: 1px solid #1e3a5f; border-radius: 10px; padding: 0.5rem 0.65rem;
+}
+.changelog-fr {
+  font-size: 0.8rem; color: var(--muted); line-height: 1.45;
+  padding-left: 1.1rem; margin: 0.35rem 0 0;
+}
+.changelog-fr li { margin: 0.25rem 0; }
 </style>
 </head>
 <body>
@@ -401,12 +437,12 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
 
   <section class="card study-panel" id="studyCard">
     <div class="card-head">
-      <h2>Étude 14 jours — Démo Exness</h2>
-      <span class="rule-ver" id="studyDayLabel">Jour —/14</span>
+      <h2>Étude 30 jours — Démo Exness</h2>
+      <span class="rule-ver" id="studyDayLabel">Jour —/30</span>
     </div>
     <p class="muted" style="margin:0;font-size:0.78rem">
       Calibration éducative uniquement · argent fictif · pas de suggestion d’argent réel.
-      Cible : ≥5 signaux/jour · ≥20 résultats G/P notés · puis éventuellement ~$10 micro réel plus tard (hors de cet outil).
+      Cible : ≥5 signaux/jour · ≥40 résultats G/P notés · puis éventuellement ~$10 micro réel plus tard (hors de cet outil).
     </p>
     <div class="study-date-row">
       <div style="flex:1;min-width:140px">
@@ -422,8 +458,8 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
         <div class="progress" aria-hidden="true"><span id="barSigToday" style="width:0%"></span></div>
       </div>
       <div class="stat wide">
-        <div class="lbl">Résultats notés (cible ≥20)</div>
-        <div class="val" id="studyOutcomes">0 / 20</div>
+        <div class="lbl">Résultats notés (cible ≥40)</div>
+        <div class="val" id="studyOutcomes">0 / 40</div>
         <div class="progress" aria-hidden="true"><span id="barOutcomes" style="width:0%"></span></div>
       </div>
       <div class="stat">
@@ -437,6 +473,54 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
       </div>
     </div>
     <p class="muted" id="studyHint" style="margin:0.65rem 0 0;font-size:0.75rem"></p>
+  </section>
+
+
+  <section class="card pro-toolkit" id="proToolkitCard">
+    <div class="card-head">
+      <h2>Boîte à outils pro</h2>
+      <span class="muted">éducatif</span>
+    </div>
+    <div class="pro-honesty" role="note">
+      <strong>Transparence :</strong> méthodes documentées (Fib, structure, style de risque des « légendes »).
+      Fibonacci n’est <em>pas</em> magique · pas de garantie · compte <strong>DÉMO</strong> seulement · pas un conseil financier.
+    </div>
+    <div class="pro-grid">
+      <div class="pro-block" id="proFibBlock">
+        <h3>1. Fibonacci (swing récent)</h3>
+        <p class="muted" style="margin:0 0 0.35rem">Retracements 38.2 / 50 / 61.8 / 78.6 · extensions 127.2 / 161.8 · SL au-delà du swing + buffer · TP près d’une extension. Confluence « poche d’or » si momentum aligne 50–61.8.</p>
+        <div id="proFibLive" class="muted">Ouvre un signal ou actualise les cours pour voir les niveaux Fib sur la paire active.</div>
+      </div>
+      <div class="pro-block" id="proStructBlock">
+        <h3>2. Structure de marché</h3>
+        <p class="muted" style="margin:0 0 0.35rem">Swing high / swing low → tendance haussière, baissière ou range (historique local).</p>
+        <div id="proStructLive" class="muted">En attente d’historique prix…</div>
+      </div>
+      <div class="pro-block">
+        <h3>3. Risque — style légendes</h3>
+        <ul>
+          <li>Couper les pertes vite (SL toujours placé).</li>
+          <li>Risque ≤ <strong>1–2&nbsp;%</strong> du capital démo par trade.</li>
+          <li>R:R ≥ <strong>1.5</strong> privilégié.</li>
+          <li>Après <strong>3 pertes</strong> d’affilée : baisser temporairement le % de risque (esprit Turtle).</li>
+        </ul>
+        <p class="muted" id="proRiskLive" style="margin:0.45rem 0 0">Streak pertes : — · risque effectif : —</p>
+      </div>
+      <div class="pro-block">
+        <h3>4. Carte signal enrichie</h3>
+        <p class="muted" style="margin:0">Chaque signal actif affiche niveaux Fib, R:R, confiance, session et divergence multi-sources — pour copier en conscience sur Exness DÉMO.</p>
+      </div>
+      <div class="pro-block">
+        <h3>5. École des légendes</h3>
+        <ul>
+          <li><strong>PTJ</strong> — discipline du plan : entrée/sortie définies avant le trade ; émotion hors du cockpit.</li>
+          <li><strong>Seykota</strong> — « cut losses » : une petite perte maîtrisée bat l’espoir de rebond.</li>
+          <li><strong>Turtles</strong> — règles fixes + taille de position ; après une série de pertes, réduire le risque, pas « se refaire ».</li>
+          <li><strong>Fib</strong> — outil de repère (zones), pas une prédiction ; confluence &gt; niveau isolé.</li>
+        </ul>
+        <p class="muted" style="margin:0.45rem 0 0">Éducation seulement — aucune promesse de résultat.</p>
+      </div>
+    </div>
   </section>
 
   <section class="card weekly-block" id="weeklyCard">
@@ -624,6 +708,20 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
       </p>
     </details>
   </section>
+
+  <section class="card" id="changelogCard">
+    <details class="help" open>
+      <summary>📋 Changelog (FR) — étude 30 j + boîte pro</summary>
+      <ul class="changelog-fr">
+        <li>Étude passée de <strong>14 → 30 jours</strong> (Jour N/30) ; cible résultats notés <strong>≥40</strong> (signaux/jour ≥5 inchangé).</li>
+        <li>Nouvelle <strong>Boîte à outils pro</strong> : Fibonacci (retracements/extensions), structure (swing/tendance), risque style légendes, carte signal enrichie, École des légendes (PTJ / Seykota / Turtles / Fib).</li>
+        <li>Signaux : niveaux Fib, R:R, confiance, session, divergence ; tag « poche d’or » si confluence 50–61.8.</li>
+        <li>Après 3 pertes consécutives : risque % temporairement abaissé (esprit Turtle) — démo seulement.</li>
+        <li>Conservé : multi-sources FX, or, crypto, Londres/Japon, filtres qualité, recalibrage, checklist copie, bannières DÉMO.</li>
+        <li>Rappel : méthodes documentées · Fib pas magique · pas de garantie · pas d’argent réel.</li>
+      </ul>
+    </details>
+  </section>
 </div>
 
 <div class="toast" id="toast" role="status"></div>
@@ -655,9 +753,9 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
     includeCrypto: true,
     includeIndices: true
   };
-  var STUDY_DAYS = 14;
+  var STUDY_DAYS = 30;
   var STUDY_TARGET_SIGNALS = 5;
-  var STUDY_TARGET_OUTCOMES = 20;
+  var STUDY_TARGET_OUTCOMES = 40;
   var MIN_SAMPLE_SOFT = 5;   // min G/P before any param tweak
   var MIN_SAMPLE_BIG = 10;   // min G/P before larger moves
   var DIVG_FILTER_PIPS = 8;  // FX multi-source spread above → filter
@@ -870,6 +968,222 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
     var d = pips * pipSize(pair);
     return side === 'buy' ? entry + d : entry - d;
   }
+
+
+  /* ---------- Pro toolkit: Fib, structure, risque légendes ---------- */
+  var FIB_RETR = [0.382, 0.5, 0.618, 0.786];
+  var FIB_EXT = [1.272, 1.618];
+  var FIB_BUFFER_PIPS = 3;
+
+  function findSwing(pair) {
+    var arr = state.history[pair] || [];
+    if (arr.length < 4) return null;
+    var pts = arr.slice(-Math.min(24, arr.length));
+    var hi = pts[0], lo = pts[0];
+    for (var i = 1; i < pts.length; i++) {
+      if (pts[i].p > hi.p) hi = pts[i];
+      if (pts[i].p < lo.p) lo = pts[i];
+    }
+    if (Math.abs(hi.p - lo.p) < pipSize(pair) * 2) return null;
+    var last = pts[pts.length - 1];
+    // Swing direction: most recent extreme defines the move being retraced
+    var upSwing = hi.t >= lo.t; // last major extreme is high → recent up move
+    // Prefer chronological: if last is closer to hi after lo, it's up-swing
+    if (lo.t < hi.t) upSwing = true;
+    else if (hi.t < lo.t) upSwing = false;
+    var swingLow = lo.p, swingHigh = hi.p;
+    var range = swingHigh - swingLow;
+    return {
+      pair: pair,
+      swingLow: swingLow,
+      swingHigh: swingHigh,
+      range: range,
+      upSwing: upSwing,
+      last: last.p,
+      n: pts.length
+    };
+  }
+
+  function fibLevelsFromSwing(sw) {
+    if (!sw) return null;
+    var out = { retr: {}, ext: {}, poche: false, bias: sw.upSwing ? 'up' : 'down' };
+    FIB_RETR.forEach(function (r) {
+      // Retracement from the impulse: up impulse → pullback from high; down → from low
+      var lvl = sw.upSwing
+        ? sw.swingHigh - sw.range * r
+        : sw.swingLow + sw.range * r;
+      out.retr[String(r)] = lvl;
+    });
+    FIB_EXT.forEach(function (e) {
+      var lvl = sw.upSwing
+        ? sw.swingHigh + sw.range * (e - 1)
+        : sw.swingLow - sw.range * (e - 1);
+      out.ext[String(e)] = lvl;
+    });
+    return out;
+  }
+
+  function structureFromSwing(sw) {
+    if (!sw) return { label: 'insuffisant', cls: 'struct-rg', detail: 'Pas assez d’historique local.' };
+    var mid = (sw.swingHigh + sw.swingLow) / 2;
+    var spanPips = Math.abs(sw.range) / pipSize(sw.pair);
+    var nearMid = Math.abs(sw.last - mid) / pipSize(sw.pair) < spanPips * 0.22;
+    if (spanPips < 8 || nearMid) {
+      return {
+        label: 'range',
+        cls: 'struct-rg',
+        detail: 'Swing H ' + formatPrice(sw.pair, sw.swingHigh) +
+          ' / L ' + formatPrice(sw.pair, sw.swingLow) + ' · range serré ou prix au milieu.'
+      };
+    }
+    if (sw.upSwing && sw.last > mid) {
+      return {
+        label: 'tendance haussière',
+        cls: 'struct-up',
+        detail: 'Swing bas → haut · prix au-dessus du milieu du range.'
+      };
+    }
+    if (!sw.upSwing && sw.last < mid) {
+      return {
+        label: 'tendance baissière',
+        cls: 'struct-dn',
+        detail: 'Swing haut → bas · prix sous le milieu du range.'
+      };
+    }
+    return {
+      label: 'range',
+      cls: 'struct-rg',
+      detail: 'Structure mixte (swing H/L présents, direction peu claire).'
+    };
+  }
+
+  function fibConfluence(pair, side, entry, fib) {
+    if (!fib || entry == null) return false;
+    var z50 = fib.retr['0.5'];
+    var z618 = fib.retr['0.618'];
+    if (z50 == null || z618 == null) return false;
+    var lo = Math.min(z50, z618);
+    var hi = Math.max(z50, z618);
+    var buf = pipSize(pair) * 4;
+    var inZone = entry >= (lo - buf) && entry <= (hi + buf);
+    if (!inZone) return false;
+    // Momentum / side aligns with expected bounce from golden pocket
+    if (side === 'buy' && fib.bias === 'up') return true;
+    if (side === 'sell' && fib.bias === 'down') return true;
+    // Also allow counter-trend bounce tags lightly when deep in pocket
+    var deep = entry >= lo && entry <= hi;
+    return deep;
+  }
+
+  function applyFibToLevels(pair, side, entry, baseSl, baseTp) {
+    var sw = findSwing(pair);
+    var fib = fibLevelsFromSwing(sw);
+    if (!sw || !fib) {
+      return { sl: baseSl, tp: baseTp, fib: null, swing: null, poche: false, structure: structureFromSwing(sw) };
+    }
+    var buffer = FIB_BUFFER_PIPS * pipSize(pair);
+    var sl = baseSl;
+    var tp = baseTp;
+    if (side === 'buy') {
+      // SL beyond swing low
+      var slFib = sw.swingLow - buffer;
+      if (slFib < entry) sl = slFib;
+      // TP near 127.2 then 161.8
+      var tpA = fib.ext['1.272'];
+      var tpB = fib.ext['1.618'];
+      if (tpA != null && tpA > entry) tp = tpA;
+      else if (tpB != null && tpB > entry) tp = tpB;
+    } else {
+      var slFibS = sw.swingHigh + buffer;
+      if (slFibS > entry) sl = slFibS;
+      var tpAs = fib.ext['1.272'];
+      var tpBs = fib.ext['1.618'];
+      if (tpAs != null && tpAs < entry) tp = tpAs;
+      else if (tpBs != null && tpBs < entry) tp = tpBs;
+    }
+    var poche = fibConfluence(pair, side, entry, fib);
+    return {
+      sl: sl,
+      tp: tp,
+      fib: fib,
+      swing: sw,
+      poche: poche,
+      structure: structureFromSwing(sw)
+    };
+  }
+
+  function consecutiveLosses() {
+    var n = 0;
+    for (var i = 0; i < state.journal.length; i++) {
+      var j = state.journal[i];
+      if (j.outcome === 'loss') n++;
+      else if (j.outcome === 'win') break;
+      // skip pending / ignored
+    }
+    return n;
+  }
+
+  function effectiveRiskPct() {
+    var base = Math.min(2, Math.max(0.5, Number(state.cfg.riskPct) || 1));
+    var streak = consecutiveLosses();
+    if (streak >= 3) {
+      return Math.max(0.5, Math.round((base * 0.5) * 10) / 10);
+    }
+    return base;
+  }
+
+  function pickPrimaryToolkitPair() {
+    var active = state.signals.filter(function (s) { return s.status === 'active'; });
+    if (active.length) return active[0].pair;
+    var keys = Object.keys(state.prices || {});
+    for (var i = 0; i < FX_PAIRS.length; i++) {
+      if (state.prices[FX_PAIRS[i]] != null) return FX_PAIRS[i];
+    }
+    return keys[0] || 'EURUSD';
+  }
+
+  function renderProToolkit() {
+    var pair = pickPrimaryToolkitPair();
+    var sw = findSwing(pair);
+    var fib = fibLevelsFromSwing(sw);
+    var struct = structureFromSwing(sw);
+    var fibEl = $('proFibLive');
+    if (fibEl) {
+      if (!fib) {
+        fibEl.innerHTML = '<span class="muted">Historique insuffisant pour ' + escapeHtml(pair) + ' — actualise quelques cycles.</span>';
+      } else {
+        var rows = '';
+        [['38.2', '0.382'], ['50', '0.5'], ['61.8', '0.618'], ['78.6', '0.786']].forEach(function (x) {
+          var gold = (x[1] === '0.5' || x[1] === '0.618') ? ' gold' : '';
+          rows += '<div class="fl' + gold + '">' + x[0] + '% · ' + formatPrice(pair, fib.retr[x[1]]) + '</div>';
+        });
+        [['127.2', '1.272'], ['161.8', '1.618']].forEach(function (x) {
+          rows += '<div class="fl">ext ' + x[0] + ' · ' + formatPrice(pair, fib.ext[x[1]]) + '</div>';
+        });
+        fibEl.innerHTML =
+          '<div><strong>' + escapeHtml(assetMeta(pair).label || pair) + '</strong> · swing L ' +
+          formatPrice(pair, sw.swingLow) + ' / H ' + formatPrice(pair, sw.swingHigh) +
+          (fib.bias === 'up' ? ' · impulse ↑' : ' · impulse ↓') + '</div>' +
+          '<div class="fib-levels">' + rows + '</div>' +
+          '<p class="muted" style="margin:0.4rem 0 0">SL éducatif : au-delà du swing ± buffer · TP près 127.2 / 161.8. Fib ≠ magie.</p>';
+      }
+    }
+    var stEl = $('proStructLive');
+    if (stEl) {
+      stEl.innerHTML = '<span class="badge ' + struct.cls + '">' + escapeHtml(struct.label) + '</span> ' +
+        '<span class="muted">' + escapeHtml(struct.detail) + '</span>';
+    }
+    var riskEl = $('proRiskLive');
+    if (riskEl) {
+      var streak = consecutiveLosses();
+      var eff = effectiveRiskPct();
+      riskEl.textContent = 'Streak pertes : ' + streak +
+        (streak >= 3 ? ' → risque réduit (Turtle)' : '') +
+        ' · risque effectif : ' + eff + '% (cfg ' + (state.cfg.riskPct || 1) + '%) · R:R cfg ' +
+        (state.cfg.rr || 1.5) + ' · démo seulement.';
+    }
+  }
+
 
   function median(nums) {
     var a = nums.filter(function (n) { return n != null && isFinite(n); })
@@ -1462,7 +1776,8 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
     var meta = assetMeta(c.pair);
     var slPips = Math.round((Number(state.cfg.slPips) || DEFAULTS.slPips) * (meta.slScale || 1));
     var rr = Number(state.cfg.rr) || DEFAULTS.rr;
-    var risk = Math.min(2, Math.max(0.5, Number(state.cfg.riskPct) || 1));
+    // R:R ≥1.5 privilégié (légendes) — on ne force pas si le labo a recalibré plus bas
+    var risk = effectiveRiskPct();
     var side = c.mom > 0 ? 'buy' : 'sell';
     var tpPips = slPips * rr;
     var entry = c.price;
@@ -1475,16 +1790,43 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
     var thr = effectiveThreshold();
     var conf = opts.confidence || scoreConfidence(c.pair, c.mom, thr);
     var sess = fxSessionPrefer(c.pair);
+    var baseSl = priceFromPips(c.pair, entry, side, slPips);
+    var baseTp = tpFromPips(c.pair, entry, side, tpPips);
+    var fibPack = applyFibToLevels(c.pair, side, entry, baseSl, baseTp);
+    var sl = fibPack.sl;
+    var tp = fibPack.tp;
+    // Recompute pip distances from possibly Fib-adjusted levels
+    var slPipsAdj = Math.max(1, Math.round(Math.abs(pipsBetween(c.pair, entry, sl)) * 10) / 10);
+    var tpPipsAdj = Math.max(1, Math.round(Math.abs(pipsBetween(c.pair, entry, tp)) * 10) / 10);
+    var rrAdj = slPipsAdj > 0 ? Math.round((tpPipsAdj / slPipsAdj) * 100) / 100 : rr;
+    var fibSnapshot = null;
+    if (fibPack.fib) {
+      fibSnapshot = {
+        retr: {
+          r382: fibPack.fib.retr['0.382'],
+          r50: fibPack.fib.retr['0.5'],
+          r618: fibPack.fib.retr['0.618'],
+          r786: fibPack.fib.retr['0.786']
+        },
+        ext: {
+          e1272: fibPack.fib.ext['1.272'],
+          e1618: fibPack.fib.ext['1.618']
+        },
+        swingLow: fibPack.swing.swingLow,
+        swingHigh: fibPack.swing.swingHigh,
+        bias: fibPack.fib.bias
+      };
+    }
     var sig = {
       id: uid(opts.rattrapage ? 'rat' : 'sig'),
       pair: displayPair,
       side: side,
       entry: entry,
-      sl: priceFromPips(c.pair, entry, side, slPips),
-      tp: tpFromPips(c.pair, entry, side, tpPips),
-      slPips: slPips,
-      tpPips: tpPips,
-      rr: rr,
+      sl: sl,
+      tp: tp,
+      slPips: slPipsAdj,
+      tpPips: tpPipsAdj,
+      rr: rrAdj,
       riskPct: risk,
       momentum: Math.round(c.mom * 10) / 10,
       createdAt: opts.at || Date.now(),
@@ -1496,7 +1838,10 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
       confidence: conf,
       sessionLabel: sess.label,
       sessionOk: !!sess.preferred,
-      divergencePips: divergencePips(c.pair)
+      divergencePips: divergencePips(c.pair),
+      fib: fibSnapshot,
+      pocheOr: !!fibPack.poche,
+      structure: fibPack.structure ? fibPack.structure.label : null
     };
     if (opts.activate !== false && activeCount() < MAX_SLOTS) {
       state.signals.unshift(sig);
@@ -1889,7 +2234,7 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
 
   function copyTextForSignal(s) {
     var sym = assetMeta(s.pair).cls === 'index' ? assetMeta(s.pair).proxyPair : s.pair;
-    return [
+    var lines = [
       'Exness DÉMO uniquement',
       'Paire: ' + sym,
       'Direction: ' + sideLabel(s.side),
@@ -1898,8 +2243,18 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
       'SL: ' + formatPrice(s.pair, s.sl) + ' (' + s.slPips + ')',
       'TP: ' + formatPrice(s.pair, s.tp) + ' (R:R ' + s.rr + ')',
       'Confiance: ' + (s.confidence || '—') + ' · Session: ' + (s.sessionLabel || '—'),
+      'Divergence: ' + (s.divergencePips != null ? (Math.round(s.divergencePips * 10) / 10) + ' pips' : '—'),
+      'Structure: ' + (s.structure || '—') + (s.pocheOr ? ' · poche d’or' : ''),
+      'Risque: ' + (s.riskPct || '—') + '%',
       'Règles v' + (s.ruleVersion || state.ruleVersion || 1)
-    ].join('\n');
+    ];
+    if (s.fib && s.fib.retr) {
+      lines.push(
+        'Fib 50/61.8: ' + formatPrice(s.pair, s.fib.retr.r50) + ' / ' + formatPrice(s.pair, s.fib.retr.r618),
+        'Fib ext 127.2/161.8: ' + formatPrice(s.pair, s.fib.ext.e1272) + ' / ' + formatPrice(s.pair, s.fib.ext.e1618)
+      );
+    }
+    return lines.join('\n');
   }
 
   function confBadge(c) {
@@ -1928,16 +2283,49 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
       var tagHtml = s.tag ? ' · <span class="badge rattrapage">' + escapeHtml(s.tag) + '</span>' : '';
       var sym = assetMeta(s.pair).cls === 'index' ? assetMeta(s.pair).proxyPair : s.pair;
       var conf = s.confidence || scoreConfidence(s.pair, s.momentum, effectiveThreshold());
+      var divgTxt = s.divergencePips != null
+        ? (Math.round(s.divergencePips * 10) / 10) + ' pips'
+        : '—';
+      var pocheHtml = s.pocheOr ? ' <span class="badge poche">poche d’or</span>' : '';
+      var structHtml = s.structure
+        ? ' <span class="badge ' +
+          (s.structure.indexOf('haussi') >= 0 ? 'struct-up' : (s.structure.indexOf('baissi') >= 0 ? 'struct-dn' : 'struct-rg')) +
+          '">' + escapeHtml(s.structure) + '</span>'
+        : '';
+      var fibHtml = '';
+      if (s.fib && s.fib.retr) {
+        fibHtml = '<div class="sig-pro-meta">' +
+          '<strong>Fib</strong> 38.2 ' + formatPrice(s.pair, s.fib.retr.r382) +
+          ' · 50 ' + formatPrice(s.pair, s.fib.retr.r50) +
+          ' · 61.8 ' + formatPrice(s.pair, s.fib.retr.r618) +
+          ' · 78.6 ' + formatPrice(s.pair, s.fib.retr.r786) +
+          '<br>Ext 127.2 ' + formatPrice(s.pair, s.fib.ext.e1272) +
+          ' · 161.8 ' + formatPrice(s.pair, s.fib.ext.e1618) +
+          '<br><span class="muted">Swing L/H ' + formatPrice(s.pair, s.fib.swingLow) +
+          ' / ' + formatPrice(s.pair, s.fib.swingHigh) +
+          ' · R:R ' + s.rr + ' · confiance ' + escapeHtml(conf) +
+          ' · session ' + escapeHtml(s.sessionLabel || '—') +
+          ' · divergence ' + escapeHtml(divgTxt) + '</span></div>';
+      } else {
+        fibHtml = '<div class="sig-pro-meta"><span class="muted">Fib : historique insuffisant · R:R ' +
+          s.rr + ' · confiance ' + escapeHtml(conf) +
+          ' · session ' + escapeHtml(s.sessionLabel || '—') +
+          ' · divergence ' + escapeHtml(divgTxt) + '</span></div>';
+      }
       html += '<div class="signal-card ' + dirCls + '" data-id="' + s.id + '">' +
         '<div class="muted">' + new Date(s.createdAt).toLocaleString('fr-FR') +
         ' · momentum ' + (s.momentum > 0 ? '+' : '') + s.momentum +
         ' · <span class="rule-ver">règles v' + (s.ruleVersion || state.ruleVersion || 1) + '</span>' +
-        tagHtml + '</div>' +
+        tagHtml + pocheHtml + structHtml + '</div>' +
         '<div style="margin:0.35rem 0">' + confBadge(conf) +
           (s.sessionLabel ? ' <span class="session-pill ' + (s.sessionOk ? 'open' : 'closed') + '">' +
             escapeHtml(s.sessionLabel) + '</span>' : '') +
+          ' <span class="badge pending">R:R ' + s.rr + '</span>' +
+          ' <span class="badge' + (s.divergencePips != null && s.divergencePips >= DIVG_WARN_PIPS ? ' filtered' : ' conf-moyen') +
+          '">divg ' + escapeHtml(divgTxt) + '</span>' +
         '</div>' +
         '<div class="big-dir ' + dirColor + '">' + sideLabel(s.side) + ' ' + escapeHtml(label) + '</div>' +
+        fibHtml +
         '<div class="checklist-card">' +
           '<div class="chk-title">Checklist Exness DÉMO (un tap)</div>' +
           '<ol>' +
@@ -1946,8 +2334,8 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
             '<li>Direction <strong>' + sideLabel(s.side) + '</strong></li>' +
             '<li>Volume <strong>0.01</strong> lot</li>' +
             '<li>Entrée ≈ <strong>' + formatPrice(s.pair, s.entry) + '</strong></li>' +
-            '<li>SL <strong>' + formatPrice(s.pair, s.sl) + '</strong> (obligatoire)</li>' +
-            '<li>TP <strong>' + formatPrice(s.pair, s.tp) + '</strong> (R:R ' + s.rr + ')</li>' +
+            '<li>SL <strong>' + formatPrice(s.pair, s.sl) + '</strong> (obligatoire · swing+buffer si Fib)</li>' +
+            '<li>TP <strong>' + formatPrice(s.pair, s.tp) + '</strong> (R:R ' + s.rr + ' · ext Fib si dispo)</li>' +
           '</ol>' +
           '<div class="copy-bar">' +
             '<button type="button" class="btn-primary btn-sm act-clipboard" data-id="' + s.id + '">Copié</button>' +
@@ -1956,8 +2344,8 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
           '</div>' +
         '</div>' +
         '<div class="meta-grid">' +
-          '<div><span>Risque</span><br>≤ ' + s.riskPct + '% (labo ≤1.5% auto)</div>' +
-          '<div><span>Note</span><br>Compte DÉMO seulement — pas d’argent réel</div>' +
+          '<div><span>Risque</span><br>≤ ' + s.riskPct + '% (≤1–2% · Turtle si 3 pertes)</div>' +
+          '<div><span>Note</span><br>Compte DÉMO seulement — Fib pas magique</div>' +
         '</div>' +
       '</div>';
     });
@@ -2203,6 +2591,7 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
     renderStats();
     renderVersionHistory();
     renderStudyPanel();
+    renderProToolkit();
     renderWeeklySummary();
     syncCfgInputs();
   }
