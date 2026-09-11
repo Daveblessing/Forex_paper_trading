@@ -1,0 +1,3307 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="FX Lab Démo" />
+<meta name="application-name" content="FX Lab Démo" />
+<meta name="theme-color" content="#0f1419" />
+<meta name="description" content="Labo éducatif 30 jours — signaux FX/or/crypto, copie Exness DÉMO uniquement. Pas un conseil financier." />
+<link rel="manifest" href="manifest.webmanifest" />
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png" />
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
+<title>Signaux FX Démo — Dave (éducatif)</title>
+<style>
+:root {
+  --bg: #0f1419;
+  --card: #1a2332;
+  --border: #2a3548;
+  --text: #e8eef7;
+  --muted: #8b9bb4;
+  --accent: #3b82f6;
+  --green: #22c55e;
+  --red: #ef4444;
+  --warn-bg: #3a2a12;
+  --warn-border: #8a6a2a;
+  --warn-text: #f0d9a0;
+  --tap: 48px;
+  --radius: 14px;
+  --safe-b: env(safe-area-inset-bottom, 0px);
+}
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.45;
+  min-height: 100dvh;
+  padding-bottom: calc(1rem + var(--safe-b));
+}
+button, input, select { font: inherit; color: inherit; }
+button {
+  min-height: var(--tap);
+  border: none;
+  border-radius: 12px;
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  font-weight: 600;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+button:disabled { opacity: 0.45; cursor: not-allowed; }
+.app { max-width: 480px; margin: 0 auto; padding: 0.85rem 0.85rem 1.5rem; }
+.header h1 { margin: 0; font-size: 1.25rem; letter-spacing: -0.02em; }
+.tagline { margin: 0.25rem 0 0; color: var(--muted); font-size: 0.85rem; }
+.disclaimer {
+  background: var(--warn-bg);
+  border: 1px solid var(--warn-border);
+  color: var(--warn-text);
+  padding: 0.75rem 0.9rem;
+  border-radius: 12px;
+  margin: 0.85rem 0;
+  font-size: 0.82rem;
+}
+.checklist {
+  display: flex; flex-wrap: wrap; gap: 0.4rem;
+  margin: 0.5rem 0 0.85rem;
+}
+.chip {
+  background: #0d1218;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 0.35rem 0.7rem;
+  font-size: 0.72rem;
+  color: var(--muted);
+  font-weight: 600;
+}
+.chip.ok { border-color: #166534; color: #86efac; }
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1rem;
+  margin-bottom: 0.85rem;
+}
+.card h2 { margin: 0 0 0.75rem; font-size: 1.05rem; }
+.card-head {
+  display: flex; justify-content: space-between; align-items: center;
+  gap: 0.5rem; margin-bottom: 0.75rem;
+}
+.card-head h2 { margin: 0; }
+.muted { color: var(--muted); font-size: 0.8rem; }
+.pos { color: var(--green); }
+.neg { color: var(--red); }
+.row { display: flex; gap: 0.5rem; }
+.row > * { flex: 1; }
+.btn-primary { background: var(--accent); color: #fff; width: 100%; }
+.btn-buy { background: #15803d; color: #fff; }
+.btn-sell { background: #b91c1c; color: #fff; }
+.btn-ghost {
+  background: transparent; border: 1px solid var(--border); color: var(--text);
+}
+.btn-sm { min-height: 40px; padding: 0.45rem 0.75rem; font-size: 0.85rem; }
+.btn-ok { background: #14532d; color: #bbf7d0; }
+.btn-ignore { background: #1e293b; color: #cbd5e1; border: 1px solid var(--border); }
+.ticker {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+}
+.tick {
+  background: #0d1218;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 0.65rem 0.7rem;
+}
+.tick .pair { font-weight: 700; font-size: 0.9rem; }
+.tick .price { font-variant-numeric: tabular-nums; font-size: 1.05rem; margin-top: 0.15rem; }
+.tick .delta { font-size: 0.75rem; margin-top: 0.1rem; }
+.tick .divg { font-size: 0.68rem; margin-top: 0.15rem; color: var(--muted); }
+.status-bar {
+  display: flex; justify-content: space-between; align-items: center;
+  gap: 0.5rem; flex-wrap: wrap;
+  font-size: 0.78rem; color: var(--muted); margin-bottom: 0.65rem;
+}
+.dot {
+  display: inline-block; width: 8px; height: 8px; border-radius: 50%;
+  background: var(--muted); margin-right: 0.35rem; vertical-align: middle;
+}
+.dot.ok { background: var(--green); }
+.dot.err { background: var(--red); }
+.dot.wait { background: #eab308; }
+.toggle-row {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 0.75rem; padding: 0.35rem 0;
+}
+.switch {
+  position: relative; width: 52px; height: 30px; flex-shrink: 0;
+}
+.switch input { opacity: 0; width: 0; height: 0; }
+.slider {
+  position: absolute; inset: 0; background: #334155; border-radius: 999px;
+  transition: 0.2s;
+}
+.slider::before {
+  content: ""; position: absolute; height: 24px; width: 24px;
+  left: 3px; top: 3px; background: #fff; border-radius: 50%; transition: 0.2s;
+}
+.switch input:checked + .slider { background: var(--accent); }
+.switch input:checked + .slider::before { transform: translateX(22px); }
+.error-box {
+  background: #3f1212; border: 1px solid #7f1d1d; color: #fecaca;
+  padding: 0.75rem; border-radius: 12px; font-size: 0.85rem; margin-bottom: 0.65rem;
+}
+.signal-card {
+  border: 2px solid var(--accent);
+  border-radius: var(--radius);
+  padding: 1rem;
+  margin-bottom: 0.75rem;
+  background: linear-gradient(180deg, #1e2a3d 0%, #1a2332 100%);
+}
+.signal-card.buy { border-color: #22c55e; }
+.signal-card.sell { border-color: #ef4444; }
+.signal-card .big-dir {
+  font-size: 1.6rem; font-weight: 800; letter-spacing: 0.02em;
+  margin: 0.25rem 0 0.5rem;
+}
+.copy-steps {
+  background: #0d1218;
+  border-radius: 12px;
+  padding: 0.75rem 0.85rem;
+  margin: 0.65rem 0;
+  font-size: 0.9rem;
+}
+.copy-steps li { margin: 0.35rem 0; }
+.copy-steps strong { color: #fff; }
+.meta-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 0.4rem;
+  font-size: 0.82rem; margin-top: 0.5rem;
+}
+.meta-grid span { color: var(--muted); }
+.journal-item {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 0.7rem;
+  margin-bottom: 0.5rem;
+  font-size: 0.85rem;
+  background: #0d1218;
+}
+.toast {
+  position: fixed; left: 50%; bottom: calc(1.25rem + var(--safe-b));
+  transform: translateX(-50%) translateY(120%);
+  background: #1e293b; border: 1px solid var(--border); color: var(--text);
+  padding: 0.7rem 1rem; border-radius: 12px; font-size: 0.85rem;
+  z-index: 50; transition: transform 0.25s ease; max-width: 90vw;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+}
+.toast.show { transform: translateX(-50%) translateY(0); }
+.ref-note {
+  font-size: 0.75rem; color: var(--warn-text);
+  background: var(--warn-bg); border: 1px dashed var(--warn-border);
+  border-radius: 10px; padding: 0.55rem 0.7rem; margin-top: 0.65rem;
+}
+.settings-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 0.55rem;
+}
+.settings-grid label { display: block; font-size: 0.72rem; color: var(--muted); margin-bottom: 0.25rem; }
+.settings-grid input {
+  width: 100%; min-height: 40px; background: #0d1218;
+  border: 1px solid var(--border); border-radius: 10px; padding: 0.4rem 0.6rem;
+}
+.empty {
+  text-align: center; color: var(--muted); padding: 1rem 0.5rem; font-size: 0.9rem;
+}
+.badge {
+  display: inline-block; font-size: 0.7rem; font-weight: 700;
+  padding: 0.15rem 0.45rem; border-radius: 6px; vertical-align: middle;
+}
+.badge.buy { background: #14532d; color: #86efac; }
+.badge.sell { background: #7f1d1d; color: #fca5a5; }
+.badge.pending { background: #1e3a5f; color: #93c5fd; }
+details.help summary {
+  cursor: pointer; color: var(--muted); font-size: 0.85rem; font-weight: 600;
+  list-style: none;
+}
+details.help summary::-webkit-details-marker { display: none; }
+details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
+
+.demo-banner {
+  background: linear-gradient(135deg, #7f1d1d 0%, #991b1b 40%, #9a3412 100%);
+  border: 2px solid #fca5a5;
+  color: #fff;
+  padding: 0.9rem 1rem;
+  border-radius: 14px;
+  margin: 0.85rem 0;
+  text-align: center;
+  box-shadow: 0 0 0 3px rgba(239,68,68,0.25);
+}
+.demo-banner .big {
+  display: block;
+  font-size: 1.35rem;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: 0.35rem;
+}
+.demo-banner p { margin: 0; font-size: 0.82rem; line-height: 1.4; opacity: 0.95; }
+.stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.55rem;
+}
+.stat {
+  background: #0d1218;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 0.65rem 0.75rem;
+}
+.stat .lbl { font-size: 0.72rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.03em; }
+.stat .val { font-size: 1.1rem; font-weight: 700; margin-top: 0.15rem; font-variant-numeric: tabular-nums; }
+.stat.wide { grid-column: 1 / -1; }
+.rule-ver {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  color: #93c5fd;
+}
+.version-item {
+  border-left: 3px solid var(--accent);
+  background: #0d1218;
+  border-radius: 0 12px 12px 0;
+  padding: 0.65rem 0.75rem;
+  margin-bottom: 0.5rem;
+  font-size: 0.82rem;
+}
+.version-item .ver-head {
+  display: flex; justify-content: space-between; gap: 0.5rem; flex-wrap: wrap;
+  font-weight: 700; margin-bottom: 0.25rem;
+}
+.version-item .chg { color: #fde68a; margin-top: 0.25rem; }
+.version-item .unchanged { color: var(--muted); }
+.goal-note {
+  font-size: 0.8rem; color: #bfdbfe;
+  background: #0c1a2e; border: 1px solid #1e3a5f;
+  border-radius: 12px; padding: 0.7rem 0.85rem; margin: 0.5rem 0 0.85rem;
+}
+
+.section-label {
+  font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.04em;
+  color: var(--muted); margin: 0.75rem 0 0.4rem; font-weight: 700;
+}
+.ticker.single-col { grid-template-columns: 1fr; }
+.honesty {
+  font-size: 0.72rem; color: #fde68a; margin: 0.35rem 0 0.15rem; line-height: 1.35;
+}
+.session-pill {
+  display: inline-block; font-size: 0.68rem; font-weight: 700;
+  padding: 0.12rem 0.45rem; border-radius: 999px; margin-left: 0.35rem;
+  vertical-align: middle;
+}
+.session-pill.open { background: #14532d; color: #86efac; }
+.session-pill.closed { background: #334155; color: #cbd5e1; }
+.badge.rattrapage { background: #713f12; color: #fde68a; }
+.badge.nouveau { background: #1e3a5f; color: #93c5fd; }
+.badge.copie { background: #164e63; color: #a5f3fc; }
+.badge.gagne { background: #14532d; color: #86efac; }
+.badge.perdu { background: #7f1d1d; color: #fca5a5; }
+.badge.manque { background: #44403c; color: #d6d3d1; }
+.today-item {
+  border: 1px solid var(--border); border-radius: 12px;
+  padding: 0.7rem; margin-bottom: 0.5rem; font-size: 0.85rem; background: #0d1218;
+}
+.today-item.expanded { border-color: var(--accent); }
+.today-actions { display: flex; flex-wrap: wrap; gap: 0.35rem; margin-top: 0.55rem; }
+.cap-note {
+  font-size: 0.78rem; color: #bfdbfe; background: #0c1a2e;
+  border: 1px solid #1e3a5f; border-radius: 10px; padding: 0.55rem 0.7rem; margin-top: 0.55rem;
+}
+/* === STUDY UPGRADE CSS === */
+
+.study-panel { border: 2px solid #1e3a5f; background: linear-gradient(180deg,#0c1a2e 0%,#1a2332 100%); }
+.study-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.55rem; margin-top: 0.5rem; }
+.study-grid .stat.wide { grid-column: 1 / -1; }
+.progress {
+  height: 10px; background: #0d1218; border-radius: 999px; overflow: hidden;
+  border: 1px solid var(--border); margin-top: 0.35rem;
+}
+.progress > span {
+  display: block; height: 100%; background: var(--accent); border-radius: 999px;
+  transition: width 0.35s ease; min-width: 0;
+}
+.progress > span.ok { background: var(--green); }
+.progress > span.warn { background: #eab308; }
+.study-date-row {
+  display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: flex-end; margin: 0.5rem 0;
+}
+.study-date-row label { font-size: 0.72rem; color: var(--muted); display: block; margin-bottom: 0.2rem; }
+.study-date-row input[type="date"] {
+  min-height: 40px; background: #0d1218; border: 1px solid var(--border);
+  border-radius: 10px; padding: 0.35rem 0.55rem; color: var(--text);
+}
+.badge.conf-fort { background: #14532d; color: #86efac; }
+.badge.conf-moyen { background: #1e3a5f; color: #93c5fd; }
+.badge.conf-faible { background: #713f12; color: #fde68a; }
+.badge.filtered { background: #7f1d1d; color: #fecaca; }
+.filter-note {
+  font-size: 0.8rem; color: #fecaca; background: #3f1212;
+  border: 1px solid #7f1d1d; border-radius: 10px; padding: 0.55rem 0.7rem; margin-top: 0.55rem;
+}
+.checklist-card {
+  background: #0d1218; border: 1px solid #334155; border-radius: 12px;
+  padding: 0.75rem 0.85rem; margin: 0.65rem 0;
+}
+.checklist-card .chk-title { font-weight: 700; margin-bottom: 0.4rem; font-size: 0.9rem; }
+.checklist-card ol { margin: 0.35rem 0 0.65rem; padding-left: 1.2rem; font-size: 0.88rem; }
+.checklist-card li { margin: 0.28rem 0; }
+.copy-bar { display: flex; gap: 0.45rem; flex-wrap: wrap; }
+.before-after {
+  font-size: 0.78rem; margin-top: 0.35rem; line-height: 1.4;
+  background: #0c1a2e; border-radius: 8px; padding: 0.45rem 0.55rem; color: #bfdbfe;
+}
+.weekly-block .wk-row {
+  display: flex; justify-content: space-between; gap: 0.5rem;
+  padding: 0.35rem 0; border-bottom: 1px solid var(--border); font-size: 0.85rem;
+}
+.weekly-block .wk-row:last-child { border-bottom: none; }
+.session-pref {
+  font-size: 0.7rem; color: #a5f3fc; margin-top: 0.2rem;
+}
+
+/* === PRO TOOLKIT CSS === */
+.pro-toolkit { border: 2px solid #3b2f1a; background: linear-gradient(180deg,#1a1408 0%,#1a2332 100%); }
+.pro-honesty {
+  font-size: 0.78rem; color: var(--warn-text);
+  background: var(--warn-bg); border: 1px solid var(--warn-border);
+  border-radius: 10px; padding: 0.55rem 0.7rem; margin: 0.35rem 0 0.75rem; line-height: 1.4;
+}
+.pro-grid { display: grid; gap: 0.65rem; }
+.pro-block {
+  background: #0d1218; border: 1px solid var(--border);
+  border-radius: 12px; padding: 0.7rem 0.8rem;
+}
+.pro-block h3 { margin: 0 0 0.4rem; font-size: 0.92rem; color: #fde68a; }
+.pro-block ul { margin: 0; padding-left: 1.1rem; font-size: 0.82rem; color: var(--text); }
+.pro-block li { margin: 0.22rem 0; }
+.pro-block .muted { font-size: 0.75rem; }
+.fib-levels {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 0.3rem;
+  font-size: 0.78rem; margin-top: 0.4rem; font-variant-numeric: tabular-nums;
+}
+.fib-levels .fl { background: #0c1a2e; border-radius: 8px; padding: 0.3rem 0.45rem; }
+.fib-levels .fl.gold { border: 1px solid #a16207; color: #fde68a; }
+.badge.poche { background: #713f12; color: #fde68a; }
+.badge.struct-up { background: #14532d; color: #86efac; }
+.badge.struct-dn { background: #7f1d1d; color: #fca5a5; }
+.badge.struct-rg { background: #334155; color: #cbd5e1; }
+.sig-pro-meta {
+  font-size: 0.8rem; margin: 0.45rem 0; line-height: 1.45;
+  background: #0c1a2e; border: 1px solid #1e3a5f; border-radius: 10px; padding: 0.5rem 0.65rem;
+}
+.changelog-fr {
+  font-size: 0.8rem; color: var(--muted); line-height: 1.45;
+  padding-left: 1.1rem; margin: 0.35rem 0 0;
+}
+.changelog-fr li { margin: 0.25rem 0; }
+
+/* === PWA install + alertes === */
+.pwa-card {
+  border: 2px solid #2563eb;
+  background: linear-gradient(180deg, #0c1a2e 0%, #1a2332 100%);
+}
+.pwa-actions { display: flex; flex-direction: column; gap: 0.45rem; margin-top: 0.65rem; }
+.btn-install { background: #1d4ed8; color: #fff; width: 100%; }
+.btn-alerts { background: #0f766e; color: #fff; width: 100%; }
+.pwa-status { font-size: 0.78rem; margin: 0.4rem 0 0; color: var(--muted); }
+.pwa-status.ok { color: #86efac; }
+.pwa-status.warn { color: #fde68a; }
+.pwa-status.err { color: #fca5a5; }
+.install-hint { font-size: 0.8rem; color: var(--muted); margin: 0.55rem 0 0; }
+.install-hint ol { margin: 0.35rem 0 0; padding-left: 1.15rem; }
+.install-hint li { margin: 0.22rem 0; }
+.pwa-card code { font-size: 0.72rem; color: #93c5fd; word-break: break-all; }
+@media (display-mode: standalone) {
+  .hide-when-installed { display: none !important; }
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="header">
+    <h1>📡 Signaux FX — labo recalibrage</h1>
+    <p class="tagline">Cours réels · copie Exness DÉMO · mesurer la qualité du bot</p>
+  </header>
+
+  <div class="demo-banner" role="alert">
+    <span class="big">⚠ COMPTE DÉMO UNIQUEMENT</span>
+    <p>
+      Prix <strong>réels</strong> via <strong>consensus multi-sources</strong> (médiane) pour les signaux —
+      mais tu copies <strong>seulement sur Exness DÉMO</strong> (argent fictif).
+      Objectif : noter Gagné/Perdu pour mesurer si le bot s’améliore après recalibrage.
+      <strong>Pas d’argent réel. Pas un conseil financier. Aucune promesse de profit.</strong>
+      Le consensus améliore la robustesse mais <strong>ne peut pas</strong> coller aux ticks Exness au millimètre.
+    </p>
+  </div>
+
+  <section class="card pwa-card" id="pwaCard">
+    <div class="card-head">
+      <h2>Installer l’appli &amp; alertes</h2>
+      <span class="muted">Infinix · Chrome</span>
+    </div>
+    <p class="muted" style="margin:0;font-size:0.82rem">
+      Icône sur l’écran d’accueil (pas de Play Store) · notification locale à chaque <strong>nouveau signal</strong>.
+    </p>
+    <div class="pwa-actions">
+      <button type="button" class="btn-install hide-when-installed" id="btnInstall">Installer l’appli</button>
+      <button type="button" class="btn-alerts" id="btnAlerts">Activer les alertes</button>
+      <button type="button" class="btn-ghost btn-sm" id="btnTestAlert">Tester une alerte</button>
+    </div>
+    <p class="pwa-status" id="pwaInstallStatus"></p>
+    <p class="pwa-status" id="pwaAlertStatus"></p>
+    <div class="install-hint hide-when-installed" id="installHint">
+      <strong>Infinix (Android) · Google Chrome :</strong>
+      <ol>
+        <li>Ouvre cette page dans <strong>Chrome</strong> (icône Google — pas le navigateur XOS, pas Facebook, pas htmlpreview).</li>
+        <li>Tape le menu <strong>⋮</strong> en haut à droite.</li>
+        <li>Choisis <strong>Installer l’application</strong> ou <strong>Ajouter à l’écran d’accueil</strong>.</li>
+        <li>Confirme. L’icône <strong>FX Lab Démo</strong> apparaît sur l’écran d’accueil.</li>
+        <li>Ouvre-la comme une appli, puis tape <strong>Activer les alertes</strong> et autorise Chrome.</li>
+      </ol>
+    </div>
+    <p class="pro-honesty" style="margin-top:0.7rem" role="note">
+      <strong>Honnêteté alertes :</strong> un vrai push 24h/24 avec écran éteint demande un <em>serveur</em> plus tard.
+      Cette version prévient quand l’appli ou l’onglet <em>peut encore tourner</em>
+      (premier plan, ou arrière-plan Android selon l’OS — Chrome peut geler la page).
+      <strong>GitHub htmlpreview casse le service worker</strong> (mauvais périmètre).
+      Pour la vraie PWA : GitHub Pages, ex.
+      <code>https://daveblessing.github.io/…/fx-lab-app/</code>.
+    </p>
+  </section>
+
+  <div class="disclaimer" role="note">
+    <strong>Rappel :</strong> <em>Consensus multi-sources (écart possible vs Exness)</em> —
+    plusieurs API publiques mondiales, prix médian. Impossible d’égaler les ticks broker.
+    Ne partage jamais ton mot de passe. Cette page ne se connecte pas à Exness.
+  </div>
+
+  <div class="checklist" aria-label="Rappels sécurité">
+    <span class="chip ok">✓ Toujours SL</span>
+    <span class="chip ok">✓ Démo seulement</span>
+    <span class="chip ok">✓ Ne pas me donner de mot de passe</span>
+  </div>
+
+  <p class="goal-note">
+    <strong>But du labo :</strong> beaucoup de résultats démo (G/P) → le bot ajuste seuil &amp; SL
+    (versions de règles) → tu vois win rate et historique des changements. Qualité du recalibrage, pas du cash.
+  </p>
+
+
+  <section class="card study-panel" id="studyCard">
+    <div class="card-head">
+      <h2>Étude 30 jours — Démo Exness</h2>
+      <span class="rule-ver" id="studyDayLabel">Jour —/30</span>
+    </div>
+    <p class="muted" style="margin:0;font-size:0.78rem">
+      Calibration éducative uniquement · argent fictif · pas de suggestion d’argent réel.
+      Cible : ≥5 signaux/jour · ≥40 résultats G/P notés · puis éventuellement ~$10 micro réel plus tard (hors de cet outil).
+    </p>
+    <div class="study-date-row">
+      <div style="flex:1;min-width:140px">
+        <label for="studyStartInput">Date de début</label>
+        <input type="date" id="studyStartInput" />
+      </div>
+      <button type="button" class="btn-ghost btn-sm" id="btnStudyResetStart" style="flex:0 0 auto">Aujourd’hui</button>
+    </div>
+    <div class="study-grid" id="studyProgress">
+      <div class="stat wide">
+        <div class="lbl">Signaux aujourd’hui (cible ≥5)</div>
+        <div class="val" id="studySigToday">0 / 5</div>
+        <div class="progress" aria-hidden="true"><span id="barSigToday" style="width:0%"></span></div>
+      </div>
+      <div class="stat wide">
+        <div class="lbl">Résultats notés (cible ≥40)</div>
+        <div class="val" id="studyOutcomes">0 / 40</div>
+        <div class="progress" aria-hidden="true"><span id="barOutcomes" style="width:0%"></span></div>
+      </div>
+      <div class="stat">
+        <div class="lbl">Win rate (démo)</div>
+        <div class="val" id="studyWr">—</div>
+        <div class="progress" aria-hidden="true"><span id="barWr" style="width:0%"></span></div>
+      </div>
+      <div class="stat">
+        <div class="lbl">Version règles</div>
+        <div class="val rule-ver" id="studyRuleVer">v1</div>
+      </div>
+    </div>
+    <p class="muted" id="studyHint" style="margin:0.65rem 0 0;font-size:0.75rem"></p>
+  </section>
+
+
+  <section class="card pro-toolkit" id="proToolkitCard">
+    <div class="card-head">
+      <h2>Boîte à outils pro</h2>
+      <span class="muted">éducatif</span>
+    </div>
+    <div class="pro-honesty" role="note">
+      <strong>Transparence :</strong> méthodes documentées (Fib, structure, style de risque des « légendes »).
+      Fibonacci n’est <em>pas</em> magique · pas de garantie · compte <strong>DÉMO</strong> seulement · pas un conseil financier.
+    </div>
+    <div class="pro-grid">
+      <div class="pro-block" id="proFibBlock">
+        <h3>1. Fibonacci (swing récent)</h3>
+        <p class="muted" style="margin:0 0 0.35rem">Retracements 38.2 / 50 / 61.8 / 78.6 · extensions 127.2 / 161.8 · SL au-delà du swing + buffer · TP près d’une extension. Confluence « poche d’or » si momentum aligne 50–61.8.</p>
+        <div id="proFibLive" class="muted">Ouvre un signal ou actualise les cours pour voir les niveaux Fib sur la paire active.</div>
+      </div>
+      <div class="pro-block" id="proStructBlock">
+        <h3>2. Structure de marché</h3>
+        <p class="muted" style="margin:0 0 0.35rem">Swing high / swing low → tendance haussière, baissière ou range (historique local).</p>
+        <div id="proStructLive" class="muted">En attente d’historique prix…</div>
+      </div>
+      <div class="pro-block">
+        <h3>3. Risque — style légendes</h3>
+        <ul>
+          <li>Couper les pertes vite (SL toujours placé).</li>
+          <li>Risque ≤ <strong>1–2&nbsp;%</strong> du capital démo par trade.</li>
+          <li>R:R ≥ <strong>1.5</strong> privilégié.</li>
+          <li>Après <strong>3 pertes</strong> d’affilée : baisser temporairement le % de risque (esprit Turtle).</li>
+        </ul>
+        <p class="muted" id="proRiskLive" style="margin:0.45rem 0 0">Streak pertes : — · risque effectif : —</p>
+      </div>
+      <div class="pro-block">
+        <h3>4. Carte signal enrichie</h3>
+        <p class="muted" style="margin:0">Chaque signal actif affiche niveaux Fib, R:R, confiance, session et divergence multi-sources — pour copier en conscience sur Exness DÉMO.</p>
+      </div>
+      <div class="pro-block">
+        <h3>5. École des légendes</h3>
+        <ul>
+          <li><strong>PTJ</strong> — discipline du plan : entrée/sortie définies avant le trade ; émotion hors du cockpit.</li>
+          <li><strong>Seykota</strong> — « cut losses » : une petite perte maîtrisée bat l’espoir de rebond.</li>
+          <li><strong>Turtles</strong> — règles fixes + taille de position ; après une série de pertes, réduire le risque, pas « se refaire ».</li>
+          <li><strong>Fib</strong> — outil de repère (zones), pas une prédiction ; confluence &gt; niveau isolé.</li>
+        </ul>
+        <p class="muted" style="margin:0.45rem 0 0">Éducation seulement — aucune promesse de résultat.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="card weekly-block" id="weeklyCard">
+    <div class="card-head">
+      <h2>Résumé 7 jours</h2>
+      <span class="muted">auto</span>
+    </div>
+    <div id="weeklySummary">
+      <p class="empty">Pas encore assez de données sur 7 jours.</p>
+    </div>
+  </section>
+
+  <section class="card" id="statsCard">
+    <div class="card-head">
+      <h2>Stats &amp; règles</h2>
+      <span class="rule-ver" id="ruleVersionLabel">v1</span>
+    </div>
+    <div class="stats" id="statsPanel">
+      <div class="stat"><div class="lbl">Gagnés (démo)</div><div class="val pos" id="statWins">0</div></div>
+      <div class="stat"><div class="lbl">Perdus (démo)</div><div class="val neg" id="statLosses">0</div></div>
+      <div class="stat"><div class="lbl">Win rate</div><div class="val" id="statWr">—</div></div>
+      <div class="stat"><div class="lbl">Résultats notés</div><div class="val" id="statTotal">0</div></div>
+      <div class="stat wide">
+        <div class="lbl">Règles actuelles (v<span id="statVerNum">1</span>)</div>
+        <div class="val" style="font-size:0.95rem" id="statRules">seuil — · SL — · R:R —</div>
+      </div>
+      <div class="stat wide">
+        <div class="lbl">Dernier changement</div>
+        <div class="val" style="font-size:0.85rem;font-weight:500" id="statLastChange">Aucune recalibrage encore</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="card-head">
+      <h2>Cours</h2>
+      <button type="button" class="btn-ghost btn-sm" id="btnRefresh">Actualiser</button>
+    </div>
+    <div class="status-bar">
+      <span id="apiStatus"><span class="dot wait"></span>Chargement…</span>
+      <span id="lastUpdate">—</span>
+    </div>
+    <div id="consensusMeta" class="muted" style="margin-bottom:0.55rem;font-size:0.78rem;line-height:1.4">
+      <span id="sourceCountLabel">—</span>
+      <span id="sourceWarn" class="neg" hidden style="display:block;margin-top:0.25rem"></span>
+    </div>
+    <div id="errorBox" class="error-box" hidden></div>
+
+    <div class="section-label">Forex (primaire)</div>
+    <div class="ticker" id="ticker"></div>
+    <p class="ref-note">
+      <strong>Consensus multi-sources (écart possible vs Exness)</strong> —
+      médiane des API OK. Robustesse ↑, match millimétrique Exness = impossible.
+      Sources OK : <span id="apiSource">—</span> · historique local pour le momentum.
+    </p>
+
+    <div class="section-label">Métaux</div>
+    <p class="honesty" id="goldHonesty">Or : source secondaire gratuite (qualité variable, pas un tick Exness).</p>
+    <div class="ticker" id="tickerGold"></div>
+
+    <div class="section-label">Crypto</div>
+    <p class="honesty" id="cryptoHonesty">Crypto : API publiques (Coinbase / Binance Vision) — spot indicatif, pas Exness.</p>
+    <div class="ticker" id="tickerCrypto"></div>
+
+    <div class="section-label">Indices Londres / Japon</div>
+    <p class="honesty" id="indexHonesty">
+      Pas d’API FTSE/Nikkei gratuite CORS fiable sans clé — proxy éducatif session
+      (GBPUSD ↔ Londres, USDJPY ↔ Tokyo) + horaires. Niveaux index réels non affichés.
+    </p>
+    <div class="ticker single-col" id="tickerIndices"></div>
+  </section>
+
+  <section class="card">
+    <div class="card-head">
+      <h2>Auto-signaux</h2>
+      <label class="switch" title="Mode auto">
+        <input type="checkbox" id="autoToggle" />
+        <span class="slider"></span>
+      </label>
+    </div>
+    <p class="muted" style="margin-top:0">
+      Quand ON : évalue à chaque mise à jour réussie. Max 2 signaux actifs · cooldown entre nouveaux.
+      Objectif labo ≥5 signaux/jour (seuil assoupli + rattrapage) · plafond 12/jour.
+    </p>
+    <div class="toggle-row" style="margin-top:0.55rem">
+      <span>Inclure or</span>
+      <label class="switch" title="Inclure or">
+        <input type="checkbox" id="toggleGold" checked />
+        <span class="slider"></span>
+      </label>
+    </div>
+    <div class="toggle-row">
+      <span>Inclure crypto</span>
+      <label class="switch" title="Inclure crypto">
+        <input type="checkbox" id="toggleCrypto" checked />
+        <span class="slider"></span>
+      </label>
+    </div>
+    <div class="toggle-row">
+      <span>Inclure indices Londres/Japon</span>
+      <label class="switch" title="Inclure indices">
+        <input type="checkbox" id="toggleIndices" checked />
+        <span class="slider"></span>
+      </label>
+    </div>
+    <div class="settings-grid" style="margin-top:0.75rem">
+      <div>
+        <label for="cfgThreshold">Seuil momentum (pips)</label>
+        <input type="number" id="cfgThreshold" min="1" max="50" step="0.5" />
+      </div>
+      <div>
+        <label for="cfgSlPips">SL (pips)</label>
+        <input type="number" id="cfgSlPips" min="5" max="100" step="1" />
+      </div>
+      <div>
+        <label for="cfgRr">R:R (TP)</label>
+        <input type="number" id="cfgRr" min="0.5" max="5" step="0.1" />
+      </div>
+      <div>
+        <label for="cfgRisk">Risque %</label>
+        <input type="number" id="cfgRisk" min="0.5" max="2" step="0.5" />
+      </div>
+    </div>
+    <button type="button" class="btn-ghost btn-sm" id="btnEval" style="width:100%;margin-top:0.75rem">
+      Évaluer maintenant
+    </button>
+    <p class="cap-note" id="dailyCapNote">
+      Signaux du jour : objectif ≥5 (rattrapage éducatif si besoin) · max 12 · plafond partagé FX/or/crypto/indices.
+    </p>
+  </section>
+
+  <section class="card">
+    <div class="card-head">
+      <h2 id="todayTitle">Signaux du jour (0)</h2>
+      <span class="muted" id="todayMeta">localStorage</span>
+    </div>
+    <p class="muted" style="margin-top:0;font-size:0.78rem" id="catchupNote">
+      Historique « Aujourd’hui » : chaque signal est sauvé (heure, paire, direction, SL, version règles, statut).
+      Si &lt; 5 signaux, le labo assouplit le seuil et peut émettre des « rattrapage » éducatifs (chemin du jour).
+    </p>
+    <div id="todayList"></div>
+  </section>
+
+  <section class="card">
+    <div class="card-head">
+      <h2>Signaux actifs</h2>
+      <span class="muted" id="slotCount">0 / 2</span>
+    </div>
+    <div id="filterNote" class="filter-note" hidden></div>
+    <div id="signals"></div>
+  </section>
+
+  <section class="card">
+    <div class="card-head">
+      <h2>Historique recalibrage</h2>
+      <span class="muted">après chaque G/P</span>
+    </div>
+    <div id="versionHistory"></div>
+  </section>
+
+  <section class="card">
+    <div class="card-head">
+      <h2>Journal (démo)</h2>
+      <button type="button" class="btn-ghost btn-sm" id="btnClearJournal">Effacer</button>
+    </div>
+    <div id="journal"></div>
+    <p class="muted" id="calibNote" style="margin-top:0.65rem"></p>
+  </section>
+
+  <section class="card">
+    <details class="help">
+      <summary>ℹ️ Comment l’utiliser sur Exness démo</summary>
+      <ol class="muted" style="padding-left:1.1rem;margin:0;font-size:0.85rem">
+        <li>Ouvre Exness (app) → compte <strong>Démo</strong>.</li>
+        <li>Cherche la paire du signal.</li>
+        <li>Tape ACHAT ou VENTE selon la carte.</li>
+        <li>Volume : commence par <strong>0.01</strong> lot.</li>
+        <li>Renseigne le SL (et TP) indiqués — toujours un SL.</li>
+        <li>Marque « Copié en démo » ici, puis plus tard Gagné / Perdu.</li>
+      </ol>
+      <p class="muted" style="margin:0.65rem 0 0;font-size:0.8rem">
+        Ne partage jamais ton mot de passe. Cette page ne se connecte pas à Exness.
+        Les prix sont un <strong>consensus multi-sources</strong> (médiane) — robuste, mais
+        pas un match millimétrique vs ticks Exness. La copie est 100&nbsp;% démo pour juger le recalibrage.
+      </p>
+    </details>
+  </section>
+
+  <section class="card" id="changelogCard">
+    <details class="help" open>
+      <summary>📋 Changelog (FR) — PWA + étude 30 j + boîte pro</summary>
+      <ul class="changelog-fr">
+        <li><strong>PWA (cette version)</strong> : appli installable (manifest + icônes + service worker), bouton « Installer l’appli », « Activer les alertes », notification locale (paire · ACHAT/VENTE · rappel SL · « Ouvrir pour copier en démo »). Si les notifications sont refusées : toast + vibreur / bip. Pas de Play Store. htmlpreview GitHub ≠ PWA — utiliser GitHub Pages. Alertes 24/7 écran éteint = serveur plus tard ; ici l’alerte part quand la page/appli peut tourner.</li>
+        <li>Étude passée de <strong>14 → 30 jours</strong> (Jour N/30) ; cible résultats notés <strong>≥40</strong> (signaux/jour ≥5 inchangé).</li>
+        <li>Nouvelle <strong>Boîte à outils pro</strong> : Fibonacci (retracements/extensions), structure (swing/tendance), risque style légendes, carte signal enrichie, École des légendes (PTJ / Seykota / Turtles / Fib).</li>
+        <li>Signaux : niveaux Fib, R:R, confiance, session, divergence ; tag « poche d’or » si confluence 50–61.8.</li>
+        <li>Après 3 pertes consécutives : risque % temporairement abaissé (esprit Turtle) — démo seulement.</li>
+        <li>Conservé : multi-sources FX, or, crypto, Londres/Japon, filtres qualité, recalibrage, checklist copie, bannières DÉMO.</li>
+        <li>Rappel : méthodes documentées · Fib pas magique · pas de garantie · pas d’argent réel.</li>
+      </ul>
+    </details>
+  </section>
+</div>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+(function () {
+  'use strict';
+
+  var STORAGE_KEY = 'fx_signals_real_v1';
+  var FX_PAIRS = ['EURUSD', 'GBPUSD', 'USDJPY', 'USDCHF'];
+  var GOLD_PAIRS = ['XAUUSD'];
+  var CRYPTO_PAIRS = ['BTCUSD', 'ETHUSD'];
+  var INDEX_IDS = ['FTSE100', 'NIKKEI225'];
+  var PAIRS = FX_PAIRS.slice(); // FX consensus pairs (baby) — never mixed into median math
+  var POLL_MS = 45000;
+  var HISTORY_MAX = 40;
+  var MOMENTUM_N = 6;
+  var MAX_SLOTS = 2;
+  var COOLDOWN_MS = 3 * 60 * 1000;
+  var DAILY_MIN = 5;
+  var DAILY_MAX = 12;
+  var DEFAULTS = {
+    thresholdPips: 5,
+    slPips: 18,
+    rr: 1.5,
+    riskPct: 1,
+    auto: false,
+    includeGold: true,
+    includeCrypto: true,
+    includeIndices: true
+  };
+  var STUDY_DAYS = 30;
+  var STUDY_TARGET_SIGNALS = 5;
+  var STUDY_TARGET_OUTCOMES = 40;
+  var MIN_SAMPLE_SOFT = 5;   // min G/P before any param tweak
+  var MIN_SAMPLE_BIG = 10;   // min G/P before larger moves
+  var DIVG_FILTER_PIPS = 8;  // FX multi-source spread above → filter
+  var DIVG_WARN_PIPS = 5;
+  var lastFilterMsg = null;
+
+  var state = loadState();
+  var pollTimer = null;
+  var fetching = false;
+
+  var $ = function (id) { return document.getElementById(id); };
+
+  function assetMeta(pair) {
+    if (pair === 'XAUUSD') {
+      return { cls: 'metal', pip: 0.1, digits: 2, label: 'XAUUSD (Or)', slScale: 1.2, unit: 'pips or' };
+    }
+    if (pair === 'BTCUSD') {
+      return { cls: 'crypto', pip: 10, digits: 2, label: 'BTCUSD', slScale: 2.5, unit: 'pts $' };
+    }
+    if (pair === 'ETHUSD') {
+      return { cls: 'crypto', pip: 1, digits: 2, label: 'ETHUSD', slScale: 2.5, unit: 'pts $' };
+    }
+    if (pair === 'FTSE100') {
+      return {
+        cls: 'index', pip: 0.0001, digits: 5, label: 'Londres (LSE / FTSE)',
+        slScale: 1, unit: 'pips', proxyPair: 'GBPUSD', session: 'london'
+      };
+    }
+    if (pair === 'NIKKEI225') {
+      return {
+        cls: 'index', pip: 0.01, digits: 3, label: 'Japon (TSE / Nikkei)',
+        slScale: 1, unit: 'pips', proxyPair: 'USDJPY', session: 'tokyo'
+      };
+    }
+    return {
+      cls: 'fx',
+      pip: pair.indexOf('JPY') >= 0 ? 0.01 : 0.0001,
+      digits: pair.indexOf('JPY') >= 0 ? 3 : 5,
+      label: pair,
+      slScale: 1,
+      unit: 'pips'
+    };
+  }
+
+  function loadState() {
+    try {
+      var raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return freshState();
+      return normalize(JSON.parse(raw));
+    } catch (e) {
+      return freshState();
+    }
+  }
+
+  function freshState() {
+    return {
+      prices: {},
+      history: {},
+      signals: [],
+      journal: [],
+      todaySignals: [],
+      lastSignalAt: 0,
+      cfg: Object.assign({}, DEFAULTS),
+      apiSource: null,
+      divergence: {},
+      sourceCount: null,
+      sourceTotal: null,
+      sourceWarning: null,
+      lastFetchAt: null,
+      lastError: null,
+      wins: 0,
+      losses: 0,
+      ruleVersion: 1,
+      ruleHistory: [],
+      goldSource: null,
+      cryptoSource: null,
+      indexNote: null,
+      extraMeta: {},
+      studyStart: null,
+      filteredLog: []
+    };
+  }
+
+  function normalize(s) {
+    var f = freshState();
+    s = s || {};
+    f.prices = s.prices || {};
+    f.history = s.history || {};
+    f.signals = Array.isArray(s.signals) ? s.signals : [];
+    f.journal = Array.isArray(s.journal) ? s.journal : [];
+    f.todaySignals = Array.isArray(s.todaySignals) ? s.todaySignals : [];
+    f.lastSignalAt = s.lastSignalAt || 0;
+    f.cfg = Object.assign({}, DEFAULTS, s.cfg || {});
+    f.cfg.riskPct = Math.min(2, Math.max(0.5, Number(f.cfg.riskPct) || 1));
+    if (f.cfg.includeGold == null) f.cfg.includeGold = true;
+    if (f.cfg.includeCrypto == null) f.cfg.includeCrypto = true;
+    if (f.cfg.includeIndices == null) f.cfg.includeIndices = true;
+    f.apiSource = s.apiSource || null;
+    f.divergence = s.divergence || {};
+    f.sourceCount = s.sourceCount != null ? s.sourceCount : null;
+    f.sourceTotal = s.sourceTotal != null ? s.sourceTotal : null;
+    f.sourceWarning = s.sourceWarning || null;
+    f.lastFetchAt = s.lastFetchAt || null;
+    f.lastError = s.lastError || null;
+    f.wins = s.wins || 0;
+    f.losses = s.losses || 0;
+    f.ruleVersion = s.ruleVersion || 1;
+    f.goldSource = s.goldSource || null;
+    f.cryptoSource = s.cryptoSource || null;
+    f.indexNote = s.indexNote || null;
+    f.extraMeta = s.extraMeta || {};
+    f.studyStart = s.studyStart || null;
+    f.filteredLog = Array.isArray(s.filteredLog) ? s.filteredLog.slice(0, 20) : [];
+    f.ruleHistory = Array.isArray(s.ruleHistory) && s.ruleHistory.length
+      ? s.ruleHistory
+      : [{
+          version: f.ruleVersion,
+          at: Date.now(),
+          trigger: 'migrated',
+          outcome: null,
+          winRate: null,
+          before: null,
+          after: snapshotRules(f.cfg),
+          changes: ['État migré / règles actuelles']
+        }];
+    pruneToday(f);
+    return f;
+  }
+
+  function todayKey(d) {
+    d = d || new Date();
+    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' +
+      String(d.getDate()).padStart(2, '0');
+  }
+
+  function pruneToday(st) {
+    var key = todayKey();
+    st.todaySignals = (st.todaySignals || []).filter(function (x) {
+      return x && x.day === key;
+    });
+  }
+
+  function save() {
+    try {
+      pruneToday(state);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    } catch (e) { /* quota */ }
+  }
+
+  function toast(msg) {
+    var el = $('toast');
+    el.textContent = msg;
+    el.classList.add('show');
+    clearTimeout(toast._t);
+    toast._t = setTimeout(function () { el.classList.remove('show'); }, 2800);
+  }
+
+  function snapshotRules(cfg) {
+    cfg = cfg || state.cfg;
+    return {
+      thresholdPips: Number(cfg.thresholdPips),
+      slPips: Number(cfg.slPips),
+      rr: Number(cfg.rr),
+      riskPct: Number(cfg.riskPct)
+    };
+  }
+
+  function formatRules(r) {
+    if (!r) return '—';
+    return 'seuil ' + r.thresholdPips + ' · SL ' + r.slPips + ' · R:R ' + r.rr + ' · risque ' + r.riskPct + '%';
+  }
+
+  function describeChanges(before, after) {
+    if (!before || !after) return ['État initial'];
+    var parts = [];
+    if (before.thresholdPips !== after.thresholdPips) {
+      parts.push('seuil ' + before.thresholdPips + ' → ' + after.thresholdPips);
+    }
+    if (before.slPips !== after.slPips) {
+      parts.push('SL ' + before.slPips + ' → ' + after.slPips);
+    }
+    if (before.rr !== after.rr) {
+      parts.push('R:R ' + before.rr + ' → ' + after.rr);
+    }
+    if (before.riskPct !== after.riskPct) {
+      parts.push('risque ' + before.riskPct + '% → ' + after.riskPct + '%');
+    }
+    return parts.length ? parts : ['Aucun changement de paramètres'];
+  }
+
+  function pipSize(pair) {
+    return assetMeta(pair).pip;
+  }
+
+  function formatPrice(pair, price) {
+    if (price == null || !isFinite(price)) return '—';
+    return Number(price).toFixed(assetMeta(pair).digits);
+  }
+
+  function pipsBetween(pair, a, b) {
+    return (b - a) / pipSize(pair);
+  }
+
+  function priceFromPips(pair, entry, side, pips) {
+    var d = pips * pipSize(pair);
+    return side === 'buy' ? entry - d : entry + d;
+  }
+
+  function tpFromPips(pair, entry, side, pips) {
+    var d = pips * pipSize(pair);
+    return side === 'buy' ? entry + d : entry - d;
+  }
+
+
+  /* ---------- Pro toolkit: Fib, structure, risque légendes ---------- */
+  var FIB_RETR = [0.382, 0.5, 0.618, 0.786];
+  var FIB_EXT = [1.272, 1.618];
+  var FIB_BUFFER_PIPS = 3;
+
+  function findSwing(pair) {
+    var arr = state.history[pair] || [];
+    if (arr.length < 4) return null;
+    var pts = arr.slice(-Math.min(24, arr.length));
+    var hi = pts[0], lo = pts[0];
+    for (var i = 1; i < pts.length; i++) {
+      if (pts[i].p > hi.p) hi = pts[i];
+      if (pts[i].p < lo.p) lo = pts[i];
+    }
+    if (Math.abs(hi.p - lo.p) < pipSize(pair) * 2) return null;
+    var last = pts[pts.length - 1];
+    // Swing direction: most recent extreme defines the move being retraced
+    var upSwing = hi.t >= lo.t; // last major extreme is high → recent up move
+    // Prefer chronological: if last is closer to hi after lo, it's up-swing
+    if (lo.t < hi.t) upSwing = true;
+    else if (hi.t < lo.t) upSwing = false;
+    var swingLow = lo.p, swingHigh = hi.p;
+    var range = swingHigh - swingLow;
+    return {
+      pair: pair,
+      swingLow: swingLow,
+      swingHigh: swingHigh,
+      range: range,
+      upSwing: upSwing,
+      last: last.p,
+      n: pts.length
+    };
+  }
+
+  function fibLevelsFromSwing(sw) {
+    if (!sw) return null;
+    var out = { retr: {}, ext: {}, poche: false, bias: sw.upSwing ? 'up' : 'down' };
+    FIB_RETR.forEach(function (r) {
+      // Retracement from the impulse: up impulse → pullback from high; down → from low
+      var lvl = sw.upSwing
+        ? sw.swingHigh - sw.range * r
+        : sw.swingLow + sw.range * r;
+      out.retr[String(r)] = lvl;
+    });
+    FIB_EXT.forEach(function (e) {
+      var lvl = sw.upSwing
+        ? sw.swingHigh + sw.range * (e - 1)
+        : sw.swingLow - sw.range * (e - 1);
+      out.ext[String(e)] = lvl;
+    });
+    return out;
+  }
+
+  function structureFromSwing(sw) {
+    if (!sw) return { label: 'insuffisant', cls: 'struct-rg', detail: 'Pas assez d’historique local.' };
+    var mid = (sw.swingHigh + sw.swingLow) / 2;
+    var spanPips = Math.abs(sw.range) / pipSize(sw.pair);
+    var nearMid = Math.abs(sw.last - mid) / pipSize(sw.pair) < spanPips * 0.22;
+    if (spanPips < 8 || nearMid) {
+      return {
+        label: 'range',
+        cls: 'struct-rg',
+        detail: 'Swing H ' + formatPrice(sw.pair, sw.swingHigh) +
+          ' / L ' + formatPrice(sw.pair, sw.swingLow) + ' · range serré ou prix au milieu.'
+      };
+    }
+    if (sw.upSwing && sw.last > mid) {
+      return {
+        label: 'tendance haussière',
+        cls: 'struct-up',
+        detail: 'Swing bas → haut · prix au-dessus du milieu du range.'
+      };
+    }
+    if (!sw.upSwing && sw.last < mid) {
+      return {
+        label: 'tendance baissière',
+        cls: 'struct-dn',
+        detail: 'Swing haut → bas · prix sous le milieu du range.'
+      };
+    }
+    return {
+      label: 'range',
+      cls: 'struct-rg',
+      detail: 'Structure mixte (swing H/L présents, direction peu claire).'
+    };
+  }
+
+  function fibConfluence(pair, side, entry, fib) {
+    if (!fib || entry == null) return false;
+    var z50 = fib.retr['0.5'];
+    var z618 = fib.retr['0.618'];
+    if (z50 == null || z618 == null) return false;
+    var lo = Math.min(z50, z618);
+    var hi = Math.max(z50, z618);
+    var buf = pipSize(pair) * 4;
+    var inZone = entry >= (lo - buf) && entry <= (hi + buf);
+    if (!inZone) return false;
+    // Momentum / side aligns with expected bounce from golden pocket
+    if (side === 'buy' && fib.bias === 'up') return true;
+    if (side === 'sell' && fib.bias === 'down') return true;
+    // Also allow counter-trend bounce tags lightly when deep in pocket
+    var deep = entry >= lo && entry <= hi;
+    return deep;
+  }
+
+  function applyFibToLevels(pair, side, entry, baseSl, baseTp) {
+    var sw = findSwing(pair);
+    var fib = fibLevelsFromSwing(sw);
+    if (!sw || !fib) {
+      return { sl: baseSl, tp: baseTp, fib: null, swing: null, poche: false, structure: structureFromSwing(sw) };
+    }
+    var buffer = FIB_BUFFER_PIPS * pipSize(pair);
+    var sl = baseSl;
+    var tp = baseTp;
+    if (side === 'buy') {
+      // SL beyond swing low
+      var slFib = sw.swingLow - buffer;
+      if (slFib < entry) sl = slFib;
+      // TP near 127.2 then 161.8
+      var tpA = fib.ext['1.272'];
+      var tpB = fib.ext['1.618'];
+      if (tpA != null && tpA > entry) tp = tpA;
+      else if (tpB != null && tpB > entry) tp = tpB;
+    } else {
+      var slFibS = sw.swingHigh + buffer;
+      if (slFibS > entry) sl = slFibS;
+      var tpAs = fib.ext['1.272'];
+      var tpBs = fib.ext['1.618'];
+      if (tpAs != null && tpAs < entry) tp = tpAs;
+      else if (tpBs != null && tpBs < entry) tp = tpBs;
+    }
+    var poche = fibConfluence(pair, side, entry, fib);
+    return {
+      sl: sl,
+      tp: tp,
+      fib: fib,
+      swing: sw,
+      poche: poche,
+      structure: structureFromSwing(sw)
+    };
+  }
+
+  function consecutiveLosses() {
+    var n = 0;
+    for (var i = 0; i < state.journal.length; i++) {
+      var j = state.journal[i];
+      if (j.outcome === 'loss') n++;
+      else if (j.outcome === 'win') break;
+      // skip pending / ignored
+    }
+    return n;
+  }
+
+  function effectiveRiskPct() {
+    var base = Math.min(2, Math.max(0.5, Number(state.cfg.riskPct) || 1));
+    var streak = consecutiveLosses();
+    if (streak >= 3) {
+      return Math.max(0.5, Math.round((base * 0.5) * 10) / 10);
+    }
+    return base;
+  }
+
+  function pickPrimaryToolkitPair() {
+    var active = state.signals.filter(function (s) { return s.status === 'active'; });
+    if (active.length) return active[0].pair;
+    var keys = Object.keys(state.prices || {});
+    for (var i = 0; i < FX_PAIRS.length; i++) {
+      if (state.prices[FX_PAIRS[i]] != null) return FX_PAIRS[i];
+    }
+    return keys[0] || 'EURUSD';
+  }
+
+  function renderProToolkit() {
+    var pair = pickPrimaryToolkitPair();
+    var sw = findSwing(pair);
+    var fib = fibLevelsFromSwing(sw);
+    var struct = structureFromSwing(sw);
+    var fibEl = $('proFibLive');
+    if (fibEl) {
+      if (!fib) {
+        fibEl.innerHTML = '<span class="muted">Historique insuffisant pour ' + escapeHtml(pair) + ' — actualise quelques cycles.</span>';
+      } else {
+        var rows = '';
+        [['38.2', '0.382'], ['50', '0.5'], ['61.8', '0.618'], ['78.6', '0.786']].forEach(function (x) {
+          var gold = (x[1] === '0.5' || x[1] === '0.618') ? ' gold' : '';
+          rows += '<div class="fl' + gold + '">' + x[0] + '% · ' + formatPrice(pair, fib.retr[x[1]]) + '</div>';
+        });
+        [['127.2', '1.272'], ['161.8', '1.618']].forEach(function (x) {
+          rows += '<div class="fl">ext ' + x[0] + ' · ' + formatPrice(pair, fib.ext[x[1]]) + '</div>';
+        });
+        fibEl.innerHTML =
+          '<div><strong>' + escapeHtml(assetMeta(pair).label || pair) + '</strong> · swing L ' +
+          formatPrice(pair, sw.swingLow) + ' / H ' + formatPrice(pair, sw.swingHigh) +
+          (fib.bias === 'up' ? ' · impulse ↑' : ' · impulse ↓') + '</div>' +
+          '<div class="fib-levels">' + rows + '</div>' +
+          '<p class="muted" style="margin:0.4rem 0 0">SL éducatif : au-delà du swing ± buffer · TP près 127.2 / 161.8. Fib ≠ magie.</p>';
+      }
+    }
+    var stEl = $('proStructLive');
+    if (stEl) {
+      stEl.innerHTML = '<span class="badge ' + struct.cls + '">' + escapeHtml(struct.label) + '</span> ' +
+        '<span class="muted">' + escapeHtml(struct.detail) + '</span>';
+    }
+    var riskEl = $('proRiskLive');
+    if (riskEl) {
+      var streak = consecutiveLosses();
+      var eff = effectiveRiskPct();
+      riskEl.textContent = 'Streak pertes : ' + streak +
+        (streak >= 3 ? ' → risque réduit (Turtle)' : '') +
+        ' · risque effectif : ' + eff + '% (cfg ' + (state.cfg.riskPct || 1) + '%) · R:R cfg ' +
+        (state.cfg.rr || 1.5) + ' · démo seulement.';
+    }
+  }
+
+
+  function median(nums) {
+    var a = nums.filter(function (n) { return n != null && isFinite(n); })
+      .slice()
+      .sort(function (x, y) { return x - y; });
+    if (!a.length) return null;
+    var mid = Math.floor(a.length / 2);
+    return a.length % 2 ? a[mid] : (a[mid - 1] + a[mid]) / 2;
+  }
+
+  /* ---------- FX API providers (browser CORS, no keys) — UNCHANGED baby ---------- */
+  async function fetchOpenErApi() {
+    var res = await fetch('https://open.er-api.com/v6/latest/USD', { cache: 'no-store' });
+    if (!res.ok) throw new Error('open.er-api HTTP ' + res.status);
+    var data = await res.json();
+    if (data.result !== 'success' || !data.rates) throw new Error('open.er-api invalide');
+    var r = data.rates;
+    if (!r.EUR || !r.GBP || !r.JPY || !r.CHF) throw new Error('paires manquantes');
+    return {
+      source: 'open.er-api',
+      prices: {
+        EURUSD: 1 / r.EUR,
+        GBPUSD: 1 / r.GBP,
+        USDJPY: r.JPY,
+        USDCHF: r.CHF
+      },
+      updated: data.time_last_update_utc || null
+    };
+  }
+
+  async function fetchFrankfurter() {
+    var url = 'https://api.frankfurter.dev/v1/latest?from=USD&to=EUR,GBP,JPY,CHF';
+    var res = await fetch(url, { cache: 'no-store' });
+    if (!res.ok) throw new Error('frankfurter HTTP ' + res.status);
+    var data = await res.json();
+    var r = data.rates;
+    if (!r || !r.EUR || !r.GBP || !r.JPY || !r.CHF) throw new Error('frankfurter invalide');
+    return {
+      source: 'frankfurter',
+      prices: {
+        EURUSD: 1 / r.EUR,
+        GBPUSD: 1 / r.GBP,
+        USDJPY: r.JPY,
+        USDCHF: r.CHF
+      },
+      updated: data.date || null
+    };
+  }
+
+  async function fetchFloatRates() {
+    var res = await fetch('https://www.floatrates.com/daily/usd.json', { cache: 'no-store' });
+    if (!res.ok) throw new Error('floatrates HTTP ' + res.status);
+    var data = await res.json();
+    if (!data.eur || !data.gbp || !data.jpy || !data.chf) throw new Error('floatrates invalide');
+    return {
+      source: 'floatrates',
+      prices: {
+        EURUSD: Number(data.eur.inverseRate),
+        GBPUSD: Number(data.gbp.inverseRate),
+        USDJPY: Number(data.jpy.rate),
+        USDCHF: Number(data.chf.rate)
+      },
+      updated: data.eur.date || null
+    };
+  }
+
+  async function fetchCurrencyApi() {
+    var res = await fetch(
+      'https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/usd.json',
+      { cache: 'no-store' }
+    );
+    if (!res.ok) throw new Error('currency-api HTTP ' + res.status);
+    var data = await res.json();
+    var u = data && data.usd;
+    if (!u || u.eur == null || u.gbp == null || u.jpy == null || u.chf == null) {
+      throw new Error('currency-api invalide');
+    }
+    return {
+      source: 'currency-api',
+      prices: {
+        EURUSD: 1 / Number(u.eur),
+        GBPUSD: 1 / Number(u.gbp),
+        USDJPY: Number(u.jpy),
+        USDCHF: Number(u.chf)
+      },
+      updated: data.date || null
+    };
+  }
+
+  async function fetchBankOfCanada() {
+    var url = 'https://www.bankofcanada.ca/valet/observations/' +
+      'FXUSDCAD,FXEURCAD,FXGBPCAD,FXJPYCAD,FXCHFCAD/json?recent=1';
+    var res = await fetch(url, { cache: 'no-store' });
+    if (!res.ok) throw new Error('banque-canada HTTP ' + res.status);
+    var data = await res.json();
+    var obs = data && data.observations && data.observations[0];
+    if (!obs) throw new Error('banque-canada vide');
+    var usd = Number(obs.FXUSDCAD && obs.FXUSDCAD.v);
+    var eur = Number(obs.FXEURCAD && obs.FXEURCAD.v);
+    var gbp = Number(obs.FXGBPCAD && obs.FXGBPCAD.v);
+    var jpy = Number(obs.FXJPYCAD && obs.FXJPYCAD.v);
+    var chf = Number(obs.FXCHFCAD && obs.FXCHFCAD.v);
+    if (![usd, eur, gbp, jpy, chf].every(isFinite) || usd === 0 || jpy === 0 || chf === 0) {
+      throw new Error('banque-canada paires manquantes');
+    }
+    return {
+      source: 'banque-canada',
+      prices: {
+        EURUSD: eur / usd,
+        GBPUSD: gbp / usd,
+        USDJPY: usd / jpy,
+        USDCHF: usd / chf
+      },
+      updated: obs.d || null
+    };
+  }
+
+  var PRICE_PROVIDERS = [
+    { id: 'open.er-api', fn: fetchOpenErApi },
+    { id: 'frankfurter', fn: fetchFrankfurter },
+    { id: 'floatrates', fn: fetchFloatRates },
+    { id: 'currency-api', fn: fetchCurrencyApi },
+    { id: 'banque-canada', fn: fetchBankOfCanada }
+  ];
+
+  async function fetchFxConsensus() {
+    var settled = await Promise.all(PRICE_PROVIDERS.map(function (p) {
+      return p.fn().then(function (r) {
+        return { ok: true, id: p.id, result: r };
+      }).catch(function (e) {
+        return { ok: false, id: p.id, error: (e && e.message) || String(e) };
+      });
+    }));
+
+    var ok = settled.filter(function (s) { return s.ok; });
+    var failed = settled.filter(function (s) { return !s.ok; });
+    if (!ok.length) {
+      throw new Error(failed.map(function (f) { return f.id + ': ' + f.error; }).join(' · '));
+    }
+
+    var prices = {};
+    var divergence = {};
+    FX_PAIRS.forEach(function (pair) {
+      var vals = [];
+      ok.forEach(function (s) {
+        var v = s.result.prices[pair];
+        if (v != null && isFinite(v) && v > 0) vals.push(v);
+      });
+      prices[pair] = median(vals);
+      if (vals.length) {
+        var mn = Math.min.apply(null, vals);
+        var mx = Math.max.apply(null, vals);
+        divergence[pair] = { min: mn, max: mx, spread: mx - mn, n: vals.length };
+      } else {
+        divergence[pair] = null;
+      }
+    });
+
+    var names = ok.map(function (s) { return s.result.source || s.id; });
+    return {
+      prices: prices,
+      source: 'Consensus multi-sources',
+      sourceCount: ok.length,
+      sourceTotal: PRICE_PROVIDERS.length,
+      sourceNames: names,
+      failedNames: failed.map(function (f) { return f.id; }),
+      divergence: divergence,
+      warning: ok.length < 2
+        ? 'Moins de 2 sources OK — consensus fragile, écart vs Exness plus probable.'
+        : null
+    };
+  }
+
+  /* ---------- Gold (secondary, no key) ---------- */
+  async function fetchGoldXaus() {
+    var res = await fetch('https://xaus.com/api/v1/spot', { cache: 'no-store' });
+    if (!res.ok) throw new Error('xaus HTTP ' + res.status);
+    var data = await res.json();
+    var p = Number((data.xau && data.xau.price) || data.spot_usd_oz);
+    if (!isFinite(p) || p <= 0) throw new Error('xaus invalide');
+    return { source: 'xaus.com (spot indicatif)', price: p, quality: 'secondaire' };
+  }
+
+  async function fetchGoldApi() {
+    var res = await fetch('https://api.gold-api.com/price/XAU', { cache: 'no-store' });
+    if (!res.ok) throw new Error('gold-api HTTP ' + res.status);
+    var data = await res.json();
+    var p = Number(data.price);
+    if (!isFinite(p) || p <= 0) throw new Error('gold-api invalide');
+    return { source: 'gold-api.com (spot indicatif)', price: p, quality: 'secondaire' };
+  }
+
+  async function fetchGold() {
+    var errs = [];
+    try { return await fetchGoldXaus(); } catch (e) { errs.push((e && e.message) || String(e)); }
+    try { return await fetchGoldApi(); } catch (e) { errs.push((e && e.message) || String(e)); }
+    throw new Error('Or indisponible · ' + errs.join(' · '));
+  }
+
+  /* ---------- Crypto (no key) ---------- */
+  async function fetchCryptoBinance() {
+    var res = await fetch(
+      'https://data-api.binance.vision/api/v3/ticker/price?symbols=%5B%22BTCUSDT%22,%22ETHUSDT%22%5D',
+      { cache: 'no-store' }
+    );
+    if (!res.ok) throw new Error('binance-vision HTTP ' + res.status);
+    var data = await res.json();
+    var map = {};
+    (data || []).forEach(function (row) { map[row.symbol] = Number(row.price); });
+    if (!isFinite(map.BTCUSDT) || !isFinite(map.ETHUSDT)) throw new Error('binance-vision invalide');
+    return {
+      source: 'Binance Vision (USDT≈USD)',
+      prices: { BTCUSD: map.BTCUSDT, ETHUSD: map.ETHUSDT },
+      quality: 'spot public'
+    };
+  }
+
+  async function fetchCryptoCoinbase() {
+    var b = await fetch('https://api.coinbase.com/v2/prices/BTC-USD/spot', { cache: 'no-store' });
+    var e = await fetch('https://api.coinbase.com/v2/prices/ETH-USD/spot', { cache: 'no-store' });
+    if (!b.ok || !e.ok) throw new Error('coinbase HTTP');
+    var bj = await b.json();
+    var ej = await e.json();
+    var bp = Number(bj.data && bj.data.amount);
+    var ep = Number(ej.data && ej.data.amount);
+    if (!isFinite(bp) || !isFinite(ep)) throw new Error('coinbase invalide');
+    return {
+      source: 'Coinbase spot',
+      prices: { BTCUSD: bp, ETHUSD: ep },
+      quality: 'spot public'
+    };
+  }
+
+  async function fetchCrypto() {
+    var errs = [];
+    try { return await fetchCryptoBinance(); } catch (e) { errs.push((e && e.message) || String(e)); }
+    try { return await fetchCryptoCoinbase(); } catch (e) { errs.push((e && e.message) || String(e)); }
+    throw new Error('Crypto indisponible · ' + errs.join(' · '));
+  }
+
+  /* ---------- London / Japan session awareness (no paid index API) ---------- */
+  function londonSessionOpen(d) {
+    d = d || new Date();
+    var utc = d.getUTCHours() + d.getUTCMinutes() / 60;
+    var day = d.getUTCDay(); // 0 Sun .. 6 Sat
+    if (day === 0 || day === 6) return false;
+    // Approx LSE cash: 08:00–16:30 London ≈ 07:00–15:30 UTC (winter) / 08:00–16:30 UTC summer
+    // Use broad window 07:00–16:30 UTC
+    return utc >= 7 && utc < 16.5;
+  }
+
+  function tokyoSessionOpen(d) {
+    d = d || new Date();
+    var utc = d.getUTCHours() + d.getUTCMinutes() / 60;
+    var day = d.getUTCDay();
+    if (day === 0 || day === 6) return false;
+    // TSE approx 00:00–06:00 UTC (09:00–15:00 JST)
+    return utc >= 0 && utc < 6;
+  }
+
+  function nySessionOpen(d) {
+    d = d || new Date();
+    var utc = d.getUTCHours() + d.getUTCMinutes() / 60;
+    var day = d.getUTCDay();
+    if (day === 0 || day === 6) return false;
+    // Approx NY cash / FX overlap: 13:00–21:00 UTC (winter) — broad 12:30–21:00
+    return utc >= 12.5 && utc < 21;
+  }
+
+  function fxSessionPrefer(pair) {
+    var now = new Date();
+    var london = londonSessionOpen(now);
+    var tokyo = tokyoSessionOpen(now);
+    var ny = nySessionOpen(now);
+    if (pair === 'EURUSD' || pair === 'GBPUSD') {
+      return { preferred: london || ny, label: london ? 'Londres' : (ny ? 'New York' : 'hors session L/NY'), session: london ? 'london' : (ny ? 'ny' : 'off') };
+    }
+    if (pair === 'USDJPY') {
+      return { preferred: tokyo || ny, label: tokyo ? 'Tokyo' : (ny ? 'New York' : 'hors session T/NY'), session: tokyo ? 'tokyo' : (ny ? 'ny' : 'off') };
+    }
+    if (pair === 'USDCHF') {
+      return { preferred: london || ny, label: london ? 'Londres' : (ny ? 'New York' : 'hors session L/NY'), session: london ? 'london' : (ny ? 'ny' : 'off') };
+    }
+    if (pair === 'FTSE100' || pair === 'XAUUSD') {
+      return { preferred: london || ny, label: london ? 'Londres' : (ny ? 'New York' : 'hors session'), session: london ? 'london' : (ny ? 'ny' : 'off') };
+    }
+    if (pair === 'NIKKEI225') {
+      return { preferred: tokyo, label: tokyo ? 'Tokyo' : 'hors session Tokyo', session: tokyo ? 'tokyo' : 'off' };
+    }
+    // crypto 24/7
+    return { preferred: true, label: '24/7', session: 'crypto' };
+  }
+
+  function divergencePips(pair) {
+    var divg = state.divergence && state.divergence[pair];
+    if (!divg || divg.n < 2 || divg.spread == null) return null;
+    return Math.abs(divg.spread) / pipSize(pair);
+  }
+
+  function isDivergenceTooHigh(pair) {
+    var meta = assetMeta(pair);
+    if (meta.cls !== 'fx') return false; // filter mainly FX multi-source
+    var dp = divergencePips(pair);
+    if (dp == null) return false;
+    return dp >= DIVG_FILTER_PIPS;
+  }
+
+  function scoreConfidence(pair, mom, threshold) {
+    var score = 0;
+    var absMom = Math.abs(mom || 0);
+    var thr = threshold || effectiveThreshold();
+    if (absMom >= thr * 1.8) score += 2;
+    else if (absMom >= thr * 1.15) score += 1;
+    var dp = divergencePips(pair);
+    if (dp != null) {
+      if (dp < DIVG_WARN_PIPS * 0.6) score += 1;
+      else if (dp >= DIVG_FILTER_PIPS) score -= 2;
+      else if (dp >= DIVG_WARN_PIPS) score -= 1;
+    } else {
+      score += 0; // unknown
+    }
+    var sess = fxSessionPrefer(pair);
+    if (sess.preferred) score += 1;
+    else score -= 1;
+    var histLen = (state.history[pair] || []).length;
+    if (histLen >= 5) score += 1;
+    if (score >= 3) return 'fort';
+    if (score >= 1) return 'moyen';
+    return 'faible';
+  }
+
+  function ensureStudyStart() {
+    if (!state.studyStart) {
+      state.studyStart = todayKey();
+      save();
+    }
+    return state.studyStart;
+  }
+
+  function studyDayNumber() {
+    var start = ensureStudyStart();
+    var parts = start.split('-');
+    var s = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
+    var now = new Date();
+    var today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    var diff = Math.floor((today - s) / 86400000) + 1;
+    if (diff < 1) diff = 1;
+    if (diff > STUDY_DAYS) diff = STUDY_DAYS;
+    return { day: diff, start: start, total: STUDY_DAYS };
+  }
+
+  function recentOutcomes(days) {
+    days = days || 7;
+    var cutoff = Date.now() - days * 86400000;
+    return (state.journal || []).filter(function (j) {
+      return j.outcome && j.at && j.at >= cutoff;
+    });
+  }
+
+  function estimateAvgR(outcomes) {
+    if (!outcomes.length) return null;
+    var sum = 0;
+    var n = 0;
+    outcomes.forEach(function (j) {
+      var rr = Number(state.cfg.rr) || DEFAULTS.rr;
+      // Prefer signal/today stored rr if present
+      var t = findToday(j.signalId);
+      if (t && t.rr) rr = Number(t.rr);
+      var sig = findSignal(j.signalId);
+      if (sig && sig.rr) rr = Number(sig.rr);
+      if (j.outcome === 'win') { sum += rr; n++; }
+      else if (j.outcome === 'loss') { sum -= 1; n++; }
+    });
+    if (!n) return null;
+    return Math.round((sum / n) * 100) / 100;
+  }
+
+  function topMistakesNote(outcomes) {
+    if (!outcomes.length) return 'Pas encore assez de G/P sur 7 jours pour diagnostiquer.';
+    var losses = outcomes.filter(function (j) { return j.outcome === 'loss'; });
+    var wins = outcomes.filter(function (j) { return j.outcome === 'win'; });
+    var notes = [];
+    if (losses.length >= wins.length && losses.length >= 2) {
+      notes.push('Plus de pertes que de gains récents — privilégier confiance « fort » et sessions L/T/NY.');
+    }
+    var offSessLoss = 0;
+    losses.forEach(function (j) {
+      var pref = fxSessionPrefer(j.pair);
+      if (!pref.preferred) offSessLoss++;
+    });
+    if (offSessLoss >= 2) {
+      notes.push(offSessLoss + ' pertes hors fenêtre de session préférée.');
+    }
+    var weak = losses.filter(function (j) {
+      return j.confidence === 'faible' || (j.recalibration && false);
+    }).length;
+    // Check todaySignals tags
+    var filteredLossHint = (state.filteredLog || []).length >= 3;
+    if (filteredLossHint) {
+      notes.push('Plusieurs signaux filtrés pour divergence — bien : ne pas forcer.');
+    }
+    if (!notes.length) {
+      if (wins.length > losses.length) notes.push('Tendance correcte — continuer à noter chaque G/P démo.');
+      else notes.push('Échantillon mince — viser ≥20 résultats notés avant conclusions.');
+    }
+    notes.push('Rappel : jamais d’argent réel via cet outil — démo uniquement.');
+    return notes.join(' ');
+  }
+
+  function indexSessionInfo() {
+    var now = new Date();
+    return {
+      FTSE100: {
+        open: londonSessionOpen(now),
+        label: 'Londres (LSE / FTSE)',
+        proxyPair: 'GBPUSD',
+        note: 'Proxy éducatif GBPUSD · pas le niveau FTSE réel (API CORS gratuite indisponible)'
+      },
+      NIKKEI225: {
+        open: tokyoSessionOpen(now),
+        label: 'Japon (TSE / Nikkei)',
+        proxyPair: 'USDJPY',
+        note: 'Proxy éducatif USDJPY · pas le niveau Nikkei réel (API CORS gratuite indisponible)'
+      }
+    };
+  }
+
+  async function fetchPrices() {
+    var fx = await fetchFxConsensus();
+    var prices = Object.assign({}, fx.prices);
+    var extra = { gold: null, crypto: null, indices: indexSessionInfo() };
+
+    if (state.cfg.includeGold) {
+      try {
+        var g = await fetchGold();
+        prices.XAUUSD = g.price;
+        extra.gold = g;
+        state.goldSource = g.source + ' · qualité ' + g.quality;
+      } catch (e) {
+        state.goldSource = 'Or KO · ' + ((e && e.message) || String(e));
+      }
+    } else {
+      state.goldSource = 'Or désactivé (toggle)';
+    }
+
+    if (state.cfg.includeCrypto) {
+      try {
+        var c = await fetchCrypto();
+        Object.assign(prices, c.prices);
+        extra.crypto = c;
+        state.cryptoSource = c.source + ' · ' + c.quality;
+      } catch (e) {
+        state.cryptoSource = 'Crypto KO · ' + ((e && e.message) || String(e));
+      }
+    } else {
+      state.cryptoSource = 'Crypto désactivée (toggle)';
+    }
+
+    // Index: map proxy FX into synthetic keys for momentum history only (honest)
+    if (state.cfg.includeIndices) {
+      if (prices.GBPUSD != null) prices.FTSE100 = prices.GBPUSD;
+      if (prices.USDJPY != null) prices.NIKKEI225 = prices.USDJPY;
+      state.indexNote = 'Sessions LSE/TSE + proxy FX (pas de tick index réel)';
+    } else {
+      state.indexNote = 'Indices désactivés (toggle)';
+    }
+
+    state.extraMeta = extra;
+    return {
+      prices: prices,
+      source: fx.source,
+      sourceCount: fx.sourceCount,
+      sourceTotal: fx.sourceTotal,
+      sourceNames: fx.sourceNames,
+      failedNames: fx.failedNames,
+      divergence: fx.divergence,
+      warning: fx.warning
+    };
+  }
+
+  function allTrackPairs() {
+    var list = FX_PAIRS.slice();
+    if (state.cfg.includeGold) list = list.concat(GOLD_PAIRS);
+    if (state.cfg.includeCrypto) list = list.concat(CRYPTO_PAIRS);
+    if (state.cfg.includeIndices) list = list.concat(INDEX_IDS);
+    return list;
+  }
+
+  function pushHistory(prices, ts) {
+    allTrackPairs().forEach(function (pair) {
+      var p = prices[pair];
+      if (p == null || !isFinite(p)) return;
+      if (!state.history[pair]) state.history[pair] = [];
+      var arr = state.history[pair];
+      var last = arr[arr.length - 1];
+      if (last && (ts - last.t) < 20000 && Math.abs(last.p - p) < pipSize(pair) * 0.1) {
+        return;
+      }
+      arr.push({ t: ts, p: p });
+      if (arr.length > HISTORY_MAX) arr.splice(0, arr.length - HISTORY_MAX);
+    });
+  }
+
+  function momentumPips(pair) {
+    var arr = state.history[pair] || [];
+    if (arr.length < 2) return 0;
+    var n = Math.min(MOMENTUM_N, arr.length);
+    var recent = arr.slice(-n);
+    return pipsBetween(pair, recent[0].p, recent[recent.length - 1].p);
+  }
+
+  function uid(prefix) {
+    return (prefix || 'sig') + '_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 7);
+  }
+
+  function activeCount() {
+    return state.signals.filter(function (s) { return s.status === 'active'; }).length;
+  }
+
+  function todayCount() {
+    pruneToday(state);
+    return state.todaySignals.length;
+  }
+
+  function effectiveThreshold() {
+    var base = Number(state.cfg.thresholdPips) || DEFAULTS.thresholdPips;
+    var n = todayCount();
+    if (n < DAILY_MIN) {
+      // Soften toward ≥5/day educational target
+      return Math.max(2, Math.round((base * 0.65) * 2) / 2);
+    }
+    return base;
+  }
+
+  function candidatePairs() {
+    var list = FX_PAIRS.slice();
+    if (state.cfg.includeGold) list = list.concat(GOLD_PAIRS);
+    if (state.cfg.includeCrypto) list = list.concat(CRYPTO_PAIRS);
+    if (state.cfg.includeIndices) {
+      var sess = indexSessionInfo();
+      // Only consider index proxies when session open (secondary)
+      if (sess.FTSE100.open) list.push('FTSE100');
+      if (sess.NIKKEI225.open) list.push('NIKKEI225');
+    }
+    return list;
+  }
+
+  function recordToday(sig, status, tag) {
+    pruneToday(state);
+    var existing = null;
+    for (var i = 0; i < state.todaySignals.length; i++) {
+      if (state.todaySignals[i].id === sig.id) { existing = state.todaySignals[i]; break; }
+    }
+    if (existing) {
+      if (status) existing.status = status;
+      if (tag) existing.tag = tag;
+      return existing;
+    }
+    if (state.todaySignals.length >= DAILY_MAX) return null;
+    var row = {
+      id: sig.id,
+      day: todayKey(),
+      at: sig.createdAt || Date.now(),
+      pair: sig.pair,
+      side: sig.side,
+      entry: sig.entry,
+      sl: sig.sl,
+      tp: sig.tp,
+      slPips: sig.slPips,
+      tpPips: sig.tpPips,
+      rr: sig.rr,
+      riskPct: sig.riskPct,
+      momentum: sig.momentum,
+      ruleVersion: sig.ruleVersion || state.ruleVersion || 1,
+      status: status || 'nouveau',
+      tag: tag || sig.tag || null,
+      assetClass: assetMeta(sig.pair).cls,
+      displayLabel: sig.displayLabel || assetMeta(sig.pair).label,
+      confidence: sig.confidence || null,
+      sessionLabel: sig.sessionLabel || null,
+      sessionOk: sig.sessionOk
+    };
+    state.todaySignals.unshift(row);
+    return row;
+  }
+
+  function createSignal(c, opts) {
+    opts = opts || {};
+    if (todayCount() >= DAILY_MAX) return null;
+    var meta = assetMeta(c.pair);
+    var slPips = Math.round((Number(state.cfg.slPips) || DEFAULTS.slPips) * (meta.slScale || 1));
+    var rr = Number(state.cfg.rr) || DEFAULTS.rr;
+    // R:R ≥1.5 privilégié (légendes) — on ne force pas si le labo a recalibré plus bas
+    var risk = effectiveRiskPct();
+    var side = c.mom > 0 ? 'buy' : 'sell';
+    var tpPips = slPips * rr;
+    var entry = c.price;
+    var displayPair = c.pair;
+    var displayLabel = meta.label;
+    // For index proxies, SL/TP computed on proxy FX price; label honesty
+    if (meta.cls === 'index') {
+      displayLabel = meta.label + ' · proxy ' + meta.proxyPair;
+    }
+    var thr = effectiveThreshold();
+    var conf = opts.confidence || scoreConfidence(c.pair, c.mom, thr);
+    var sess = fxSessionPrefer(c.pair);
+    var baseSl = priceFromPips(c.pair, entry, side, slPips);
+    var baseTp = tpFromPips(c.pair, entry, side, tpPips);
+    var fibPack = applyFibToLevels(c.pair, side, entry, baseSl, baseTp);
+    var sl = fibPack.sl;
+    var tp = fibPack.tp;
+    // Recompute pip distances from possibly Fib-adjusted levels
+    var slPipsAdj = Math.max(1, Math.round(Math.abs(pipsBetween(c.pair, entry, sl)) * 10) / 10);
+    var tpPipsAdj = Math.max(1, Math.round(Math.abs(pipsBetween(c.pair, entry, tp)) * 10) / 10);
+    var rrAdj = slPipsAdj > 0 ? Math.round((tpPipsAdj / slPipsAdj) * 100) / 100 : rr;
+    var fibSnapshot = null;
+    if (fibPack.fib) {
+      fibSnapshot = {
+        retr: {
+          r382: fibPack.fib.retr['0.382'],
+          r50: fibPack.fib.retr['0.5'],
+          r618: fibPack.fib.retr['0.618'],
+          r786: fibPack.fib.retr['0.786']
+        },
+        ext: {
+          e1272: fibPack.fib.ext['1.272'],
+          e1618: fibPack.fib.ext['1.618']
+        },
+        swingLow: fibPack.swing.swingLow,
+        swingHigh: fibPack.swing.swingHigh,
+        bias: fibPack.fib.bias
+      };
+    }
+    var sig = {
+      id: uid(opts.rattrapage ? 'rat' : 'sig'),
+      pair: displayPair,
+      side: side,
+      entry: entry,
+      sl: sl,
+      tp: tp,
+      slPips: slPipsAdj,
+      tpPips: tpPipsAdj,
+      rr: rrAdj,
+      riskPct: risk,
+      momentum: Math.round(c.mom * 10) / 10,
+      createdAt: opts.at || Date.now(),
+      status: opts.activate === false ? 'history' : 'active',
+      ruleVersion: state.ruleVersion || 1,
+      tag: opts.tag || null,
+      displayLabel: displayLabel,
+      assetClass: meta.cls,
+      confidence: conf,
+      sessionLabel: sess.label,
+      sessionOk: !!sess.preferred,
+      divergencePips: divergencePips(c.pair),
+      fib: fibSnapshot,
+      pocheOr: !!fibPack.poche,
+      structure: fibPack.structure ? fibPack.structure.label : null
+    };
+    if (opts.activate !== false && activeCount() < MAX_SLOTS) {
+      state.signals.unshift(sig);
+      state.lastSignalAt = Date.now();
+    } else if (opts.activate !== false) {
+      // Still record in today history even if slots full
+      sig.status = 'history';
+    }
+    recordToday(sig, opts.status || 'nouveau', opts.tag || null);
+    if (opts.tag !== 'rattrapage' && (opts.status || 'nouveau') !== 'manqué') {
+      try { notifyNewSignal(sig); } catch (eNotify) { /* ignore */ }
+    }
+    return sig;
+  }
+
+  function evaluateSignals(manual) {
+    var threshold = effectiveThreshold();
+    var soft = todayCount() < DAILY_MIN;
+
+    if (!manual && !state.cfg.auto) {
+      maybeCatchUp();
+      return;
+    }
+    if (todayCount() >= DAILY_MAX) {
+      if (manual) toast('Plafond journalier atteint (' + DAILY_MAX + ')');
+      return;
+    }
+    if (activeCount() >= MAX_SLOTS && !manual) {
+      maybeCatchUp();
+      return;
+    }
+    if (!manual && state.lastSignalAt && (Date.now() - state.lastSignalAt) < COOLDOWN_MS) {
+      maybeCatchUp();
+      return;
+    }
+
+    var candidates = [];
+    var filteredMsgs = [];
+    candidatePairs().forEach(function (pair) {
+      var price = state.prices[pair];
+      if (price == null) return;
+      var mom = momentumPips(pair);
+      var thr = threshold;
+      // Slightly softer for secondary assets when catching up
+      if (soft && assetMeta(pair).cls !== 'fx') thr = Math.max(1.5, thr * 0.85);
+      if (Math.abs(mom) < thr) return;
+      if (isDivergenceTooHigh(pair)) {
+        var dp = divergencePips(pair);
+        var msg = 'divergence trop forte — signal filtré (' + pair + ' · ' +
+          (dp != null ? dp.toFixed(1) + ' pips' : '?') + ')';
+        filteredMsgs.push(msg);
+        state.filteredLog = state.filteredLog || [];
+        state.filteredLog.unshift({ at: Date.now(), pair: pair, msg: msg, dp: dp });
+        if (state.filteredLog.length > 20) state.filteredLog.length = 20;
+        return;
+      }
+      var exists = state.signals.some(function (s) {
+        return s.status === 'active' && s.pair === pair;
+      });
+      if (exists) return;
+      // Avoid duplicate today on same pair+side within 90 min
+      var sideGuess = mom > 0 ? 'buy' : 'sell';
+      var dup = state.todaySignals.some(function (t) {
+        return t.pair === pair && t.side === sideGuess && (Date.now() - t.at) < 90 * 60 * 1000;
+      });
+      if (dup) return;
+      var sess = fxSessionPrefer(pair);
+      var conf = scoreConfidence(pair, mom, thr);
+      candidates.push({
+        pair: pair, mom: mom, price: price,
+        sessionOk: sess.preferred, confidence: conf, sessLabel: sess.label
+      });
+    });
+
+    // Prefer preferred-session + stronger confidence, then |momentum|
+    candidates.sort(function (a, b) {
+      var sa = (a.sessionOk ? 2 : 0) + (a.confidence === 'fort' ? 2 : a.confidence === 'moyen' ? 1 : 0);
+      var sb = (b.sessionOk ? 2 : 0) + (b.confidence === 'fort' ? 2 : b.confidence === 'moyen' ? 1 : 0);
+      if (sb !== sa) return sb - sa;
+      return Math.abs(b.mom) - Math.abs(a.mom);
+    });
+
+    if (filteredMsgs.length) {
+      lastFilterMsg = filteredMsgs[0];
+      var fn = $('filterNote');
+      if (fn) {
+        fn.hidden = false;
+        fn.textContent = '⚠ ' + filteredMsgs[0] +
+          (filteredMsgs.length > 1 ? ' (+' + (filteredMsgs.length - 1) + ')' : '');
+      }
+    } else {
+      lastFilterMsg = null;
+    }
+
+    if (!candidates.length) {
+      if (manual) {
+        if (filteredMsgs.length) toast('divergence trop forte — signal filtré');
+        else toast('Aucun momentum ≥ ' + threshold + ' (seuil effectif' + (soft ? ' assoupli' : '') + ')');
+      }
+      maybeCatchUp();
+      return;
+    }
+
+    var slotsLeft = Math.max(0, MAX_SLOTS - activeCount());
+    var room = DAILY_MAX - todayCount();
+    var created = 0;
+    for (var i = 0; i < candidates.length && created < room; i++) {
+      if (!manual && created > 0) break;
+      if (slotsLeft <= 0 && !manual) break;
+      var c = candidates[i];
+      var activate = slotsLeft > 0;
+      var sig = createSignal(c, {
+        activate: activate,
+        tag: soft && assetMeta(c.pair).cls !== 'fx' ? 'secondaire' : null,
+        confidence: c.confidence
+      });
+      if (sig) {
+        created++;
+        if (activate) slotsLeft--;
+      }
+    }
+
+    if (created) {
+      save();
+      render();
+      toast(created + ' signal(s) · copie sur démo Exness');
+    }
+    maybeCatchUp();
+  }
+
+  function dayPathMomentum(pair) {
+    var arr = state.history[pair] || [];
+    if (arr.length < 3) return null;
+    var startOfDay = new Date();
+    startOfDay.setHours(0, 0, 0, 0);
+    var dayPts = arr.filter(function (x) { return x.t >= startOfDay.getTime(); });
+    if (dayPts.length < 3) dayPts = arr.slice(-Math.min(12, arr.length));
+    if (dayPts.length < 3) return null;
+    var first = dayPts[0].p;
+    var last = dayPts[dayPts.length - 1].p;
+    var mid = dayPts[Math.floor(dayPts.length / 2)].p;
+    var momFull = pipsBetween(pair, first, last);
+    var momEarly = pipsBetween(pair, first, mid);
+    var momLate = pipsBetween(pair, mid, last);
+    return { momFull: momFull, momEarly: momEarly, momLate: momLate, price: last, first: first };
+  }
+
+  function maybeCatchUp() {
+    pruneToday(state);
+    var n = todayCount();
+    if (n >= DAILY_MIN || n >= DAILY_MAX) return;
+
+    var hour = new Date().getHours();
+    // Midday / evening backfill windows (local)
+    var windowOk = hour >= 11 || n <= 1;
+    if (!windowOk && n >= 2) return;
+
+    var need = Math.min(DAILY_MIN - n, DAILY_MAX - n);
+    if (need <= 0) return;
+
+    var thr = Math.max(1.5, (Number(state.cfg.thresholdPips) || 5) * 0.5);
+    var pairs = candidatePairs();
+    var made = 0;
+
+    for (var i = 0; i < pairs.length && made < need; i++) {
+      var pair = pairs[i];
+      if (isDivergenceTooHigh(pair)) continue;
+      var path = dayPathMomentum(pair);
+      if (!path) continue;
+      var useMom = Math.abs(path.momEarly) >= Math.abs(path.momLate) ? path.momEarly : path.momLate;
+      if (Math.abs(useMom) < thr && Math.abs(path.momFull) < thr) continue;
+      if (Math.abs(useMom) < thr) useMom = path.momFull;
+
+      var already = state.todaySignals.some(function (t) {
+        return t.pair === pair && t.tag === 'rattrapage';
+      });
+      if (already) continue;
+
+      var conf = scoreConfidence(pair, useMom, thr);
+      var sig = createSignal(
+        { pair: pair, mom: useMom, price: path.price },
+        { activate: false, tag: 'rattrapage', status: 'manqué', at: Date.now(), confidence: conf }
+      );
+      if (sig) made++;
+    }
+
+    if (made) {
+      save();
+      render();
+      toast(made + ' rattrapage éducatif (historique du jour)');
+    }
+  }
+
+  async function refresh(fromAutoEval) {
+    if (fetching) return;
+    fetching = true;
+    setStatus('wait', 'Mise à jour…');
+    $('errorBox').hidden = true;
+    try {
+      var result = await fetchPrices();
+      var ts = Date.now();
+      // Preserve previous non-FX extras if fetch skipped them
+      state.prices = result.prices;
+      state.divergence = result.divergence || {};
+      state.apiSource = (result.sourceNames && result.sourceNames.length)
+        ? result.sourceNames.join(', ')
+        : result.source;
+      state.sourceCount = result.sourceCount;
+      state.sourceTotal = result.sourceTotal;
+      state.sourceWarning = result.warning || null;
+      state.lastFetchAt = ts;
+      state.lastError = null;
+      pushHistory(result.prices, ts);
+      save();
+      var sc = result.sourceCount + '/' + result.sourceTotal + ' sources FX';
+      setStatus(result.sourceCount < 2 ? 'wait' : 'ok', 'OK · ' + sc + ' · consensus médiane');
+      render();
+      if (fromAutoEval !== false) evaluateSignals(false);
+      else maybeCatchUp();
+    } catch (e) {
+      state.lastError = (e && e.message) || String(e);
+      state.sourceWarning = null;
+      save();
+      setStatus('err', 'Erreur API');
+      showError(state.lastError);
+      renderTicker();
+    } finally {
+      fetching = false;
+    }
+  }
+
+  function setStatus(kind, text) {
+    $('apiStatus').innerHTML = '<span class="dot ' + kind + '"></span>' + text;
+  }
+
+  function showError(msg) {
+    var box = $('errorBox');
+    box.hidden = false;
+    box.innerHTML = '<strong>Impossible de charger les cours FX.</strong><br>' +
+      escapeHtml(msg) +
+      '<br><button type="button" class="btn-primary btn-sm" id="btnRetry" style="margin-top:0.65rem">Réessayer</button>';
+    var btn = $('btnRetry');
+    if (btn) btn.onclick = function () { refresh(true); };
+  }
+
+  function escapeHtml(s) {
+    return String(s)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  function sideLabel(side) {
+    return side === 'buy' ? 'ACHAT' : 'VENTE';
+  }
+
+  function statusBadge(st) {
+    var map = {
+      nouveau: 'nouveau',
+      copie: 'copie',
+      copié: 'copie',
+      gagné: 'gagne',
+      gagne: 'gagne',
+      perdu: 'perdu',
+      manqué: 'manque',
+      manque: 'manque'
+    };
+    var cls = map[st] || 'nouveau';
+    var label = st || 'nouveau';
+    return '<span class="badge ' + cls + '">' + escapeHtml(label) + '</span>';
+  }
+
+  function renderTickPair(pair) {
+    var price = state.prices[pair];
+    var mom = momentumPips(pair);
+    var hist = (state.history[pair] || []).length;
+    var cls = mom > 0.2 ? 'pos' : (mom < -0.2 ? 'neg' : 'muted');
+    var sign = mom > 0 ? '+' : '';
+    var divg = state.divergence && state.divergence[pair];
+    var divgHtml = '';
+    if (divg && divg.n >= 2) {
+      var spreadPips = Math.abs(divg.spread) / pipSize(pair);
+      divgHtml = '<div class="divg">divergence sources · ' +
+        spreadPips.toFixed(1) + ' pips (' + divg.n + ' src)</div>';
+    } else if (divg && divg.n === 1) {
+      divgHtml = '<div class="divg">1 seule source pour cette paire</div>';
+    }
+    var meta = assetMeta(pair);
+    return '<div class="tick">' +
+      '<div class="pair">' + escapeHtml(meta.label || pair) + '</div>' +
+      '<div class="price">' + formatPrice(pair, price) + '</div>' +
+      '<div class="delta ' + cls + '">' +
+        (hist >= 2 ? (sign + mom.toFixed(1) + ' ' + meta.unit + ' / ' + Math.min(MOMENTUM_N, hist) + ' pts') : 'historique…') +
+      '</div>' + divgHtml + '</div>';
+  }
+
+  function renderTicker() {
+    var html = '';
+    FX_PAIRS.forEach(function (pair) { html += renderTickPair(pair); });
+    $('ticker').innerHTML = html || '<p class="empty">Pas encore de cours FX</p>';
+
+    // Gold
+    var gHtml = '';
+    if (state.cfg.includeGold && state.prices.XAUUSD != null) {
+      gHtml = renderTickPair('XAUUSD');
+    } else {
+      gHtml = '<p class="empty">' + escapeHtml(state.goldSource || 'Or non chargé') + '</p>';
+    }
+    $('tickerGold').innerHTML = gHtml;
+    if ($('goldHonesty')) {
+      $('goldHonesty').textContent = 'Or : ' + (state.goldSource || 'source secondaire gratuite (qualité variable, pas un tick Exness).');
+    }
+
+    // Crypto
+    var cHtml = '';
+    if (state.cfg.includeCrypto && (state.prices.BTCUSD != null || state.prices.ETHUSD != null)) {
+      CRYPTO_PAIRS.forEach(function (p) {
+        if (state.prices[p] != null) cHtml += renderTickPair(p);
+      });
+    } else {
+      cHtml = '<p class="empty">' + escapeHtml(state.cryptoSource || 'Crypto non chargée') + '</p>';
+    }
+    $('tickerCrypto').innerHTML = cHtml || '<p class="empty">Crypto non chargée</p>';
+    if ($('cryptoHonesty')) {
+      $('cryptoHonesty').textContent = 'Crypto : ' + (state.cryptoSource || 'API publiques — spot indicatif, pas Exness.');
+    }
+
+    // Indices
+    var sess = indexSessionInfo();
+    var iHtml = '';
+    INDEX_IDS.forEach(function (id) {
+      var info = sess[id];
+      var open = info.open;
+      var proxy = info.proxyPair;
+      var mom = momentumPips(id) || momentumPips(proxy);
+      var cls = mom > 0.2 ? 'pos' : (mom < -0.2 ? 'neg' : 'muted');
+      var sign = mom > 0 ? '+' : '';
+      iHtml += '<div class="tick">' +
+        '<div class="pair">' + escapeHtml(info.label) +
+          '<span class="session-pill ' + (open ? 'open' : 'closed') + '">' +
+          (open ? 'Session ouverte' : 'Session fermée') + '</span></div>' +
+        '<div class="price muted">proxy ' + proxy + ' · ' + formatPrice(proxy, state.prices[proxy]) + '</div>' +
+        '<div class="delta ' + cls + '">' +
+          (sign + (mom || 0).toFixed(1) + ' pips proxy') +
+        '</div>' +
+        '<div class="divg">' + escapeHtml(info.note) +
+          (open ? '' : ' · signaux index secondaires en pause') + '</div></div>';
+    });
+    $('tickerIndices').innerHTML = iHtml;
+    if ($('indexHonesty')) {
+      $('indexHonesty').textContent = state.indexNote ||
+        'Pas d’API FTSE/Nikkei gratuite CORS fiable — proxy session GBP/JPY + horaires (niveaux index non affichés).';
+    }
+
+    $('apiSource').textContent = state.apiSource || '—';
+    var countEl = $('sourceCountLabel');
+    if (countEl) {
+      if (state.sourceCount != null && state.sourceTotal != null) {
+        countEl.textContent = state.sourceCount + '/' + state.sourceTotal +
+          ' sources FX · médiane · Consensus multi-sources (écart possible vs Exness)';
+      } else {
+        countEl.textContent = 'Consensus multi-sources (écart possible vs Exness)';
+      }
+    }
+    var warnEl = $('sourceWarn');
+    if (warnEl) {
+      if (state.sourceWarning) {
+        warnEl.hidden = false;
+        warnEl.style.display = 'block';
+        warnEl.textContent = '⚠ ' + state.sourceWarning;
+      } else {
+        warnEl.hidden = true;
+        warnEl.style.display = 'none';
+        warnEl.textContent = '';
+      }
+    }
+    if (state.lastFetchAt) {
+      var d = new Date(state.lastFetchAt);
+      $('lastUpdate').textContent = 'MAJ ' + d.toLocaleTimeString('fr-FR', {
+        hour: '2-digit', minute: '2-digit', second: '2-digit'
+      });
+    } else {
+      $('lastUpdate').textContent = '—';
+    }
+
+    if ($('dailyCapNote')) {
+      $('dailyCapNote').textContent = 'Signaux du jour : ' + todayCount() + '/' + DAILY_MAX +
+        ' · objectif ≥' + DAILY_MIN + ' (seuil effectif ' + effectiveThreshold() +
+        ') · rattrapage éducatif si besoin · plafond partagé FX/or/crypto/indices.';
+    }
+  }
+
+  function copyTextForSignal(s) {
+    var sym = assetMeta(s.pair).cls === 'index' ? assetMeta(s.pair).proxyPair : s.pair;
+    var lines = [
+      'Exness DÉMO uniquement',
+      'Paire: ' + sym,
+      'Direction: ' + sideLabel(s.side),
+      'Volume: 0.01 lot',
+      'Entrée ≈ ' + formatPrice(s.pair, s.entry),
+      'SL: ' + formatPrice(s.pair, s.sl) + ' (' + s.slPips + ')',
+      'TP: ' + formatPrice(s.pair, s.tp) + ' (R:R ' + s.rr + ')',
+      'Confiance: ' + (s.confidence || '—') + ' · Session: ' + (s.sessionLabel || '—'),
+      'Divergence: ' + (s.divergencePips != null ? (Math.round(s.divergencePips * 10) / 10) + ' pips' : '—'),
+      'Structure: ' + (s.structure || '—') + (s.pocheOr ? ' · poche d’or' : ''),
+      'Risque: ' + (s.riskPct || '—') + '%',
+      'Règles v' + (s.ruleVersion || state.ruleVersion || 1)
+    ];
+    if (s.fib && s.fib.retr) {
+      lines.push(
+        'Fib 50/61.8: ' + formatPrice(s.pair, s.fib.retr.r50) + ' / ' + formatPrice(s.pair, s.fib.retr.r618),
+        'Fib ext 127.2/161.8: ' + formatPrice(s.pair, s.fib.ext.e1272) + ' / ' + formatPrice(s.pair, s.fib.ext.e1618)
+      );
+    }
+    return lines.join('\n');
+  }
+
+  function confBadge(c) {
+    c = c || 'moyen';
+    var cls = c === 'fort' ? 'conf-fort' : (c === 'faible' ? 'conf-faible' : 'conf-moyen');
+    return '<span class="badge ' + cls + '">confiance ' + escapeHtml(c) + '</span>';
+  }
+
+  function renderSignals() {
+    var active = state.signals.filter(function (s) { return s.status === 'active'; });
+    $('slotCount').textContent = active.length + ' / ' + MAX_SLOTS;
+    var fn = $('filterNote');
+    if (fn && !lastFilterMsg) {
+      // keep last filter visible briefly only if set during eval; else hide if empty
+      if (!fn.textContent) fn.hidden = true;
+    }
+    if (!active.length) {
+      $('signals').innerHTML = '<p class="empty">Aucun signal actif. Active l’auto ou appuie sur « Évaluer ».</p>';
+      return;
+    }
+    var html = '';
+    active.forEach(function (s) {
+      var dirCls = s.side === 'buy' ? 'buy' : 'sell';
+      var dirColor = s.side === 'buy' ? 'pos' : 'neg';
+      var label = s.displayLabel || assetMeta(s.pair).label || s.pair;
+      var tagHtml = s.tag ? ' · <span class="badge rattrapage">' + escapeHtml(s.tag) + '</span>' : '';
+      var sym = assetMeta(s.pair).cls === 'index' ? assetMeta(s.pair).proxyPair : s.pair;
+      var conf = s.confidence || scoreConfidence(s.pair, s.momentum, effectiveThreshold());
+      var divgTxt = s.divergencePips != null
+        ? (Math.round(s.divergencePips * 10) / 10) + ' pips'
+        : '—';
+      var pocheHtml = s.pocheOr ? ' <span class="badge poche">poche d’or</span>' : '';
+      var structHtml = s.structure
+        ? ' <span class="badge ' +
+          (s.structure.indexOf('haussi') >= 0 ? 'struct-up' : (s.structure.indexOf('baissi') >= 0 ? 'struct-dn' : 'struct-rg')) +
+          '">' + escapeHtml(s.structure) + '</span>'
+        : '';
+      var fibHtml = '';
+      if (s.fib && s.fib.retr) {
+        fibHtml = '<div class="sig-pro-meta">' +
+          '<strong>Fib</strong> 38.2 ' + formatPrice(s.pair, s.fib.retr.r382) +
+          ' · 50 ' + formatPrice(s.pair, s.fib.retr.r50) +
+          ' · 61.8 ' + formatPrice(s.pair, s.fib.retr.r618) +
+          ' · 78.6 ' + formatPrice(s.pair, s.fib.retr.r786) +
+          '<br>Ext 127.2 ' + formatPrice(s.pair, s.fib.ext.e1272) +
+          ' · 161.8 ' + formatPrice(s.pair, s.fib.ext.e1618) +
+          '<br><span class="muted">Swing L/H ' + formatPrice(s.pair, s.fib.swingLow) +
+          ' / ' + formatPrice(s.pair, s.fib.swingHigh) +
+          ' · R:R ' + s.rr + ' · confiance ' + escapeHtml(conf) +
+          ' · session ' + escapeHtml(s.sessionLabel || '—') +
+          ' · divergence ' + escapeHtml(divgTxt) + '</span></div>';
+      } else {
+        fibHtml = '<div class="sig-pro-meta"><span class="muted">Fib : historique insuffisant · R:R ' +
+          s.rr + ' · confiance ' + escapeHtml(conf) +
+          ' · session ' + escapeHtml(s.sessionLabel || '—') +
+          ' · divergence ' + escapeHtml(divgTxt) + '</span></div>';
+      }
+      html += '<div class="signal-card ' + dirCls + '" data-id="' + s.id + '">' +
+        '<div class="muted">' + new Date(s.createdAt).toLocaleString('fr-FR') +
+        ' · momentum ' + (s.momentum > 0 ? '+' : '') + s.momentum +
+        ' · <span class="rule-ver">règles v' + (s.ruleVersion || state.ruleVersion || 1) + '</span>' +
+        tagHtml + pocheHtml + structHtml + '</div>' +
+        '<div style="margin:0.35rem 0">' + confBadge(conf) +
+          (s.sessionLabel ? ' <span class="session-pill ' + (s.sessionOk ? 'open' : 'closed') + '">' +
+            escapeHtml(s.sessionLabel) + '</span>' : '') +
+          ' <span class="badge pending">R:R ' + s.rr + '</span>' +
+          ' <span class="badge' + (s.divergencePips != null && s.divergencePips >= DIVG_WARN_PIPS ? ' filtered' : ' conf-moyen') +
+          '">divg ' + escapeHtml(divgTxt) + '</span>' +
+        '</div>' +
+        '<div class="big-dir ' + dirColor + '">' + sideLabel(s.side) + ' ' + escapeHtml(label) + '</div>' +
+        fibHtml +
+        '<div class="checklist-card">' +
+          '<div class="chk-title">Checklist Exness DÉMO (un tap)</div>' +
+          '<ol>' +
+            '<li>Paire <strong>' + escapeHtml(sym) + '</strong>' +
+              (assetMeta(s.pair).cls === 'index' ? ' <span class="muted">(proxy index)</span>' : '') + '</li>' +
+            '<li>Direction <strong>' + sideLabel(s.side) + '</strong></li>' +
+            '<li>Volume <strong>0.01</strong> lot</li>' +
+            '<li>Entrée ≈ <strong>' + formatPrice(s.pair, s.entry) + '</strong></li>' +
+            '<li>SL <strong>' + formatPrice(s.pair, s.sl) + '</strong> (obligatoire · swing+buffer si Fib)</li>' +
+            '<li>TP <strong>' + formatPrice(s.pair, s.tp) + '</strong> (R:R ' + s.rr + ' · ext Fib si dispo)</li>' +
+          '</ol>' +
+          '<div class="copy-bar">' +
+            '<button type="button" class="btn-primary btn-sm act-clipboard" data-id="' + s.id + '">Copié</button>' +
+            '<button type="button" class="btn-ok btn-sm act-copy" data-id="' + s.id + '">✓ Marqué copié en démo</button>' +
+            '<button type="button" class="btn-ignore btn-sm act-ignore" data-id="' + s.id + '">Ignoré</button>' +
+          '</div>' +
+        '</div>' +
+        '<div class="meta-grid">' +
+          '<div><span>Risque</span><br>≤ ' + s.riskPct + '% (≤1–2% · Turtle si 3 pertes)</div>' +
+          '<div><span>Note</span><br>Compte DÉMO seulement — Fib pas magique</div>' +
+        '</div>' +
+      '</div>';
+    });
+    $('signals').innerHTML = html;
+  }
+
+  function renderToday() {
+    pruneToday(state);
+    var list = state.todaySignals.slice().sort(function (a, b) { return b.at - a.at; });
+    if ($('todayTitle')) $('todayTitle').textContent = 'Signaux du jour (' + list.length + ')';
+    if ($('todayMeta')) {
+      $('todayMeta').textContent = list.length + '/' + DAILY_MAX + ' · min ' + DAILY_MIN;
+    }
+    var el = $('todayList');
+    if (!el) return;
+    if (!list.length) {
+      el.innerHTML = '<p class="empty">Aucun signal aujourd’hui encore. Auto / Évaluer / rattrapage rempliront cette liste.</p>';
+      return;
+    }
+    var html = '';
+    list.forEach(function (t) {
+      var label = t.displayLabel || t.pair;
+      var tag = t.tag === 'rattrapage'
+        ? ' <span class="badge rattrapage">rattrapage</span>'
+        : (t.tag ? ' <span class="badge pending">' + escapeHtml(t.tag) + '</span>' : '');
+      html += '<div class="today-item" data-tid="' + t.id + '">' +
+        statusBadge(t.status) + ' ' +
+        '<span class="badge ' + (t.side === 'buy' ? 'buy' : 'sell') + '">' + sideLabel(t.side) + '</span> ' +
+        '<strong>' + escapeHtml(label) + '</strong>' + tag +
+        (t.confidence ? ' ' + confBadge(t.confidence) : '') +
+        '<div class="muted" style="margin-top:0.25rem">' +
+          new Date(t.at).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) +
+          ' · SL ' + formatPrice(t.pair, t.sl) +
+          ' · <span class="rule-ver">v' + (t.ruleVersion || 1) + '</span>' +
+        '</div>' +
+        '<div class="today-actions">' +
+          '<button type="button" class="btn-ghost btn-sm act-today-copy" data-tid="' + t.id + '">Copié</button>' +
+          '<button type="button" class="btn-ghost btn-sm act-today-win" data-tid="' + t.id + '">Gagné</button>' +
+          '<button type="button" class="btn-ghost btn-sm act-today-loss" data-tid="' + t.id + '">Perdu</button>' +
+          '<button type="button" class="btn-ghost btn-sm act-today-miss" data-tid="' + t.id + '">Manqué</button>' +
+        '</div></div>';
+    });
+    el.innerHTML = html;
+  }
+
+  function renderJournal() {
+    if (!state.journal.length) {
+      $('journal').innerHTML = '<p class="empty">Pas encore d’entrées.</p>';
+    } else {
+      var html = '';
+      state.journal.slice(0, 30).forEach(function (j) {
+        var badge = j.side === 'buy' ? 'buy' : 'sell';
+        var outcome = '';
+        if (j.outcome === 'win') outcome = ' <span class="pos">· Gagné</span>';
+        else if (j.outcome === 'loss') outcome = ' <span class="neg">· Perdu</span>';
+        else if (j.action === 'copied') {
+          outcome = ' <span class="badge pending">en cours</span>' +
+            ' <button type="button" class="btn-ghost btn-sm act-win" data-jid="' + j.id + '" style="min-height:32px;padding:0.25rem 0.5rem;margin-left:0.25rem">Gagné</button>' +
+            ' <button type="button" class="btn-ghost btn-sm act-loss" data-jid="' + j.id + '" style="min-height:32px;padding:0.25rem 0.5rem">Perdu</button>';
+        } else {
+          outcome = ' <span class="muted">· ignoré</span>';
+        }
+        html += '<div class="journal-item">' +
+          '<span class="badge ' + badge + '">' + sideLabel(j.side) + '</span> ' +
+          '<strong>' + j.pair + '</strong> @ ' + formatPrice(j.pair, j.entry) +
+          outcome +
+          '<div class="muted" style="margin-top:0.25rem">' +
+            new Date(j.at).toLocaleString('fr-FR') +
+            ' · SL ' + formatPrice(j.pair, j.sl) +
+          '</div></div>';
+      });
+      $('journal').innerHTML = html;
+    }
+
+    var total = state.wins + state.losses;
+    var note = 'Marque Gagné/Perdu après chaque copie démo. Le labo enregistre une entrée d’historique à chaque fois (version de règles + ce qui a changé).';
+    if (total < MIN_SAMPLE_SOFT) {
+      note += ' Encore ' + (MIN_SAMPLE_SOFT - total) + ' résultat(s) avant le premier ajustement (min ' + MIN_SAMPLE_SOFT + '). Gros changements après ' + MIN_SAMPLE_BIG + '.';
+    } else if (total < MIN_SAMPLE_BIG) {
+      note += ' Ajustements doux possibles · gros changements après ' + MIN_SAMPLE_BIG + ' G/P. Démo seulement.';
+    }
+    $('calibNote').textContent = note;
+  }
+
+  function setBar(id, pct, okAt) {
+    var el = $(id);
+    if (!el) return;
+    pct = Math.max(0, Math.min(100, pct || 0));
+    el.style.width = pct + '%';
+    el.className = '';
+    if (okAt != null && pct >= okAt) el.classList.add('ok');
+    else if (pct >= 40) el.classList.add('warn');
+  }
+
+  function renderStudyPanel() {
+    ensureStudyStart();
+    var info = studyDayNumber();
+    if ($('studyDayLabel')) $('studyDayLabel').textContent = 'Jour ' + info.day + '/' + info.total;
+    var inp = $('studyStartInput');
+    if (inp && document.activeElement !== inp) inp.value = state.studyStart || info.start;
+
+    var sigToday = todayCount();
+    var outcomes = state.wins + state.losses;
+    var wr = outcomes ? Math.round((state.wins / outcomes) * 100) : null;
+
+    if ($('studySigToday')) $('studySigToday').textContent = sigToday + ' / ' + STUDY_TARGET_SIGNALS;
+    if ($('studyOutcomes')) $('studyOutcomes').textContent = outcomes + ' / ' + STUDY_TARGET_OUTCOMES;
+    if ($('studyWr')) {
+      $('studyWr').textContent = wr == null ? '—' : (wr + '%');
+      $('studyWr').className = 'val' + (wr == null ? '' : (wr >= 50 ? ' pos' : ' neg'));
+    }
+    if ($('studyRuleVer')) $('studyRuleVer').textContent = 'v' + (state.ruleVersion || 1);
+
+    setBar('barSigToday', (sigToday / STUDY_TARGET_SIGNALS) * 100, 100);
+    setBar('barOutcomes', (outcomes / STUDY_TARGET_OUTCOMES) * 100, 100);
+    setBar('barWr', wr == null ? 0 : wr, 50);
+
+    var hint = $('studyHint');
+    if (hint) {
+      var leftDays = Math.max(0, STUDY_DAYS - info.day);
+      hint.textContent = 'Jour ' + info.day + '/' + STUDY_DAYS +
+        ' · reste ~' + leftDays + ' j · règles v' + (state.ruleVersion || 1) +
+        ' · cible étude : discipline G/P démo, pas le cash. Aucune suggestion d’argent réel ici.';
+    }
+  }
+
+  function renderWeeklySummary() {
+    var el = $('weeklySummary');
+    if (!el) return;
+    var outcomes = recentOutcomes(7);
+    if (!outcomes.length) {
+      el.innerHTML = '<p class="empty">Pas encore de G/P sur les 7 derniers jours. Note des résultats démo pour remplir ce bloc.</p>';
+      return;
+    }
+    var w = outcomes.filter(function (j) { return j.outcome === 'win'; }).length;
+    var l = outcomes.filter(function (j) { return j.outcome === 'loss'; }).length;
+    var tot = w + l;
+    var wr = tot ? Math.round((w / tot) * 100) : null;
+    var avgR = estimateAvgR(outcomes);
+    var mistakes = topMistakesNote(outcomes);
+    el.innerHTML =
+      '<div class="wk-row"><span>Win rate 7j</span><strong class="' + (wr >= 50 ? 'pos' : 'neg') + '">' +
+        (wr == null ? '—' : wr + '%') + '</strong></div>' +
+      '<div class="wk-row"><span>Résultats 7j</span><strong>' + w + 'G / ' + l + 'P</strong></div>' +
+      '<div class="wk-row"><span>R moyen estimé</span><strong>' +
+        (avgR == null ? '—' : ((avgR > 0 ? '+' : '') + avgR + ' R')) +
+        '</strong></div>' +
+      '<div class="wk-row" style="flex-direction:column;align-items:flex-start">' +
+        '<span class="muted">Notes / erreurs fréquentes</span>' +
+        '<span style="margin-top:0.25rem">' + escapeHtml(mistakes) + '</span></div>' +
+      '<p class="muted" style="margin:0.55rem 0 0;font-size:0.72rem">Estimations éducatives · démo seulement · pas un conseil financier.</p>';
+  }
+
+  function renderStats() {
+    var total = state.wins + state.losses;
+    var wr = total ? Math.round((state.wins / total) * 100) : null;
+    $('statWins').textContent = String(state.wins);
+    $('statLosses').textContent = String(state.losses);
+    $('statTotal').textContent = String(total);
+    $('statWr').textContent = wr == null ? '—' : (wr + '%');
+    $('statWr').className = 'val' + (wr == null ? '' : (wr >= 50 ? ' pos' : ' neg'));
+    $('statVerNum').textContent = String(state.ruleVersion || 1);
+    $('ruleVersionLabel').textContent = 'v' + (state.ruleVersion || 1);
+    $('statRules').textContent = formatRules(snapshotRules(state.cfg));
+    var hist = state.ruleHistory || [];
+    var lastAdj = null;
+    for (var i = 0; i < hist.length; i++) {
+      if (hist[i].adjusted || hist[i].trigger === 'recalibrate') { lastAdj = hist[i]; break; }
+    }
+    if (lastAdj) {
+      $('statLastChange').textContent = 'v' + lastAdj.version + ' · ' + (lastAdj.changes || []).join(' · ') +
+        ' · ' + new Date(lastAdj.at).toLocaleString('fr-FR');
+    } else if (hist.length && hist[0].trigger !== 'init') {
+      $('statLastChange').textContent = 'Dernier marquage : ' + (hist[0].changes || []).join(' · ') +
+        ' (pas d’ajustement fort)';
+    } else {
+      $('statLastChange').textContent = 'Aucune recalibrage encore — marque des G/P démo';
+    }
+  }
+
+  function renderVersionHistory() {
+    var el = $('versionHistory');
+    if (!el) return;
+    var hist = state.ruleHistory || [];
+    var rows = hist.filter(function (h) { return h.trigger !== 'init' && h.trigger !== 'migrated'; });
+    if (!rows.length) {
+      el.innerHTML = '<p class="empty">Après chaque Gagné/Perdu démo, la version des règles et les changements apparaissent ici.</p>';
+      return;
+    }
+    var html = '';
+    rows.slice(0, 25).forEach(function (h) {
+      var wr = h.winRate != null ? Math.round(h.winRate * 100) + '%' : '—';
+      var oc = h.outcome === 'win' ? '<span class="pos">Gagné</span>' :
+               (h.outcome === 'loss' ? '<span class="neg">Perdu</span>' : '—');
+      var chgCls = h.adjusted ? 'chg' : 'unchanged';
+      html += '<div class="version-item">' +
+        '<div class="ver-head">' +
+          '<span class="rule-ver">v' + h.version + (h.adjusted ? ' ✎' : '') + '</span>' +
+          '<span class="muted">' + new Date(h.at).toLocaleString('fr-FR') + '</span>' +
+        '</div>' +
+        '<div>' + oc +
+          (h.pair ? (' · ' + sideLabel(h.side) + ' ' + h.pair) : '') +
+          ' · WR ' + wr + ' (' + (h.wins || 0) + 'G/' + (h.losses || 0) + 'P)</div>' +
+        '<div class="muted" style="margin-top:0.2rem">' + escapeHtml(h.reason || '') + '</div>' +
+        '<div class="' + chgCls + '">' + escapeHtml((h.changes || []).join(' · ')) + '</div>' +
+        (h.before && h.after ? ('<div class="before-after">Avant : ' + escapeHtml(formatRules(h.before)) +
+          '<br>Après : ' + escapeHtml(formatRules(h.after)) + '</div>') :
+          ('<div class="muted" style="margin-top:0.2rem">Après : ' + escapeHtml(formatRules(h.after)) + '</div>')) +
+      '</div>';
+    });
+    el.innerHTML = html;
+  }
+
+  function syncCfgInputs() {
+    $('cfgThreshold').value = state.cfg.thresholdPips;
+    $('cfgSlPips').value = state.cfg.slPips;
+    $('cfgRr').value = state.cfg.rr;
+    $('cfgRisk').value = state.cfg.riskPct;
+    $('autoToggle').checked = !!state.cfg.auto;
+    if ($('toggleGold')) $('toggleGold').checked = !!state.cfg.includeGold;
+    if ($('toggleCrypto')) $('toggleCrypto').checked = !!state.cfg.includeCrypto;
+    if ($('toggleIndices')) $('toggleIndices').checked = !!state.cfg.includeIndices;
+  }
+
+  function readCfgFromInputs() {
+    state.cfg.thresholdPips = clamp(Number($('cfgThreshold').value), 1, 50, DEFAULTS.thresholdPips);
+    state.cfg.slPips = clamp(Number($('cfgSlPips').value), 5, 100, DEFAULTS.slPips);
+    state.cfg.rr = clamp(Number($('cfgRr').value), 0.5, 5, DEFAULTS.rr);
+    state.cfg.riskPct = clamp(Number($('cfgRisk').value), 0.5, 2, DEFAULTS.riskPct);
+    save();
+  }
+
+  function clamp(n, min, max, fallback) {
+    if (!isFinite(n)) return fallback;
+    return Math.min(max, Math.max(min, n));
+  }
+
+  function render() {
+    renderTicker();
+    renderSignals();
+    renderToday();
+    renderJournal();
+    renderStats();
+    renderVersionHistory();
+    renderStudyPanel();
+    renderProToolkit();
+    renderWeeklySummary();
+    syncCfgInputs();
+  }
+
+  function findSignal(id) {
+    for (var i = 0; i < state.signals.length; i++) {
+      if (state.signals[i].id === id) return state.signals[i];
+    }
+    return null;
+  }
+
+  function findToday(tid) {
+    for (var i = 0; i < state.todaySignals.length; i++) {
+      if (state.todaySignals[i].id === tid) return state.todaySignals[i];
+    }
+    return null;
+  }
+
+  function archiveSignal(id, action) {
+    var s = findSignal(id);
+    if (!s || s.status !== 'active') return;
+    s.status = action === 'copied' ? 'copied' : 'ignored';
+    recordToday(s, action === 'copied' ? 'copié' : 'manqué');
+    state.journal.unshift({
+      id: 'j_' + s.id,
+      signalId: s.id,
+      pair: s.pair,
+      side: s.side,
+      entry: s.entry,
+      sl: s.sl,
+      tp: s.tp,
+      action: action,
+      outcome: null,
+      at: Date.now(),
+      confidence: s.confidence || null,
+      rr: s.rr,
+      sessionOk: s.sessionOk
+    });
+    if (state.journal.length > 80) state.journal.length = 80;
+    state.signals = state.signals.filter(function (x) {
+      return x.status === 'active' || (Date.now() - x.createdAt) < 86400000;
+    });
+    save();
+    render();
+    toast(action === 'copied' ? 'Noté : copié en démo' : 'Signal ignoré');
+  }
+
+  function markToday(tid, status) {
+    var t = findToday(tid);
+    if (!t) return;
+    t.status = status;
+    if (status === 'copié') {
+      // Ensure journal entry for recalibration later
+      var has = state.journal.some(function (j) { return j.signalId === tid && j.action === 'copied' && !j.outcome; });
+      if (!has) {
+        state.journal.unshift({
+          id: 'j_' + tid,
+          signalId: tid,
+          pair: t.pair,
+          side: t.side,
+          entry: t.entry,
+          sl: t.sl,
+          tp: t.tp,
+          action: 'copied',
+          outcome: null,
+          at: Date.now(),
+          confidence: t.confidence || null,
+          rr: t.rr,
+          sessionOk: t.sessionOk
+        });
+      }
+      var sig = findSignal(tid);
+      if (sig && sig.status === 'active') sig.status = 'copied';
+    }
+    if (status === 'gagné' || status === 'perdu') {
+      var jid = 'j_' + tid;
+      var j = null;
+      for (var i = 0; i < state.journal.length; i++) {
+        if (state.journal[i].signalId === tid || state.journal[i].id === jid) {
+          j = state.journal[i];
+          break;
+        }
+      }
+      if (!j) {
+        j = {
+          id: jid,
+          signalId: tid,
+          pair: t.pair,
+          side: t.side,
+          entry: t.entry,
+          sl: t.sl,
+          tp: t.tp,
+          action: 'copied',
+          outcome: null,
+          at: Date.now(),
+          confidence: t.confidence || null,
+          rr: t.rr,
+          sessionOk: t.sessionOk
+        };
+        state.journal.unshift(j);
+      }
+      if (!j.outcome) {
+        setOutcome(j.id, status === 'gagné' ? 'win' : 'loss');
+        return;
+      }
+    }
+    save();
+    render();
+    toast('Statut : ' + status);
+  }
+
+  function setOutcome(jid, outcome) {
+    var j = null;
+    for (var i = 0; i < state.journal.length; i++) {
+      if (state.journal[i].id === jid) { j = state.journal[i]; break; }
+    }
+    if (!j || j.outcome) return;
+    j.outcome = outcome;
+    if (outcome === 'win') state.wins++;
+    else state.losses++;
+    j.ruleVersionAtMark = state.ruleVersion;
+    // Mirror onto today history
+    var t = findToday(j.signalId);
+    if (t) t.status = outcome === 'win' ? 'gagné' : 'perdu';
+    var entry = recalibrate(outcome, j);
+    j.recalibration = entry ? {
+      version: entry.version,
+      changes: entry.changes.slice(),
+      after: entry.after
+    } : null;
+    save();
+    render();
+    if (entry && entry.adjusted && entry.trigger === 'recalibrate') {
+      toast('Démo → v' + entry.version + ' · ' + (entry.changes[0] || entry.reason));
+    } else if (entry) {
+      toast((outcome === 'win' ? 'Gagné' : 'Perdu') + ' (démo) · hist v' + entry.version + ' · ' +
+        (entry.reason ? entry.reason.slice(0, 80) : 'labo'));
+    } else {
+      toast(outcome === 'win' ? 'Gagné (démo) noté' : 'Perdu (démo) noté');
+    }
+  }
+
+  function recalibrate(outcome, journalEntry) {
+    var before = snapshotRules(state.cfg);
+    var total = state.wins + state.losses;
+    var wr = total ? state.wins / total : null;
+    var changed = false;
+    var bigChange = false;
+    var reason = 'observation';
+    var recent = recentOutcomes(7);
+    var recentWins = recent.filter(function (j) { return j.outcome === 'win'; }).length;
+    var recentLosses = recent.filter(function (j) { return j.outcome === 'loss'; }).length;
+    var recentTotal = recentWins + recentLosses;
+    var recentWr = recentTotal ? recentWins / recentTotal : null;
+
+    // Never suggest real-money — DEMO lab only
+    if (total < MIN_SAMPLE_SOFT || wr == null) {
+      reason = 'échantillon < ' + MIN_SAMPLE_SOFT + ' G/P démo — mesure en cours, aucun changement de règles';
+    } else if (total < MIN_SAMPLE_BIG) {
+      // Soft tweaks only (±0.5 seuil or ±1 SL), one knob at a time
+      if (wr < 0.40) {
+        state.cfg.thresholdPips = clamp(state.cfg.thresholdPips + 0.5, 3, 20, 5);
+        changed = true;
+        reason = 'WR démo ' + Math.round(wr * 100) + '% (n=' + total + ') → seuil +0.5 (filtre un peu plus strict). Démo seulement.';
+      } else if (wr > 0.60 && recentWr != null && recentWr >= 0.55) {
+        state.cfg.thresholdPips = clamp(state.cfg.thresholdPips - 0.5, 3, 20, 5);
+        changed = true;
+        reason = 'WR démo ' + Math.round(wr * 100) + '% stable → seuil −0.5 (un peu plus de signaux). Démo seulement.';
+      } else if (recentLosses >= 3 && recentWins === 0) {
+        state.cfg.slPips = clamp(state.cfg.slPips + 1, 12, 35, 18);
+        changed = true;
+        reason = 'série de pertes récentes (7j) → SL +1 pip (marge). Démo seulement.';
+      } else {
+        reason = 'WR démo ' + Math.round(wr * 100) + '% (n=' + total + ') — zone neutre, pas d’ajustement. Continuer à noter G/P.';
+      }
+    } else {
+      // Big-sample regime: clearer multi-knob logic, still capped
+      if (wr < 0.35 || (recentWr != null && recentWr < 0.30 && recentTotal >= 5)) {
+        state.cfg.thresholdPips = clamp(state.cfg.thresholdPips + 1, 3, 20, 5);
+        state.cfg.slPips = clamp(state.cfg.slPips + 2, 12, 35, 18);
+        if (state.cfg.rr > 1.2) state.cfg.rr = clamp(state.cfg.rr - 0.1, 0.8, 3, 1.5);
+        changed = true;
+        bigChange = true;
+        reason = 'WR faible ' + Math.round(wr * 100) + '% (n≥' + MIN_SAMPLE_BIG + ') → filtre +1, SL +2, R:R légèrement ↓. Labo démo — pas d’argent réel.';
+      } else if (wr < 0.45) {
+        state.cfg.thresholdPips = clamp(state.cfg.thresholdPips + 0.5, 3, 20, 5);
+        state.cfg.slPips = clamp(state.cfg.slPips + 1, 12, 35, 18);
+        changed = true;
+        reason = 'WR sous 45% → seuil +0.5 et SL +1. Démo seulement.';
+      } else if (wr > 0.58 && recentWr != null && recentWr >= 0.5) {
+        state.cfg.thresholdPips = clamp(state.cfg.thresholdPips - 0.5, 3, 20, 5);
+        if (wr > 0.65 && state.cfg.rr < 2) {
+          state.cfg.rr = clamp(state.cfg.rr + 0.1, 0.8, 3, 1.5);
+        }
+        changed = true;
+        reason = 'WR solide ' + Math.round(wr * 100) + '% → seuil un peu plus sensible' +
+          (wr > 0.65 ? ' + R:R ↑' : '') + '. Démo seulement.';
+      } else {
+        reason = 'WR ' + Math.round(wr * 100) + '% (n=' + total + ') en bande neutre — règles maintenues. Démo seulement.';
+      }
+    }
+
+    // Risk never auto-raised above 1.5 in lab; never suggest real money
+    state.cfg.riskPct = Math.min(1.5, Math.max(0.5, Number(state.cfg.riskPct) || 1));
+    state.cfg.thresholdPips = Math.round(state.cfg.thresholdPips * 2) / 2;
+    state.cfg.slPips = Math.round(state.cfg.slPips);
+    state.cfg.rr = Math.round(Number(state.cfg.rr) * 10) / 10;
+
+    var after = snapshotRules(state.cfg);
+    var changes = describeChanges(before, after);
+    if (changed) {
+      state.ruleVersion = (state.ruleVersion || 1) + 1;
+      // Prepend explicit before→after line
+      changes = ['avant → après : ' + formatRules(before) + '  ⇒  ' + formatRules(after)].concat(changes);
+    }
+    var entry = {
+      version: state.ruleVersion,
+      at: Date.now(),
+      trigger: changed ? 'recalibrate' : 'outcome',
+      outcome: outcome,
+      pair: journalEntry ? journalEntry.pair : null,
+      side: journalEntry ? journalEntry.side : null,
+      winRate: wr,
+      wins: state.wins,
+      losses: state.losses,
+      reason: reason,
+      before: before,
+      after: after,
+      changes: changes,
+      adjusted: changed,
+      bigChange: bigChange,
+      sampleSize: total,
+      minRequired: changed ? (bigChange ? MIN_SAMPLE_BIG : MIN_SAMPLE_SOFT) : MIN_SAMPLE_SOFT,
+      demoOnly: true
+    };
+    if (!state.ruleHistory) state.ruleHistory = [];
+    state.ruleHistory.unshift(entry);
+    if (state.ruleHistory.length > 60) state.ruleHistory.length = 60;
+    return entry;
+  }
+
+  // Events
+  $('btnRefresh').onclick = function () { refresh(true); };
+  $('btnEval').onclick = function () {
+    readCfgFromInputs();
+    evaluateSignals(true);
+  };
+  $('autoToggle').onchange = function () {
+    state.cfg.auto = !!$('autoToggle').checked;
+    save();
+    toast(state.cfg.auto ? 'Auto ON' : 'Auto OFF');
+    if (state.cfg.auto) evaluateSignals(false);
+  };
+  function bindAssetToggle(id, key, label) {
+    var el = $(id);
+    if (!el) return;
+    el.onchange = function () {
+      state.cfg[key] = !!el.checked;
+      save();
+      toast(label + (state.cfg[key] ? ' ON' : ' OFF'));
+      refresh(true);
+    };
+  }
+  bindAssetToggle('toggleGold', 'includeGold', 'Or');
+  bindAssetToggle('toggleCrypto', 'includeCrypto', 'Crypto');
+  bindAssetToggle('toggleIndices', 'includeIndices', 'Indices');
+
+  ['cfgThreshold', 'cfgSlPips', 'cfgRr', 'cfgRisk'].forEach(function (id) {
+    $(id).addEventListener('change', readCfgFromInputs);
+  });
+  $('btnClearJournal').onclick = function () {
+    if (!confirm('Effacer journal + historique de recalibrage (démo) ? Les règles actuelles et « Signaux du jour » sont conservés / partiels.')) return;
+    state.journal = [];
+    state.wins = 0;
+    state.losses = 0;
+    state.ruleHistory = [{
+      version: state.ruleVersion || 1,
+      at: Date.now(),
+      trigger: 'reset',
+      outcome: null,
+      winRate: null,
+      before: null,
+      after: snapshotRules(state.cfg),
+      changes: ['Journal réinitialisé — base v' + (state.ruleVersion || 1)],
+      adjusted: false
+    }];
+    save();
+    render();
+  };
+
+  function copyChecklistToClipboard(sigId) {
+    var s = findSignal(sigId);
+    if (!s) {
+      // also allow from today history inactive
+      var t = findToday(sigId);
+      if (!t) { toast('Signal introuvable'); return; }
+      s = t;
+    }
+    var text = copyTextForSignal(s);
+    function ok() { toast('Checklist copiée — colle dans ta note / Exness démo'); }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(ok).catch(function () {
+        window.prompt('Copie manuelle :', text);
+      });
+    } else {
+      window.prompt('Copie manuelle :', text);
+    }
+  }
+
+  document.addEventListener('click', function (ev) {
+    var t = ev.target;
+    if (!t || !t.getAttribute) return;
+    var id = t.getAttribute('data-id');
+    var jid = t.getAttribute('data-jid');
+    var tid = t.getAttribute('data-tid');
+    if (t.classList.contains('act-clipboard') && id) copyChecklistToClipboard(id);
+    if (t.classList.contains('act-copy') && id) archiveSignal(id, 'copied');
+    if (t.classList.contains('act-ignore') && id) archiveSignal(id, 'ignored');
+    if (t.classList.contains('act-win') && jid) setOutcome(jid, 'win');
+    if (t.classList.contains('act-loss') && jid) setOutcome(jid, 'loss');
+    if (t.classList.contains('act-today-copy') && tid) markToday(tid, 'copié');
+    if (t.classList.contains('act-today-win') && tid) markToday(tid, 'gagné');
+    if (t.classList.contains('act-today-loss') && tid) markToday(tid, 'perdu');
+    if (t.classList.contains('act-today-miss') && tid) markToday(tid, 'manqué');
+  });
+
+  if ($('studyStartInput')) {
+    $('studyStartInput').addEventListener('change', function () {
+      var v = $('studyStartInput').value;
+      if (!v) return;
+      state.studyStart = v;
+      save();
+      renderStudyPanel();
+      toast('Début étude : ' + v);
+    });
+  }
+  if ($('btnStudyResetStart')) {
+    $('btnStudyResetStart').onclick = function () {
+      state.studyStart = todayKey();
+      save();
+      renderStudyPanel();
+      toast('Début étude remis à aujourd’hui');
+    };
+  }
+
+  function startPoll() {
+    if (pollTimer) clearInterval(pollTimer);
+    pollTimer = setInterval(function () { refresh(true); }, POLL_MS);
+  }
+
+  /* ---------- PWA : install, SW, notifications locales ---------- */
+  var PWA_ALERTS_KEY = 'fx_lab_alerts_pref_v1';
+  var deferredInstallPrompt = null;
+  var swReg = null;
+  var audioCtx = null;
+
+  function isStandalone() {
+    return (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) ||
+      window.navigator.standalone === true;
+  }
+
+  function notifPermission() {
+    try {
+      if (!('Notification' in window)) return 'unsupported';
+      return Notification.permission;
+    } catch (e) {
+      return 'unsupported';
+    }
+  }
+
+  function setPwaStatus(id, cls, text) {
+    var el = $(id);
+    if (!el) return;
+    el.className = 'pwa-status' + (cls ? ' ' + cls : '');
+    el.textContent = text || '';
+  }
+
+  function updateInstallUi() {
+    var btn = $('btnInstall');
+    if (isStandalone()) {
+      setPwaStatus('pwaInstallStatus', 'ok', 'Ouvert comme appli ✓');
+      if (btn) btn.hidden = true;
+      return;
+    }
+    if (deferredInstallPrompt) {
+      setPwaStatus('pwaInstallStatus', 'ok', 'Chrome peut installer l’appli — tape le bouton ci-dessus.');
+      if (btn) btn.hidden = false;
+    } else {
+      setPwaStatus('pwaInstallStatus', 'warn',
+        'Si le bouton d’install Chrome n’apparaît pas : menu ⋮ → Ajouter à l’écran d’accueil. (HTTPS GitHub Pages requis ; htmlpreview ne marche pas.)');
+      if (btn) btn.hidden = false;
+    }
+  }
+
+  function updateAlertsUi() {
+    var p = notifPermission();
+    var btn = $('btnAlerts');
+    if (p === 'unsupported') {
+      setPwaStatus('pwaAlertStatus', 'warn',
+        'Notifications système indisponibles — toast + vibreur / bip si un signal arrive.');
+      if (btn) btn.disabled = true;
+      return;
+    }
+    if (p === 'granted') {
+      setPwaStatus('pwaAlertStatus', 'ok',
+        'Alertes ON · un nouveau signal envoie une notification (paire, ACHAT/VENTE, SL). Pas de push 24/7 écran éteint.');
+      if (btn) { btn.textContent = 'Alertes activées'; btn.disabled = false; }
+      return;
+    }
+    if (p === 'denied') {
+      setPwaStatus('pwaAlertStatus', 'err',
+        'Notifications refusées (Chrome / Android). Fallback : toast dans la page + vibreur / bip. Pour réactiver : Paramètres Android → Apps → Chrome → Notifications.');
+      if (btn) { btn.textContent = 'Alertes bloquées'; btn.disabled = true; }
+      return;
+    }
+    setPwaStatus('pwaAlertStatus', 'warn',
+      'Tape « Activer les alertes » puis Autoriser. Sinon : toast + vibreur / bip.');
+    if (btn) { btn.textContent = 'Activer les alertes'; btn.disabled = false; }
+  }
+
+  function unlockAudio() {
+    try {
+      var Ctx = window.AudioContext || window.webkitAudioContext;
+      if (!Ctx) return;
+      if (!audioCtx) audioCtx = new Ctx();
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+    } catch (e) { /* ignore */ }
+  }
+
+  function playAlertBeep() {
+    try {
+      unlockAudio();
+      if (!audioCtx) return;
+      var ctx = audioCtx;
+      var o = ctx.createOscillator();
+      var g = ctx.createGain();
+      o.type = 'sine';
+      o.frequency.value = 880;
+      g.gain.setValueAtTime(0.0001, ctx.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.14, ctx.currentTime + 0.02);
+      g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.32);
+      o.connect(g);
+      g.connect(ctx.destination);
+      o.start();
+      o.stop(ctx.currentTime + 0.35);
+    } catch (e) { /* ignore */ }
+  }
+
+  function vibrateAlert() {
+    try {
+      if (navigator.vibrate) navigator.vibrate([180, 80, 180]);
+    } catch (e) { /* ignore */ }
+  }
+
+  function fallbackAlert(msg) {
+    toast(msg);
+    vibrateAlert();
+    playAlertBeep();
+  }
+
+  function notifyNewSignal(sig) {
+    if (!sig) return;
+    var pair = sig.displayLabel || sig.pair || 'Paire';
+    var dir = sig.side === 'sell' ? 'VENTE' : 'ACHAT';
+    var slTxt = (sig.sl != null && sig.pair) ? formatPrice(sig.pair, sig.sl) : '—';
+    var title = pair + ' · ' + dir;
+    var body = 'SL : ' + slTxt + ' · Toujours un stop. Ouvrir pour copier en démo.';
+    var perm = notifPermission();
+    var iconUrl = 'icons/icon-192.png';
+    var options = {
+      body: body,
+      icon: iconUrl,
+      badge: iconUrl,
+      vibrate: [180, 80, 180],
+      tag: 'fx-sig-' + (sig.id || Date.now()),
+      renotify: true,
+      lang: 'fr',
+      requireInteraction: false,
+      data: { url: './index.html', id: sig.id || null },
+      actions: [{ action: 'open', title: 'Ouvrir pour copier en démo' }]
+    };
+
+    function viaSw() {
+      var payload = { type: 'NOTIFY_SIGNAL', title: title, options: options };
+      if (navigator.serviceWorker && navigator.serviceWorker.controller) {
+        navigator.serviceWorker.controller.postMessage(payload);
+        return true;
+      }
+      if (swReg && swReg.showNotification) {
+        swReg.showNotification(title, options);
+        return true;
+      }
+      return false;
+    }
+
+    if (perm === 'granted') {
+      var ok = false;
+      try { ok = viaSw(); } catch (e1) { ok = false; }
+      if (!ok) {
+        try {
+          if (swReg && swReg.showNotification) {
+            swReg.showNotification(title, options);
+            ok = true;
+          }
+        } catch (e2) { ok = false; }
+      }
+      if (!ok) {
+        try {
+          new Notification(title, options);
+          ok = true;
+        } catch (e3) { ok = false; }
+      }
+      if (!ok) fallbackAlert(title + ' — ' + body);
+      else {
+        vibrateAlert();
+      }
+      return;
+    }
+    fallbackAlert(title + ' — ' + body);
+  }
+
+  function registerServiceWorker() {
+    if (!('serviceWorker' in navigator)) {
+      setPwaStatus('pwaInstallStatus', 'warn',
+        'Service worker indisponible (HTTP non sécurisé, htmlpreview, ou navigateur trop vieux).');
+      return;
+    }
+    navigator.serviceWorker.register('./sw.js', { scope: './' }).then(function (reg) {
+      swReg = reg;
+      if (reg.waiting) {
+        try { reg.waiting.postMessage({ type: 'SKIP_WAITING' }); } catch (e) {}
+      }
+      reg.addEventListener('updatefound', function () {
+        var nw = reg.installing;
+        if (!nw) return;
+        nw.addEventListener('statechange', function () {
+          if (nw.state === 'installed' && navigator.serviceWorker.controller) {
+            try { nw.postMessage({ type: 'SKIP_WAITING' }); } catch (e) {}
+          }
+        });
+      });
+    }).catch(function (err) {
+      setPwaStatus('pwaInstallStatus', 'warn',
+        'SW non enregistré : ' + ((err && err.message) || String(err)) +
+        ' — souvent htmlpreview ou fichier ouvert en local. Utilise GitHub Pages HTTPS.');
+    });
+  }
+
+  window.addEventListener('beforeinstallprompt', function (e) {
+    e.preventDefault();
+    deferredInstallPrompt = e;
+    updateInstallUi();
+  });
+  window.addEventListener('appinstalled', function () {
+    deferredInstallPrompt = null;
+    toast('Appli installée — ouvre-la depuis l’écran d’accueil');
+    updateInstallUi();
+  });
+
+  if ($('btnInstall')) {
+    $('btnInstall').onclick = function () {
+      if (deferredInstallPrompt) {
+        deferredInstallPrompt.prompt();
+        deferredInstallPrompt.userChoice.then(function (choice) {
+          deferredInstallPrompt = null;
+          updateInstallUi();
+          if (choice && choice.outcome === 'accepted') {
+            toast('Installation confirmée');
+          } else {
+            toast('Sinon : menu ⋮ → Ajouter à l’écran d’accueil');
+          }
+        }).catch(function () {
+          toast('Menu ⋮ Chrome → Ajouter à l’écran d’accueil');
+        });
+        return;
+      }
+      toast('Menu ⋮ de Chrome → Installer l’application / Ajouter à l’écran d’accueil');
+      var hint = $('installHint');
+      if (hint && hint.scrollIntoView) hint.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    };
+  }
+
+  if ($('btnAlerts')) {
+    $('btnAlerts').onclick = function () {
+      unlockAudio();
+      if (!('Notification' in window)) {
+        fallbackAlert('Notifications non supportées — toast + vibreur actifs.');
+        updateAlertsUi();
+        return;
+      }
+      Notification.requestPermission().then(function (perm) {
+        try { localStorage.setItem(PWA_ALERTS_KEY, perm); } catch (e) {}
+        updateAlertsUi();
+        if (perm === 'granted') {
+          toast('Alertes activées (quand l’appli peut tourner)');
+          notifyNewSignal({
+            id: 'test-ok',
+            pair: 'EURUSD',
+            displayLabel: 'EURUSD',
+            side: 'buy',
+            sl: 1.0800
+          });
+        } else if (perm === 'denied') {
+          toast('Refusé — fallback toast + vibreur / bip');
+        } else {
+          toast('Permission non accordée');
+        }
+      }).catch(function () {
+        updateAlertsUi();
+        toast('Impossible de demander la permission');
+      });
+    };
+  }
+
+  if ($('btnTestAlert')) {
+    $('btnTestAlert').onclick = function () {
+      unlockAudio();
+      notifyNewSignal({
+        id: 'test-' + Date.now(),
+        pair: 'EURUSD',
+        displayLabel: 'EURUSD',
+        side: 'buy',
+        sl: 1.0800
+      });
+    };
+  }
+
+  document.addEventListener('visibilitychange', function () {
+    if (!document.hidden) {
+      refresh(true);
+    }
+  });
+
+  // Boot
+  ensureStudyStart();
+  render();
+  if (state.lastError && !state.lastFetchAt) showError(state.lastError);
+  registerServiceWorker();
+  updateInstallUi();
+  updateAlertsUi();
+  refresh(true);
+  startPoll();
+})();
+</script>
+</body>
+</html>
