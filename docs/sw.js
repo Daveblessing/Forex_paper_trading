@@ -1,11 +1,11 @@
 /* FX Lab Démo — service worker
    Cache the app shell for offline open.
-   Network-first (no long-term cache) for cross-origin price APIs.
+   Network-only (never cache) for cross-origin price/quote APIs.
    Local notifications are shown from the page via registration.showNotification
    while the lab can still run. True 24/7 screen-off push needs a server later. */
 'use strict';
 
-var CACHE = 'fx-lab-shell-v2';
+var CACHE = 'fx-lab-shell-v3';
 var SHELL = [
   './',
   './index.html',
@@ -55,10 +55,10 @@ self.addEventListener('fetch', function (event) {
     return;
   }
 
-  // Cross-origin (price APIs, CDNs): network-first, do not cache quotes.
+  // Cross-origin price/quote APIs: network-only — never cache quote responses.
   if (url.origin !== self.location.origin) {
     event.respondWith(
-      fetch(req).catch(function () {
+      fetch(req, { cache: 'no-store' }).catch(function () {
         return new Response('{"error":"offline"}', {
           status: 503,
           headers: { 'Content-Type': 'application/json' }

@@ -11,7 +11,7 @@ Dossier **prêt GitHub Pages** (chemins relatifs). Publier `fx-lab-app/` tel que
 | --- | --- |
 | `index.html` | Toute l’UI du labo (étude, Fib, légendes, multi-sources, recalibrage) + boutons PWA |
 | `manifest.webmanifest` | Nom, thème sombre, icônes, `display: standalone` |
-| `sw.js` | Cache du shell (ouvrir hors-ligne) · **network-first** pour les cours API |
+| `sw.js` | Cache du shell (ouvrir hors-ligne) · **network-only** pour les cours API (jamais mis en cache) |
 | `icons/` | PNG 192 / 512 (any + maskable), apple-touch, favicon |
 | `404.html` | Redirige vers l’app (Pages) |
 | `.nojekyll` | Empêche Jekyll de casser les chemins |
@@ -61,13 +61,14 @@ Aucun `git push` n’est fait ici ; à publier ensuite.
 
 ## Changelog (FR)
 
+- **Fraîcheur cours** : polling ∼12–15s (visible) / ∼45–60s (onglet caché) ; Mode turbo ∼8–10s (ON par défaut si focus) ; badge « À jour : il y a Xs » (rouge si >90s) ; bouton **Actualiser maintenant** ; flash léger des prix à chaque MAJ OK ; SW v3 network-only pour les API quotes. Limite honnête : pas de ticks ms Exness sans flux broker/serveur — max possible avec API publiques gratuites en PWA.
 - **PWA** : manifest + icônes + service worker, « Installer l’appli », « Activer les alertes », notifications locales, fallback toast/vibreur/bip.
 - Conservé : étude 30 jours, boîte Fib / structure / légendes, or+crypto+indices, consensus multi-sources, bannières DÉMO, recalibrage, checklist copie Exness démo.
 - Rappel : Fib n’est pas magique · pas de garantie · démo seulement.
 
 ## Hors-ligne
 
-Le **shell** (UI) peut se réouvrir sans réseau. Les **cours** restent en network-first : sans API, les prix ne se mettent pas à jour (message d’erreur habituel). Aucune donnée broker, aucun mot de passe.
+Le **shell** (UI) peut se réouvrir sans réseau. Les **cours** restent en **network-only** (jamais mis en cache par le SW) : sans API, les prix ne se mettent pas à jour (message d’erreur habituel). Aucune donnée broker, aucun mot de passe.
 
 ## Nouveautés toolkit (démo)
 
