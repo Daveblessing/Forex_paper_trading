@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>S1E01 — Guerre dans le ventre · Maquette A+B</title>
+<style>
+  :root {
+    --bg: #070B0E;
+    --amber: #D4893A;
+    --petrol: #0E1A22;
+    --ventre: #1A080C;
+    --gold: #E8D5A3;
+    --violet: #2A1530;
+    --text: #F3EDE3;
+    --muted: #9a8f82;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; font-family: system-ui, -apple-system, sans-serif;
+    background: var(--bg); color: var(--text);
+    line-height: 1.4;
+  }
+  header {
+    padding: 1.25rem 1rem 1rem; border-bottom: 1px solid #1c242c;
+    position: sticky; top: 0; background: rgba(7,11,14,.95); z-index: 2;
+  }
+  header h1 { margin: 0; font-size: 1.1rem; letter-spacing: .02em; }
+  header p { margin: .35rem 0 0; color: var(--muted); font-size: .8rem; }
+  .badge {
+    display: inline-block; margin-top: .5rem; padding: .15rem .5rem;
+    border: 1px solid var(--gold); color: var(--gold); border-radius: 999px;
+    font-size: .7rem; text-transform: uppercase; letter-spacing: .06em;
+  }
+  .timeline {
+    display: flex; gap: .35rem; padding: .75rem 1rem; overflow-x: auto;
+    border-bottom: 1px solid #1c242c;
+  }
+  .timeline a {
+    flex: 0 0 auto; text-decoration: none; color: var(--muted);
+    font-size: .7rem; padding: .35rem .55rem; border-radius: 6px;
+    background: #12181e;
+  }
+  .timeline a:hover { color: var(--gold); }
+  main { max-width: 720px; margin: 0 auto; padding: 1rem; }
+  .block { margin-bottom: 1.75rem; }
+  .block h2 {
+    font-size: .75rem; text-transform: uppercase; letter-spacing: .08em;
+    color: var(--gold); margin: 0 0 .75rem;
+  }
+  .phones {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: .75rem;
+  }
+  .phone {
+    aspect-ratio: 9/16; border-radius: 14px; padding: .65rem;
+    display: flex; flex-direction: column; justify-content: space-between;
+    border: 1px solid #2a333c; position: relative; overflow: hidden;
+    min-height: 220px;
+  }
+  .phone.void { background: #000; }
+  .phone.room { background: linear-gradient(160deg, var(--petrol), #1a120c); }
+  .phone.womb { background: linear-gradient(160deg, var(--ventre), #0a0508); }
+  .phone.dark { background: linear-gradient(160deg, #0A0F18, var(--violet)); }
+  .phone.dawn { background: linear-gradient(160deg, #2a2218, #0E1A22); }
+  .phone .gold-dot {
+    width: 10px; height: 10px; border-radius: 50%; background: var(--gold);
+    box-shadow: 0 0 12px var(--gold); margin: auto;
+  }
+  .phone .ring {
+    width: 56px; height: 28px; margin: auto; border: 2px solid var(--gold);
+    border-radius: 50%; opacity: .85;
+  }
+  .phone .meta { font-size: .65rem; color: var(--muted); }
+  .phone .plan { font-weight: 700; font-size: .8rem; color: var(--gold); }
+  .phone .action { font-size: .72rem; margin-top: .35rem; }
+  .phone .dial {
+    font-size: .7rem; font-style: italic; color: #e8dcc8;
+    border-top: 1px solid rgba(255,255,255,.08); padding-top: .4rem; margin-top: .4rem;
+  }
+  .phone .son { font-size: .65rem; color: var(--amber); }
+  .vo-box {
+    background: #12181e; border-left: 3px solid var(--gold);
+    padding: .75rem 1rem; margin: 1rem 0; border-radius: 0 8px 8px 0;
+  }
+  .vo-box strong { color: var(--gold); font-size: .7rem; }
+  .vo-box p { margin: .25rem 0 0; font-size: .9rem; }
+  footer {
+    padding: 1.5rem 1rem 2.5rem; color: var(--muted); font-size: .75rem;
+    text-align: center; border-top: 1px solid #1c242c;
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>L’Enfant de Saturne — S1E01</h1>
+  <p>Guerre dans le ventre · Maquette storyboard A+B · ~5’45 · 9:16 · HORS Market</p>
+  <span class="badge">Sans images générées · proxies couleur</span>
+</header>
+
+<nav class="timeline" aria-label="Blocs">
+  <a href="#b1">0:00 Hot open</a>
+  <a href="#b2">0:12 Chambre</a>
+  <a href="#b3">0:55 Ventre I</a>
+  <a href="#b4">2:10 Chambre II</a>
+  <a href="#b5">3:05 Guerre</a>
+  <a href="#b6">5:00 Aube</a>
+</nav>
+
+<main>
+  <div class="vo-box">
+    <strong>VOIX DAVE (narrateur) — 4 lignes</strong>
+    <p>VO1 0:09 · VO2 1:20 · VO3 3:38 · VO4 5:00 — voir <code>08-lignes-voix-dave.md</code></p>
+  </div>
+
+  <section class="block" id="b1">
+    <h2>Hot open · 0:00–0:12 · ♥ → Ø → ♥</h2>
+    <div class="phones">
+      <article class="phone void"><div class="meta">01 · 0:00</div><div class="gold-dot"></div><div><div class="plan">Point or</div><div class="action">Pulse cœur</div><div class="son">♥ La2</div></div></article>
+      <article class="phone void"><div class="meta">02 · 0:03</div><div style="flex:1"></div><div><div class="plan">Noir</div><div class="action">Silence arme</div><div class="son">Ø</div></div></article>
+      <article class="phone void"><div class="meta">04 · 0:07</div><div class="ring"></div><div><div class="plan">Anneau Saturne</div><div class="action">4 frames puis brise</div><div class="son">♥</div></div></article>
+      <article class="phone void"><div class="meta">06 · 0:09</div><div><div class="plan">TITRE</div><div class="action">GUERRE DANS LE VENTRE</div><div class="dial">VO Dave: « Avant même de naître… »</div><div class="son">VO dry</div></div></article>
+    </div>
+  </section>
+
+  <section class="block" id="b2">
+    <h2>Chambre · 0:12–0:55 · ambre / pétrole</h2>
+    <div class="phones">
+      <article class="phone room"><div class="meta">07 · K02</div><div><div class="plan">Ventre ECU</div><div class="action">Main plaque peau, sueur, moustiquaire</div><div class="son">Cœur foetal</div></div></article>
+      <article class="phone room"><div class="meta">08 · K03</div><div><div class="plan">Mère</div><div class="dial">« Pas ce rêve. Pas encore. »</div><div class="son">Lit grince</div></div></article>
+      <article class="phone room"><div class="meta">10</div><div><div class="plan">Qui est là ?</div><div class="dial">« Qui est là ? »</div><div class="son">♥ + ✖</div></div></article>
+      <article class="phone room"><div class="meta">12</div><div><div class="plan">Membrane → porte</div><div class="action">Transition signature</div><div class="son">Whoosh / smash</div></div></article>
+    </div>
+  </section>
+
+  <section class="block" id="b3">
+    <h2>Ventre I · 0:55–2:10 · noir-rouge</h2>
+    <div class="phones">
+      <article class="phone womb"><div class="meta">13 · K04</div><div><div class="plan">Enfant</div><div class="action">Poings fermés, cordon lumière</div><div class="son">♥ distant</div></div></article>
+      <article class="phone dark"><div class="meta">14 · K05</div><div><div class="plan">Ténèbres A/B</div><div class="dial">« Meurs. / Ici. / Sans jour. »</div><div class="son">✖ ×3</div></div></article>
+      <article class="phone womb"><div class="meta">17 · K06</div><div><div class="plan">FX eau</div><div class="dial">VO: « …l’enfant se bat. »</div><div class="son">♥ La3</div></div></article>
+      <article class="phone womb"><div class="meta">19 · K07</div><div><div class="plan">Or Saturne</div><div class="action">Fissure anneau 6 frames</div><div class="son">♥ flash</div></div></article>
+      <article class="phone womb"><div class="meta">21</div><div><div class="plan">Yeux ouverts</div><div class="action">Premier acte de guerre</div><div class="son">♥ tenu</div></div></article>
+    </div>
+  </section>
+
+  <section class="block" id="b4">
+    <h2>Chambre II · 2:10–3:05 · douleur réelle</h2>
+    <div class="phones">
+      <article class="phone room"><div class="meta">22 · K08</div><div><div class="plan">Genoux au sol</div><div class="dial">« Qu’est-ce qui te frappe ? »</div><div class="son">Sync hit</div></div></article>
+      <article class="phone room"><div class="meta">24</div><div><div class="plan">Serment</div><div class="dial">« Tu restes. Tu m’entends ? Tu restes. »</div><div class="son">♥ 3s</div></div></article>
+      <article class="phone room"><div class="meta">25</div><div><div class="plan">Larme / œil</div><div class="action">Type A sous la peau 1s</div><div class="son">✖ patient</div></div></article>
+    </div>
+  </section>
+
+  <section class="block" id="b5">
+    <h2>Guerre · 3:05–5:00 · Type C · Ø · boom</h2>
+    <div class="phones">
+      <article class="phone dark"><div class="meta">27 · K09</div><div><div class="plan">Masse-gueule</div><div class="dial">« Avant la naissance… Meurs. »</div><div class="son">✖ Fa1</div></div></article>
+      <article class="phone womb"><div class="meta">28–30</div><div><div class="plan">3 coups</div><div class="action">Eau / terre / gueule</div><div class="dial">VO3 Dave: ténèbres veulent qu’il meure</div><div class="son">Clip ≤2,5s</div></div></article>
+      <article class="phone void"><div class="meta">31 · 3:50</div><div style="flex:1"></div><div><div class="plan">Ø 8 frames</div><div class="action">Silence arme</div><div class="son">Ø ABSOLU</div></div></article>
+      <article class="phone womb"><div class="meta">32</div><div><div class="plan">Boom</div><div class="action">Frappe centre gueule, flash or</div><div class="son">♥ boom</div></div></article>
+      <article class="phone dark"><div class="meta">34</div><div><div class="plan">Plus tard</div><div class="dial">« Plus tard. »</div><div class="son">✖ tendré</div></div></article>
+    </div>
+  </section>
+
+  <section class="block" id="b6">
+    <h2>Aube / cliff · 5:00–5:45</h2>
+    <div class="phones">
+      <article class="phone dawn"><div class="meta">36</div><div><div class="plan">Mère dort</div><div class="dial">VO4 Dave: « Le combat commence là où personne ne le voit. »</div><div class="son">♥ propre</div></div></article>
+      <article class="phone dawn"><div class="meta">37 · K10</div><div><div class="plan">Œil cliff</div><div class="action">Type A cligne sous peau</div><div class="son">✖ infime</div></div></article>
+      <article class="phone void"><div class="meta">38</div><div><div class="plan">Carton</div><div class="action">La guerre a commencé.<br/>Ép. 2 — L’homme mystérieux</div><div class="son">♥ puis ✖</div></div></article>
+    </div>
+  </section>
+</main>
+
+<footer>
+  Œuvre du producteur · Tous droits réservés · Ne pas publier Market/web<br/>
+  Fichiers: 01-découpage · 04-rough · 08-lignes-voix-dave · kit handoff 11
+</footer>
+</body>
+</html>
