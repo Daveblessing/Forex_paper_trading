@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>S1E01 · Maquette FILM · Guerre dans le ventre</title>
+<style>
+:root{--bg:#05080c;--gold:#E8D5A3;--amber:#D4893A;--muted:#8a8076;--text:#F3EDE3}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,sans-serif}
+.stage{max-width:420px;margin:0 auto;padding:12px 12px 100px}
+.phone{
+  aspect-ratio:9/16;width:100%;max-height:72vh;margin:0 auto;border-radius:18px;
+  overflow:hidden;position:relative;border:1px solid #222;background:#000;
+  box-shadow:0 20px 60px rgba(0,0,0,.55)
+}
+.phone .bg{position:absolute;inset:0;background-size:cover;background-position:center;
+  transition:opacity .45s ease,transform 5s linear;opacity:0;transform:scale(1.06)}
+.phone .bg.on{opacity:1;transform:scale(1)}
+.phone .veil{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.2),rgba(0,0,0,.75));pointer-events:none}
+.phone .copy{position:absolute;left:0;right:0;bottom:0;padding:18px 16px 22px;z-index:2}
+.phone .tc{font-size:.7rem;color:var(--gold);letter-spacing:.06em}
+.phone .title{font-size:1.05rem;font-weight:700;margin:.2rem 0}
+.phone .action{font-size:.85rem;color:#ddd;margin:0}
+.phone .dial{font-size:.9rem;font-style:italic;color:var(--gold);margin-top:.45rem}
+.phone .son{font-size:.7rem;color:var(--amber);margin-top:.35rem}
+.flash{position:absolute;inset:0;background:#fff6e0;opacity:0;pointer-events:none;z-index:3}
+.flash.go{animation:flash .35s ease}
+@keyframes flash{0%{opacity:.7}100%{opacity:0}}
+.blackout{position:absolute;inset:0;background:#000;opacity:0;z-index:4;pointer-events:none;transition:opacity .2s}
+.blackout.on{opacity:1}
+.controls{
+  position:fixed;left:0;right:0;bottom:0;background:rgba(5,8,12,.94);
+  border-top:1px solid #1c242c;padding:10px 14px 16px;z-index:10
+}
+.row{display:flex;gap:8px;align-items:center;max-width:420px;margin:0 auto}
+button{
+  background:var(--gold);color:#111;border:0;border-radius:999px;padding:.55rem 1rem;
+  font-weight:700;cursor:pointer
+}
+button.sec{background:#1a222a;color:var(--text)}
+.bar{flex:1;height:6px;background:#1a222a;border-radius:99px;overflow:hidden;cursor:pointer}
+.fill{height:100%;width:0;background:linear-gradient(90deg,var(--amber),var(--gold));transition:width .15s linear}
+.meta{max-width:420px;margin:8px auto 0;font-size:.72rem;color:var(--muted);display:flex;justify-content:space-between}
+h1{font-size:.95rem;margin:8px 0 4px;text-align:center}
+.sub{text-align:center;color:var(--muted);font-size:.72rem;margin:0 0 10px}
+.badge{display:inline-block;border:1px solid var(--gold);color:var(--gold);border-radius:99px;padding:2px 8px;font-size:.65rem}
+</style>
+</head>
+<body>
+<div class="stage">
+  <h1>Guerre dans le ventre · S1E01</h1>
+  <p class="sub"><span class="badge">Maquette FILM</span> · ~5’45 · sans IA · HORS Market</p>
+  <div class="phone" id="phone">
+    <div class="bg" id="bg"></div>
+    <div class="veil"></div>
+    <div class="flash" id="flash"></div>
+    <div class="blackout" id="blackout"></div>
+    <div class="copy">
+      <div class="tc" id="tc">0:00</div>
+      <div class="title" id="title">—</div>
+      <div class="action" id="action"></div>
+      <div class="dial" id="dial"></div>
+      <div class="son" id="son"></div>
+    </div>
+  </div>
+</div>
+<div class="controls">
+  <div class="row">
+    <button id="play">▶ Lecture</button>
+    <button class="sec" id="prev">‹</button>
+    <button class="sec" id="next">›</button>
+    <div class="bar" id="bar"><div class="fill" id="fill"></div></div>
+  </div>
+  <div class="meta"><span id="label">Plan 1/20</span><span>Proxies photo Plan B + cartons</span></div>
+</div>
+<script>
+const shots = [
+  {t:0,d:3,title:'Point or',action:'Noir — lumière pâle qui pulse',dial:'',son:'♥ La2',bg:'key-art-planB/K01-or-mood.jpg',mode:'void'},
+  {t:3,d:2,title:'Silence',action:'Noir total',dial:'',son:'Ø',bg:'',mode:'void'},
+  {t:5,d:3,title:'Anneau Saturne',action:'Le point s’étire puis se brise',dial:'',son:'♥ → shatter',bg:'key-art-planB/K01-or-mood.jpg',mode:'void',flash:1},
+  {t:9,d:3,title:'TITRE',action:'GUERRE DANS LE VENTRE',dial:'VO Dave: « Avant même de naître… »',son:'VO dry',bg:'',mode:'void'},
+  {t:12,d:6,title:'Ventre ECU',action:'Main sur peau, sueur, moustiquaire',dial:'',son:'Cœur foetal',bg:'key-art-planB/K02-ventre-mood.jpg',mode:'room'},
+  {t:18,d:4,title:'Mère',action:'Yeux grands, dents serrées',dial:'« Pas ce rêve. Pas encore. »',son:'Lit',bg:'key-art-planB/K03-mere-mood.jpg',mode:'room'},
+  {t:28,d:6,title:'Qui est là ?',action:'Oreille contre le ventre',dial:'« Qui est là ? »',son:'♥ + ✖',bg:'key-art-planB/K02-ventre-mood.jpg',mode:'room'},
+  {t:48,d:7,title:'Membrane → porte',action:'Transition signature vers le ventre',dial:'',son:'Whoosh / smash',bg:'key-art-planB/K04-liquide-mood.jpg',mode:'womb'},
+  {t:55,d:10,title:'Monde ventre',action:'Silhouette, poings fermés, or rare',dial:'',son:'♥ distant',bg:'key-art-planB/K04-liquide-mood.jpg',mode:'womb'},
+  {t:65,d:7,title:'Ténèbres',action:'Trous qui marchent — Type A/B',dial:'« Meurs. / Ici. / Sans jour. »',son:'✖ ×3',bg:'key-art-planB/K05-ombre-mood.jpg',mode:'dark'},
+  {t:80,d:8,title:'FX eau',action:'Onde — lame d’ombre brisée',dial:'VO Dave: « …l’enfant se bat. »',son:'♥ La3',bg:'key-art-planB/K04-liquide-mood.jpg',mode:'womb',flash:1},
+  {t:100,d:6,title:'Or Saturne',action:'Cordon pulse — fissure anneau 6f',dial:'',son:'♥ flash',bg:'key-art-planB/K01-or-mood.jpg',mode:'womb',flash:1},
+  {t:130,d:10,title:'Douleur réelle',action:'Mère genoux au sol',dial:'« Qu’est-ce qui te frappe ? »',son:'Sync hit',bg:'key-art-planB/K08-nuit-mood.jpg',mode:'room'},
+  {t:155,d:13,title:'Serment',action:'Main plate sur le ventre',dial:'« Tu restes. Tu m’entends ? Tu restes. »',son:'♥ 3s',bg:'key-art-planB/K02-ventre-mood.jpg',mode:'room'},
+  {t:185,d:15,title:'Masse-gueule',action:'Type C pleine largeur',dial:'« Avant la naissance… Meurs. »',son:'✖ Fa1',bg:'key-art-planB/K05-ombre-mood.jpg',mode:'dark'},
+  {t:230,d:4,title:'Silence arme',action:'8 frames — rien',dial:'',son:'Ø ABSOLU',bg:'',mode:'void'},
+  {t:234,d:11,title:'Boom',action:'Frappe au centre — flash blanc-or',dial:'VO Dave: « …veulent qu’il meure. »',son:'♥ boom',bg:'key-art-planB/K04-liquide-mood.jpg',mode:'womb',flash:1},
+  {t:265,d:20,title:'Plus tard',action:'Yeux sur les parois',dial:'« Plus tard. »',son:'✖ tendré',bg:'key-art-planB/K05-ombre-mood.jpg',mode:'dark'},
+  {t:300,d:20,title:'Aube',action:'Mère dort — main garde',dial:'VO Dave: « Le combat commence là où personne ne le voit. »',son:'♥ propre',bg:'key-art-planB/K10-aube-mood.jpg',mode:'dawn'},
+  {t:335,d:10,title:'Cliff',action:'La guerre a commencé · tease E2',dial:'',son:'♥ puis ✖',bg:'key-art-planB/K10-aube-mood.jpg',mode:'dawn'}
+];
+const TOTAL=345;
+let i=0, playing=false, timer=null, acc=0;
+const $=id=>document.getElementById(id);
+function fmt(s){const m=Math.floor(s/60),ss=String(s%60).padStart(2,'0');return `${m}:${ss}`}
+function show(idx){
+  i=Math.max(0,Math.min(shots.length-1,idx));
+  const s=shots[i];
+  $('tc').textContent=fmt(s.t)+' · '+s.d+'s';
+  $('title').textContent=s.title;
+  $('action').textContent=s.action;
+  $('dial').textContent=s.dial||'';
+  $('son').textContent=s.son||'';
+  $('label').textContent=`Plan ${i+1}/${shots.length}`;
+  $('fill').style.width=((s.t/TOTAL)*100)+'%';
+  const bg=$('bg');
+  bg.classList.remove('on');
+  if(s.bg){bg.style.backgroundImage=`url('${s.bg}')`; bg.style.backgroundColor='#000'}
+  else {bg.style.backgroundImage='none'; bg.style.backgroundColor='#000'}
+  requestAnimationFrame(()=>bg.classList.add('on'));
+  $('blackout').classList.toggle('on', s.mode==='void' && !s.bg && s.title==='Silence');
+  if(s.flash){$('flash').classList.remove('go'); void $('flash').offsetWidth; $('flash').classList.add('go')}
+}
+function tick(){
+  if(!playing) return;
+  const s=shots[i];
+  acc+=0.25;
+  $('fill').style.width=(((s.t+Math.min(acc,s.d))/TOTAL)*100)+'%';
+  if(acc>=s.d){acc=0; if(i>=shots.length-1){playing=false;$('play').textContent='▶ Lecture';return} show(i+1)}
+  timer=setTimeout(tick,250);
+}
+$('play').onclick=()=>{playing=!playing;$('play').textContent=playing?'⏸ Pause':'▶ Lecture';if(playing){acc=0;tick()}};
+$('prev').onclick=()=>{playing=false;$('play').textContent='▶ Lecture';acc=0;show(i-1)};
+$('next').onclick=()=>{playing=false;$('play').textContent='▶ Lecture';acc=0;show(i+1)};
+$('bar').onclick=(e)=>{const r=$('bar').getBoundingClientRect();const p=(e.clientX-r.left)/r.width;const t=p*TOTAL;let best=0;shots.forEach((s,idx)=>{if(s.t<=t)best=idx});show(best)};
+show(0);
+</script>
+</body>
+</html>
