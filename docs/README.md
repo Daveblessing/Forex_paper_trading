@@ -5,6 +5,13 @@ Pas un conseil financier. Pas d’argent réel. Pas de Play Store. Pas de clé A
 
 Dossier **prêt GitHub Pages** (chemins relatifs). Publier `fx-lab-app/` tel quel, ou copier son contenu vers `/docs` si Pages est réglé sur le dossier docs.
 
+
+## Santé 7/10 + rafraîchir la PWA
+
+Voir **[SANTÉ-7.md](./SANTÉ-7.md) (alias [SANTE-7.md](./SANTE-7.md))** (onboarding, Objectif 40 G/P, statut « À jour », démo #476990434).
+
+**Pour forcer la nouvelle version sur Infinix :** ferme l’app complètement puis rouvre ; si ça reste coincé, efface les données du site dans Chrome ou réinstalle l’icône. Le service worker est en **fx-lab-shell-v4**.
+
 ## Fichiers
 
 | Fichier | Rôle |
@@ -61,7 +68,8 @@ Aucun `git push` n’est fait ici ; à publier ensuite.
 
 ## Changelog (FR)
 
-- **Fraîcheur cours** : polling ∼12–15s (visible) / ∼45–60s (onglet caché) ; Mode turbo ∼8–10s (ON par défaut si focus) ; badge « À jour : il y a Xs » (rouge si >90s) ; bouton **Actualiser maintenant** ; flash léger des prix à chaque MAJ OK ; SW v3 network-only pour les API quotes. Limite honnête : pas de ticks ms Exness sans flux broker/serveur — max possible avec API publiques gratuites en PWA.
+- **Santé 7/10** : onboarding « Prêt en 2 minutes », Objectif 40 G/P visible, prochaines actions FR, fraîcheur jamais silencieuse, cache shell v4.
+- **Fraîcheur cours** : polling ∼12–15s (visible) / ∼45–60s (onglet caché) ; Mode turbo ∼8–10s (ON par défaut si focus) ; badge « À jour : il y a Xs » (rouge si >90s) ; bouton **Actualiser maintenant** ; flash léger des prix à chaque MAJ OK ; SW v4 network-only pour les API quotes. Limite honnête : pas de ticks ms Exness sans flux broker/serveur — max possible avec API publiques gratuites en PWA.
 - **PWA** : manifest + icônes + service worker, « Installer l’appli », « Activer les alertes », notifications locales, fallback toast/vibreur/bip.
 - Conservé : étude 30 jours, boîte Fib / structure / légendes, or+crypto+indices, consensus multi-sources, bannières DÉMO, recalibrage, checklist copie Exness démo.
 - Rappel : Fib n’est pas magique · pas de garantie · démo seulement.

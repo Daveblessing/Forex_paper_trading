@@ -511,6 +511,56 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
 @media (display-mode: standalone) {
   .hide-when-installed { display: none !important; }
 }
+
+/* === SANTÉ 7 — onboarding + G/P + fraîcheur === */
+.onboard-banner {
+  border: 2px solid #2563eb;
+  background: linear-gradient(180deg, #0c1a3a 0%, #1a2332 100%);
+  box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.35);
+}
+.onboard-banner h2 { margin: 0; font-size: 1.15rem; }
+.onboard-banner .onboard-lead {
+  margin: 0.35rem 0 0.65rem; font-size: 0.86rem; color: var(--muted); line-height: 1.45;
+}
+.btn-start-study {
+  background: #2563eb; color: #fff; width: 100%; min-height: 52px;
+  font-size: 1.05rem; font-weight: 800; border: none; border-radius: 12px;
+  margin-bottom: 0.65rem;
+}
+.btn-start-study:active { opacity: 0.9; }
+.onboard-checks { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.4rem; }
+.onboard-checks li {
+  display: flex; align-items: flex-start; gap: 0.65rem;
+  background: #0d1218; border: 1px solid var(--border); border-radius: 10px;
+  padding: 0.65rem 0.75rem; cursor: pointer; user-select: none;
+  font-size: 0.9rem; line-height: 1.35;
+}
+.onboard-checks li.done { border-color: #166534; background: #0c1f14; }
+.onboard-checks li input { width: 1.15rem; height: 1.15rem; margin-top: 0.1rem; flex: 0 0 auto; accent-color: #22c55e; }
+.onboard-checks li span { flex: 1; }
+.gp-objective {
+  border: 2px solid #ca8a04 !important;
+  background: linear-gradient(180deg, #2a1f0a 0%, #1a2332 100%) !important;
+  border-radius: 12px; padding: 0.65rem 0.75rem !important;
+}
+.gp-objective .lbl { color: #fde68a !important; font-weight: 800; font-size: 0.88rem !important; }
+.gp-objective .val { font-size: 1.45rem !important; color: #fef08a; }
+.gp-nudge, .next-action-banner {
+  font-size: 0.88rem; line-height: 1.45;
+  background: #1c1917; border: 1px solid #a16207; color: #fde68a;
+  border-radius: 12px; padding: 0.7rem 0.85rem; margin: 0.65rem 0 0;
+}
+.next-action-banner { border-color: #1d4ed8; background: #0c1a2e; color: #bfdbfe; }
+.next-action-banner strong, .gp-nudge strong { color: #fff; }
+.catchup-note {
+  font-size: 0.8rem; color: #fde68a; background: #422006;
+  border: 1px solid #a16207; border-radius: 10px;
+  padding: 0.5rem 0.7rem; margin: 0.35rem 0 0.55rem;
+}
+.catchup-note[hidden] { display: none !important; }
+.freshness.err { color: var(--red); }
+.onboard-banner[hidden], .gp-nudge[hidden], .next-action-banner[hidden] { display: none !important; }
+.onboard-collapsed-note { font-size: 0.78rem; color: var(--muted); margin: 0.35rem 0 0; }
 </style>
 </head>
 <body>
@@ -530,6 +580,27 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
       Le consensus améliore la robustesse mais <strong>ne peut pas</strong> coller aux ticks Exness au millimètre.
     </p>
   </div>
+
+  <section class="card onboard-banner" id="onboardBanner" aria-label="Prêt en 2 minutes">
+    <div class="card-head">
+      <h2>⏱ Prêt en 2 minutes</h2>
+      <span class="muted">santé labo</span>
+    </div>
+    <p class="onboard-lead">
+      Démo Exness seulement (#476990434) · pas de profit promis · pas de connexion broker.
+      Coche les 4 points, puis démarre l’étude 30 jours.
+    </p>
+    <button type="button" class="btn-start-study" id="btnStartStudy">Démarrer l’étude (J1/30)</button>
+    <ul class="onboard-checks" id="onboardChecks">
+      <li data-key="chrome"><input type="checkbox" id="chkChrome" /><span>Chrome (pas XOS)</span></li>
+      <li data-key="install"><input type="checkbox" id="chkInstall" /><span>Installer l’app / écran d’accueil</span></li>
+      <li data-key="alerts"><input type="checkbox" id="chkAlerts" /><span>Activer les alertes</span></li>
+      <li data-key="battery"><input type="checkbox" id="chkBattery" /><span>Batterie → Sans restriction</span></li>
+    </ul>
+    <p class="onboard-collapsed-note" id="onboardDoneNote" hidden>
+      Étude démarrée · checklist complète. Tu peux rouvrir les astuces PWA plus bas si besoin.
+    </p>
+  </section>
 
   <section class="card pwa-card" id="pwaCard">
     <div class="card-head">
@@ -616,10 +687,11 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
         <div class="val" id="studySigToday">0 / 5</div>
         <div class="progress" aria-hidden="true"><span id="barSigToday" style="width:0%"></span></div>
       </div>
-      <div class="stat wide">
-        <div class="lbl">Résultats notés (cible ≥40)</div>
+      <div class="stat wide gp-objective">
+        <div class="lbl">🎯 Objectif 40 G/P</div>
         <div class="val" id="studyOutcomes">0 / 40</div>
         <div class="progress" aria-hidden="true"><span id="barOutcomes" style="width:0%"></span></div>
+        <div class="muted" style="margin-top:0.35rem;font-size:0.75rem" id="studyGpSub">Notés : 0 · reste 40 pour la cible labo</div>
       </div>
       <div class="stat">
         <div class="lbl">Win rate (démo)</div>
@@ -632,6 +704,8 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
       </div>
     </div>
     <p class="muted" id="studyHint" style="margin:0.65rem 0 0;font-size:0.75rem"></p>
+    <div class="gp-nudge" id="gpNudge" role="status" hidden></div>
+    <div class="next-action-banner" id="nextActionBanner" role="status" hidden></div>
   </section>
 
 
@@ -946,6 +1020,7 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
   'use strict';
 
   var STORAGE_KEY = 'fx_signals_real_v1';
+  var ONBOARD_KEY = 'fx_lab_onboard_v1';
   var FX_PAIRS = ['EURUSD', 'GBPUSD', 'USDJPY', 'USDCHF'];
   var GOLD_PAIRS = ['XAUUSD'];
   var CRYPTO_PAIRS = ['BTCUSD', 'ETHUSD'];
@@ -989,6 +1064,9 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
   var state = loadState();
   var pollTimer = null;
   var freshnessTimer = null;
+  var userRefreshPending = false;
+  var lastCatchUpNote = '';
+  var onboardState = { chrome: false, install: false, alerts: false, battery: false };
   var fetching = false;
   var turboMode = true;
   try {
@@ -1929,15 +2007,21 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
   }
 
   function ensureStudyStart() {
-    if (!state.studyStart) {
-      state.studyStart = todayKey();
-      save();
-    }
+    /* Santé 7: ne démarre plus tout seul — CTA « Démarrer l'étude » ou date manuelle. */
+    return state.studyStart || null;
+  }
+
+  function startStudyToday() {
+    state.studyStart = todayKey();
+    save();
     return state.studyStart;
   }
 
   function studyDayNumber() {
-    var start = ensureStudyStart();
+    var start = state.studyStart;
+    if (!start) {
+      return { day: 0, start: null, total: STUDY_DAYS, started: false };
+    }
     var parts = start.split('-');
     var s = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
     var now = new Date();
@@ -1945,7 +2029,37 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
     var diff = Math.floor((today - s) / 86400000) + 1;
     if (diff < 1) diff = 1;
     if (diff > STUDY_DAYS) diff = STUDY_DAYS;
-    return { day: diff, start: start, total: STUDY_DAYS };
+    return { day: diff, start: start, total: STUDY_DAYS, started: true };
+  }
+
+  function loadOnboard() {
+    try {
+      var raw = localStorage.getItem(ONBOARD_KEY);
+      if (raw) {
+        var o = JSON.parse(raw);
+        onboardState = {
+          chrome: !!o.chrome,
+          install: !!o.install,
+          alerts: !!o.alerts,
+          battery: !!o.battery
+        };
+      }
+    } catch (e) { /* ignore */ }
+    return onboardState;
+  }
+
+  function saveOnboard() {
+    try {
+      localStorage.setItem(ONBOARD_KEY, JSON.stringify(onboardState));
+    } catch (e) { /* quota */ }
+  }
+
+  function onboardComplete() {
+    return !!(onboardState.chrome && onboardState.install && onboardState.alerts && onboardState.battery);
+  }
+
+  function studyStarted() {
+    return !!state.studyStart;
   }
 
   function recentOutcomes(days) {
@@ -2453,9 +2567,11 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
     }
 
     if (made) {
+      lastCatchUpNote = made + ' signal(s) « rattrapage » éducatif ajouté(s) — vois Signaux du jour.';
       save();
       render();
       toast(made + ' rattrapage éducatif (historique du jour)');
+      updateCatchupNote();
     }
   }
 
@@ -2463,6 +2579,7 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
     if (fetching) return;
     fetching = true;
     setStatus('wait', 'Mise à jour…');
+    setFreshnessBusy();
     $('errorBox').hidden = true;
     try {
       var result = await fetchPrices();
@@ -2482,6 +2599,7 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
       save();
       var sc = result.sourceCount + '/' + result.sourceTotal + ' sources FX';
       setStatus(result.sourceCount < 2 ? 'wait' : 'ok', 'OK · ' + sc + ' · consensus médiane');
+      userRefreshPending = false;
       render();
       flashPrices();
       updateFreshness();
@@ -2491,9 +2609,11 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
       state.lastError = (e && e.message) || String(e);
       state.sourceWarning = null;
       save();
-      setStatus('err', 'Erreur API');
+      setStatus('err', 'Erreur API — retente Actualiser');
       showError(state.lastError);
+      userRefreshPending = false;
       renderTicker();
+      updateFreshness();
     } finally {
       fetching = false;
     }
@@ -2831,7 +2951,13 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
     var openN = list.filter(function (x) { return x.status === 'ouvert'; }).length;
     if (meta) meta.textContent = 'ouverts ' + openN + ' · total ' + list.length;
     if (!list.length) {
-      el.innerHTML = '<p class="empty">Aucune copie suivie. Tape « Copié » sur un signal pour démarrer le suivi.</p>';
+      var gp0 = (state.wins + state.losses) === 0;
+      var hasSig = (state.todaySignals && state.todaySignals.length) || (state.signals && state.signals.some(function (s) { return s.status === 'active'; }));
+      if (hasSig && gp0) {
+        el.innerHTML = '<p class="empty">Sur Exness <strong>DÉMO</strong> : copie <strong>0.01 lot + SL</strong>, puis tape <strong>Copié ici</strong>.</p>';
+      } else {
+        el.innerHTML = '<p class="empty">Aucune copie suivie. Tape « Copié » sur un signal pour démarrer le suivi.</p>';
+      }
       return;
     }
     var html = '';
@@ -2900,7 +3026,7 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
       if (!fn.textContent) fn.hidden = true;
     }
     if (!active.length) {
-      $('signals').innerHTML = '<p class="empty">Aucun signal actif. Active l’auto ou appuie sur « Évaluer ».</p>';
+      $('signals').innerHTML = '<p class="empty">Aucun signal actif. <strong>Tape Actualiser</strong>, puis mets <strong>Auto-signaux ON</strong> (ou Évaluer).</p>';
       return;
     }
     var html = '';
@@ -2992,7 +3118,7 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
     var el = $('todayList');
     if (!el) return;
     if (!list.length) {
-      el.innerHTML = '<p class="empty">Aucun signal aujourd’hui encore. Auto / Évaluer / rattrapage rempliront cette liste.</p>';
+      el.innerHTML = '<p class="empty">0 signal aujourd’hui. <strong>Tape Actualiser</strong>, puis mets <strong>Auto-signaux ON</strong>.</p>';
       return;
     }
     var html = '';
@@ -3071,18 +3197,26 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
   }
 
   function renderStudyPanel() {
-    ensureStudyStart();
     var info = studyDayNumber();
-    if ($('studyDayLabel')) $('studyDayLabel').textContent = 'Jour ' + info.day + '/' + info.total;
+    if ($('studyDayLabel')) {
+      $('studyDayLabel').textContent = info.started
+        ? ('Jour ' + info.day + '/' + info.total)
+        : 'Pas démarré';
+    }
     var inp = $('studyStartInput');
-    if (inp && document.activeElement !== inp) inp.value = state.studyStart || info.start;
+    if (inp && document.activeElement !== inp) inp.value = state.studyStart || '';
 
     var sigToday = todayCount();
     var outcomes = state.wins + state.losses;
     var wr = outcomes ? Math.round((state.wins / outcomes) * 100) : null;
+    var leftGp = Math.max(0, STUDY_TARGET_OUTCOMES - outcomes);
 
     if ($('studySigToday')) $('studySigToday').textContent = sigToday + ' / ' + STUDY_TARGET_SIGNALS;
     if ($('studyOutcomes')) $('studyOutcomes').textContent = outcomes + ' / ' + STUDY_TARGET_OUTCOMES;
+    if ($('studyGpSub')) {
+      $('studyGpSub').textContent = 'Notés : ' + outcomes + ' · reste ' + leftGp +
+        ' pour la cible labo (démo only)';
+    }
     if ($('studyWr')) {
       $('studyWr').textContent = wr == null ? '—' : (wr + '%');
       $('studyWr').className = 'val' + (wr == null ? '' : (wr >= 50 ? ' pos' : ' neg'));
@@ -3095,11 +3229,102 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
 
     var hint = $('studyHint');
     if (hint) {
-      var leftDays = Math.max(0, STUDY_DAYS - info.day);
-      hint.textContent = 'Jour ' + info.day + '/' + STUDY_DAYS +
-        ' · reste ~' + leftDays + ' j · règles v' + (state.ruleVersion || 1) +
-        ' · cible étude : discipline G/P démo, pas le cash. Aucune suggestion d’argent réel ici.';
+      if (!info.started) {
+        hint.textContent = 'Étude non démarrée — tape « Démarrer l’étude (J1/30) » en haut. Démo seulement, pas de cash.';
+      } else {
+        var leftDays = Math.max(0, STUDY_DAYS - info.day);
+        hint.textContent = 'Jour ' + info.day + '/' + STUDY_DAYS +
+          ' · reste ~' + leftDays + ' j · règles v' + (state.ruleVersion || 1) +
+          ' · Objectif 40 G/P : ' + outcomes + '/' + STUDY_TARGET_OUTCOMES +
+          ' · discipline démo, pas le cash.';
+      }
     }
+    renderGpNudge();
+    renderNextAction();
+    renderOnboarding();
+  }
+
+  function openCopiesCount() {
+    return (state.openCopies || []).filter(function (x) { return x.status === 'ouvert'; }).length;
+  }
+
+  function renderGpNudge() {
+    var el = $('gpNudge');
+    if (!el) return;
+    var outcomes = state.wins + state.losses;
+    var openN = openCopiesCount();
+    var msg = '';
+    if (studyStarted() && outcomes === 0 && openN === 0) {
+      msg = '<strong>Rappel G/P :</strong> 0 résultat noté. Après une copie démo, marque <strong>Gagné</strong> ou <strong>Perdu</strong> pour alimenter le recalibrage (cible 40).';
+    } else if (openN > 0) {
+      msg = '<strong>Rappel :</strong> ' + openN + ' copie(s) ouverte(s) sans issue — marque <strong>Gagné</strong> ou <strong>Perdu</strong> sur chaque copie ouverte.';
+    }
+    if (msg) {
+      el.hidden = false;
+      el.innerHTML = msg;
+    } else {
+      el.hidden = true;
+      el.innerHTML = '';
+    }
+  }
+
+  function renderNextAction() {
+    var el = $('nextActionBanner');
+    if (!el) return;
+    var outcomes = state.wins + state.losses;
+    var openN = openCopiesCount();
+    var sigToday = todayCount();
+    var hasActive = state.signals.some(function (s) { return s.status === 'active'; });
+    var msg = '';
+    if (sigToday === 0 && !hasActive) {
+      msg = '<strong>Prochaine action :</strong> Tape <strong>Actualiser</strong>, puis mets <strong>Auto-signaux ON</strong>.';
+    } else if ((sigToday > 0 || hasActive) && openN === 0 && outcomes === 0) {
+      msg = '<strong>Prochaine action :</strong> Sur Exness <strong>DÉMO</strong> : copie <strong>0.01 lot + SL</strong>, puis tape <strong>Copié ici</strong>.';
+    } else if (openN > 0) {
+      msg = '<strong>Prochaine action :</strong> Marque <strong>Gagné</strong> ou <strong>Perdu</strong> sur chaque copie ouverte.';
+    }
+    if (msg) {
+      el.hidden = false;
+      el.innerHTML = msg;
+    } else {
+      el.hidden = true;
+      el.innerHTML = '';
+    }
+  }
+
+  function renderOnboarding() {
+    var banner = $('onboardBanner');
+    if (!banner) return;
+    var started = studyStarted();
+    var done = onboardComplete();
+    var show = !started || !done;
+    banner.hidden = !show;
+    var startBtn = $('btnStartStudy');
+    if (startBtn) {
+      if (started) {
+        startBtn.hidden = true;
+      } else {
+        startBtn.hidden = false;
+        startBtn.textContent = 'Démarrer l’étude (J1/30)';
+      }
+    }
+    var note = $('onboardDoneNote');
+    if (note) note.hidden = !(started && done);
+    var map = {
+      chrome: 'chkChrome',
+      install: 'chkInstall',
+      alerts: 'chkAlerts',
+      battery: 'chkBattery'
+    };
+    Object.keys(map).forEach(function (key) {
+      var input = $(map[key]);
+      var li = banner.querySelector('li[data-key="' + key + '"]');
+      if (input) input.checked = !!onboardState[key];
+      if (li) {
+        if (onboardState[key]) li.classList.add('done');
+        else li.classList.remove('done');
+      }
+    });
   }
 
   function renderWeeklySummary() {
@@ -3466,8 +3691,11 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
   function forceRefreshAll() {
     if (fetching) {
       toast('Mise à jour déjà en cours…');
+      setFreshnessBusy();
       return;
     }
+    userRefreshPending = true;
+    setFreshnessBusy();
     refresh(true).then(function () { startPoll(); }).catch(function () { startPoll(); });
   }
   $('btnRefresh').onclick = function () { forceRefreshAll(); };
@@ -3595,18 +3823,44 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
       if (!v) return;
       state.studyStart = v;
       save();
-      renderStudyPanel();
+      render();
       toast('Début étude : ' + v);
     });
   }
   if ($('btnStudyResetStart')) {
     $('btnStudyResetStart').onclick = function () {
-      state.studyStart = todayKey();
-      save();
+      startStudyToday();
       renderStudyPanel();
       toast('Début étude remis à aujourd’hui');
     };
   }
+
+  if ($('btnStartStudy')) {
+    $('btnStartStudy').onclick = function () {
+      startStudyToday();
+      render();
+      toast('Étude démarrée — Jour 1/30 (démo)');
+    };
+  }
+
+  function bindOnboardChecks() {
+    var root = $('onboardChecks');
+    if (!root) return;
+    root.addEventListener('click', function (ev) {
+      var li = ev.target.closest ? ev.target.closest('li[data-key]') : null;
+      if (!li) return;
+      var key = li.getAttribute('data-key');
+      if (!key || !Object.prototype.hasOwnProperty.call(onboardState, key)) return;
+      if (ev.target && ev.target.tagName === 'INPUT') {
+        onboardState[key] = !!ev.target.checked;
+      } else {
+        onboardState[key] = !onboardState[key];
+      }
+      saveOnboard();
+      renderOnboarding();
+    });
+  }
+  bindOnboardChecks();
 
   function currentPollMs() {
     if (document.hidden) return POLL_HIDDEN_MS;
@@ -3622,32 +3876,96 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
     el.textContent = 'Polling : ∼' + sec + 's (' + mode + ') · FX consensus + or/crypto';
   }
 
+  function setFreshnessBusy() {
+    var el = $('freshnessLabel');
+    if (el) {
+      el.textContent = 'À jour : actualisation en cours…';
+      el.className = 'freshness wait';
+    }
+    var detail = $('refreshDetail');
+    if (detail) {
+      detail.hidden = false;
+      detail.textContent = 'Chargement des cours (consensus multi-sources)…';
+    }
+  }
+
+  function updateCatchupNote() {
+    var el = $('catchupNote');
+    if (!el) return;
+    if (lastCatchUpNote) {
+      el.hidden = false;
+      el.textContent = lastCatchUpNote;
+    } else {
+      el.hidden = true;
+      el.textContent = '';
+    }
+  }
+
   function updateFreshness() {
     var el = $('freshnessLabel');
     var lu = $('lastUpdate');
+    var detail = $('refreshDetail');
     if (!el) return;
-    if (!state.lastFetchAt) {
-      el.textContent = 'À jour : —';
+    updateCatchupNote();
+    if (fetching || userRefreshPending) {
+      el.textContent = 'À jour : actualisation en cours…';
       el.className = 'freshness wait';
+      if (detail) {
+        detail.hidden = false;
+        detail.textContent = 'Chargement… si ça dure, vérifie le réseau puis retente Actualiser.';
+      }
       if (lu) {
-        lu.textContent = '—';
+        lu.textContent = 'en cours…';
         lu.className = '';
+      }
+      return;
+    }
+    if (!state.lastFetchAt) {
+      if (state.lastError) {
+        var shortErr = String(state.lastError).slice(0, 120);
+        el.textContent = 'À jour : échec — retente Actualiser';
+        el.className = 'freshness err';
+        if (detail) {
+          detail.hidden = false;
+          detail.textContent = 'Erreur : ' + shortErr + ' · Vérifie le réseau / Chrome, puis tape Actualiser.';
+        }
+        if (lu) {
+          lu.textContent = 'échec';
+          lu.className = 'neg';
+        }
+      } else {
+        el.textContent = 'À jour : pas encore chargé — tape Actualiser';
+        el.className = 'freshness wait';
+        if (detail) {
+          detail.hidden = false;
+          detail.textContent = 'Aucun cours chargé pour l’instant. Tape « Actualiser maintenant ».';
+        }
+        if (lu) {
+          lu.textContent = 'pas encore';
+          lu.className = '';
+        }
       }
       return;
     }
     var ageMs = Date.now() - state.lastFetchAt;
     var age = Math.max(0, Math.floor(ageMs / 1000));
     var sc = (state.sourceCount != null && state.sourceTotal != null)
-      ? (' · ' + state.sourceCount + '/' + state.sourceTotal + ' src')
+      ? (' · ' + state.sourceCount + '/' + state.sourceTotal + ' src OK')
       : '';
-    el.textContent = 'À jour : il y a ' + age + 's' + sc;
+    var d = new Date(state.lastFetchAt);
+    var clock = d.toLocaleTimeString('fr-FR', {
+      hour: '2-digit', minute: '2-digit', second: '2-digit'
+    });
+    el.textContent = 'À jour : ' + clock + ' (il y a ' + age + 's)' + sc;
     var stale = ageMs > STALE_MS;
     el.className = 'freshness ' + (stale ? 'stale' : 'ok');
+    if (detail) {
+      detail.hidden = false;
+      detail.textContent = 'Dernière MAJ OK · sources : ' + (state.apiSource || '—') +
+        (stale ? ' · attention : >90s, retente Actualiser si besoin.' : '');
+    }
     if (lu) {
-      var d = new Date(state.lastFetchAt);
-      lu.textContent = 'MAJ ' + d.toLocaleTimeString('fr-FR', {
-        hour: '2-digit', minute: '2-digit', second: '2-digit'
-      }) + (stale ? ' · périmé (>90s)' : '');
+      lu.textContent = 'MAJ ' + clock + (stale ? ' · périmé (>90s)' : ' · OK');
       lu.className = stale ? 'neg' : '';
     }
   }
@@ -3972,7 +4290,7 @@ details.help[open] summary { margin-bottom: 0.5rem; color: var(--text); }
   });
 
   // Boot
-  ensureStudyStart();
+  loadOnboard();
   render();
   updateFreshness();
   if (state.lastError && !state.lastFetchAt) showError(state.lastError);
