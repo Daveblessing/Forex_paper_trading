@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>S1E02 · Maquette FILM · L’homme mystérieux</title>
+<style>
+:root{--bg:#05080c;--gold:#E8D5A3;--amber:#D4893A;--muted:#8a8076;--text:#F3EDE3}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,sans-serif}
+.stage{max-width:420px;margin:0 auto;padding:12px 12px 100px}
+.phone{aspect-ratio:9/16;width:100%;max-height:72vh;margin:0 auto;border-radius:18px;overflow:hidden;position:relative;border:1px solid #222;background:#000;box-shadow:0 20px 60px rgba(0,0,0,.55)}
+.bg{position:absolute;inset:0;background-size:cover;background-position:center;opacity:0;transform:scale(1.05);transition:opacity .4s,transform 4s linear}
+.bg.on{opacity:1;transform:scale(1)}
+.veil{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.15),rgba(0,0,0,.78))}
+.copy{position:absolute;left:0;right:0;bottom:0;padding:18px 16px 22px;z-index:2}
+.tc{font-size:.7rem;color:var(--gold)}.title{font-size:1.05rem;font-weight:700;margin:.2rem 0}
+.action{font-size:.85rem;color:#ddd}.dial{font-size:.9rem;font-style:italic;color:var(--gold);margin-top:.4rem}
+.son{font-size:.7rem;color:var(--amber);margin-top:.3rem}
+.flash{position:absolute;inset:0;background:#fff6e0;opacity:0;z-index:3;pointer-events:none}
+.flash.go{animation:f .35s ease}@keyframes f{0%{opacity:.65}100%{opacity:0}}
+.controls{position:fixed;left:0;right:0;bottom:0;background:rgba(5,8,12,.94);border-top:1px solid #1c242c;padding:10px 14px 16px}
+.row{display:flex;gap:8px;align-items:center;max-width:420px;margin:0 auto}
+button{background:var(--gold);color:#111;border:0;border-radius:999px;padding:.55rem 1rem;font-weight:700;cursor:pointer}
+button.sec{background:#1a222a;color:var(--text)}
+.bar{flex:1;height:6px;background:#1a222a;border-radius:99px;overflow:hidden;cursor:pointer}
+.fill{height:100%;width:0;background:linear-gradient(90deg,var(--amber),var(--gold))}
+.meta{max-width:420px;margin:8px auto 0;font-size:.72rem;color:var(--muted);display:flex;justify-content:space-between}
+h1{font-size:.95rem;margin:8px 0 4px;text-align:center}
+.sub{text-align:center;color:var(--muted);font-size:.72rem;margin:0 0 10px}
+.badge{border:1px solid var(--gold);color:var(--gold);border-radius:99px;padding:2px 8px;font-size:.65rem}
+</style>
+</head>
+<body>
+<div class="stage">
+<h1>L’homme mystérieux · S1E02</h1>
+<p class="sub"><span class="badge">Maquette FILM</span> · ~6’00 · sans IA · HORS Market</p>
+<div class="phone"><div class="bg" id="bg"></div><div class="veil"></div><div class="flash" id="flash"></div>
+<div class="copy"><div class="tc" id="tc"></div><div class="title" id="title"></div><div class="action" id="action"></div><div class="dial" id="dial"></div><div class="son" id="son"></div></div>
+</div></div>
+<div class="controls"><div class="row">
+<button id="play">▶ Lecture</button><button class="sec" id="prev">‹</button><button class="sec" id="next">›</button>
+<div class="bar" id="bar"><div class="fill" id="fill"></div></div></div>
+<div class="meta"><span id="label"></span><span>A+B papier prêt</span></div></div>
+<script>
+const shots=[
+{t:0,d:10,title:'Rue',action:'Soleil bas, poussière d’or — Mère avance',dial:'',son:'Diegesis ville',bg:'key-art-planB/K-rue.jpg'},
+{t:10,d:10,title:'Silence',action:'Les sons s’arrachent un à un',dial:'',son:'→ Ø',bg:'key-art-planB/K-rue.jpg'},
+{t:28,d:7,title:'L’Homme',action:'Seul au bout de la rue',dial:'Mère: « Encore… ? »',son:'♥ puis ✖',bg:'key-art-planB/K-rue.jpg'},
+{t:40,d:15,title:'Cour',action:'Homme déjà là — pas d’entrée spectacle',dial:'« Je ne reste pas. Je parle. »',son:'♥ 2s',bg:'key-art-planB/K-cour.jpg'},
+{t:70,d:10,title:'Œil-paroi',action:'Type A dans l’ombre du linge',dial:'« Ils sont déjà là. »',son:'✖',bg:'key-art-planB/K05-ombre-mood.jpg'},
+{t:85,d:20,title:'Garde-le',action:'Chaque phrase = un plan',dial:'« Garde cet enfant. »',son:'Silence entre',bg:'key-art-planB/K-cour.jpg'},
+{t:120,d:15,title:'La Terre',action:'Le mot trop grand pour la cour',dial:'« Il sauvera la planète Terre. »',son:'♥ + La–Mi léger',bg:'key-art-planB/K01-or-mood.jpg',flash:1},
+{t:160,d:20,title:'Ne pas détruire',action:'Anneau Saturne 8 frames entre main et ventre',dial:'« L’enfant ne doit pas être détruit. »',son:'♥ flash',bg:'key-art-planB/K02-ventre-mood.jpg',flash:1},
+{t:200,d:25,title:'Serment',action:'Choix de la Mère',dial:'« Je le garde… mon sang… qu’il reste vivant. »',son:'♥ 3s · ✖ s’étouffe',bg:'key-art-planB/K02-ventre-mood.jpg'},
+{t:240,d:15,title:'Disparition',action:'Clin d’œil — hors cadre',dial:'',son:'Réel + impossible',bg:'key-art-planB/K-cour.jpg'},
+{t:280,d:20,title:'On multiplie',action:'Ventre — Type C furieux',dial:'« Elle a choisi. Alors on multiplie. »',son:'✖',bg:'key-art-planB/K05-ombre-mood.jpg'},
+{t:320,d:20,title:'Nuit / cliff',action:'Tu me dois le jour',dial:'« Tu sauveras la Terre. D’abord… tu me dois le jour. »',son:'✖ ×3 → E3',bg:'key-art-planB/K08-nuit-mood.jpg'},
+{t:350,d:10,title:'Carton',action:'Épisode 3 — Les ténèbres contre la vie',dial:'',son:'Cliff',bg:'key-art-planB/K08-nuit-mood.jpg'}
+];
+const TOTAL=360;let i=0,playing=false,timer=null,acc=0;
+const $=id=>document.getElementById(id);
+const fmt=s=>{const m=Math.floor(s/60);return m+':'+String(s%60).padStart(2,'0')};
+function show(idx){i=Math.max(0,Math.min(shots.length-1,idx));const s=shots[i];
+$('tc').textContent=fmt(s.t)+' · '+s.d+'s';$('title').textContent=s.title;$('action').textContent=s.action;
+$('dial').textContent=s.dial||'';$('son').textContent=s.son||'';$('label').textContent=`Beat ${i+1}/${shots.length}`;
+$('fill').style.width=(s.t/TOTAL*100)+'%';const bg=$('bg');bg.classList.remove('on');
+bg.style.backgroundImage=s.bg?`url('${s.bg}')`:'none';bg.style.backgroundColor='#000';
+requestAnimationFrame(()=>bg.classList.add('on'));
+if(s.flash){$('flash').classList.remove('go');void $('flash').offsetWidth;$('flash').classList.add('go')}}
+function tick(){if(!playing)return;const s=shots[i];acc+=0.25;$('fill').style.width=(((s.t+Math.min(acc,s.d))/TOTAL)*100)+'%';
+if(acc>=s.d){acc=0;if(i>=shots.length-1){playing=false;$('play').textContent='▶ Lecture';return}show(i+1)}timer=setTimeout(tick,250)}
+$('play').onclick=()=>{playing=!playing;$('play').textContent=playing?'⏸ Pause':'▶ Lecture';if(playing){acc=0;tick()}};
+$('prev').onclick=()=>{playing=false;$('play').textContent='▶ Lecture';acc=0;show(i-1)};
+$('next').onclick=()=>{playing=false;$('play').textContent='▶ Lecture';acc=0;show(i+1)};
+$('bar').onclick=e=>{const r=$('bar').getBoundingClientRect();const t=((e.clientX-r.left)/r.width)*TOTAL;let b=0;shots.forEach((s,idx)=>{if(s.t<=t)b=idx});show(b)};
+show(0);
+</script>
+</body></html>
