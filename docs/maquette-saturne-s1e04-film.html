@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="fr"><head>
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>S1E04 · Maquette FILM · Il est venu au monde</title>
+<style>
+:root{--bg:#05080c;--gold:#E8D5A3;--amber:#D4893A;--muted:#8a8076;--text:#F3EDE3}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,sans-serif}
+.stage{max-width:420px;margin:0 auto;padding:12px 12px 100px}
+.phone{aspect-ratio:9/16;width:100%;max-height:72vh;margin:0 auto;border-radius:18px;overflow:hidden;position:relative;border:1px solid #222;background:#000;box-shadow:0 20px 60px rgba(0,0,0,.55)}
+.bg{position:absolute;inset:0;background-size:cover;background-position:center;opacity:0;transform:scale(1.05);transition:opacity .4s,transform 4s linear}
+.bg.on{opacity:1;transform:scale(1)}.veil{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.2),rgba(0,0,0,.8))}
+.copy{position:absolute;left:0;right:0;bottom:0;padding:18px 16px 22px;z-index:2}
+.tc{font-size:.7rem;color:var(--gold)}.title{font-size:1.05rem;font-weight:700;margin:.2rem 0}
+.action{font-size:.85rem;color:#ddd}.dial{font-size:.9rem;font-style:italic;color:var(--gold);margin-top:.4rem}
+.son{font-size:.7rem;color:var(--amber);margin-top:.3rem}
+.flash{position:absolute;inset:0;background:#fff6e0;opacity:0;z-index:3;pointer-events:none}
+.flash.go{animation:f .35s ease}@keyframes f{0%{opacity:.7}100%{opacity:0}}
+.controls{position:fixed;left:0;right:0;bottom:0;background:rgba(5,8,12,.94);border-top:1px solid #1c242c;padding:10px 14px 16px}
+.row{display:flex;gap:8px;align-items:center;max-width:420px;margin:0 auto}
+button{background:var(--gold);color:#111;border:0;border-radius:999px;padding:.55rem 1rem;font-weight:700;cursor:pointer}
+button.sec{background:#1a222a;color:var(--text)}
+.bar{flex:1;height:6px;background:#1a222a;border-radius:99px;overflow:hidden;cursor:pointer}
+.fill{height:100%;width:0;background:linear-gradient(90deg,var(--amber),var(--gold))}
+.meta{max-width:420px;margin:8px auto 0;font-size:.72rem;color:var(--muted);display:flex;justify-content:space-between}
+h1{font-size:.95rem;margin:8px 0 4px;text-align:center}.sub{text-align:center;color:var(--muted);font-size:.72rem;margin:0 0 10px}
+.badge{border:1px solid var(--gold);color:var(--gold);border-radius:99px;padding:2px 8px;font-size:.65rem}
+</style></head><body>
+<div class="stage"><h1>Il est venu au monde · S1E04</h1>
+<p class="sub"><span class="badge">Maquette FILM</span> · ~6’00 · sans IA · HORS Market</p>
+<div class="phone"><div class="bg" id="bg"></div><div class="veil"></div><div class="flash" id="flash"></div>
+<div class="copy"><div class="tc" id="tc"></div><div class="title" id="title"></div><div class="action" id="action"></div><div class="dial" id="dial"></div><div class="son" id="son"></div></div></div></div>
+<div class="controls"><div class="row">
+<button id="play">▶ Lecture</button><button class="sec" id="prev">‹</button><button class="sec" id="next">›</button>
+<div class="bar" id="bar"><div class="fill" id="fill"></div></div></div>
+<div class="meta"><span id="label"></span><span>Naissance · collées · cliff</span></div></div>
+<script>
+const shots=[
+{t:0,d:20,title:'Travail',action:'Malgré tout… tu sors',dial:'« Malgré tout… tu sors. »',son:'Cœur foetal',bg:'key-art-planB/K03-mere-mood.jpg'},
+{t:20,d:8,title:'Titre',action:'IL EST VENU AU MONDE',dial:'',son:'♥',bg:'key-art-planB/K01-or-mood.jpg',flash:1},
+{t:50,d:25,title:'Cri',action:'Flash · silence · cri raw',dial:'VO: « Malgré tout, l’enfant naît. »',son:'Ø → cri · or 4f',bg:'key-art-planB/K02-ventre-mood.jpg',flash:1},
+{t:90,d:30,title:'Tu es là',action:'Deux visages — prophétie a un visage',dial:'« Tu es là. Tu es *là*. »',son:'♥',bg:'key-art-planB/K02-ventre-mood.jpg'},
+{t:140,d:40,title:'Collées',action:'Ténèbres collées à la famille',dial:'« Proches. / Collées. / Famille. »',son:'✖',bg:'key-art-planB/K05-ombre-mood.jpg'},
+{t:200,d:25,title:'Serment jour',action:'Ils ne t’auront pas le jour',dial:'« Ils n’ont pas eu le ventre… »',son:'♥',bg:'key-art-planB/K08-nuit-mood.jpg'},
+{t:240,d:30,title:'Regard',action:'Yeux ouverts — guerre aussi',dial:'VO: « La prophétie a un visage. La guerre aussi. »',son:'♥ + ✖',bg:'key-art-planB/K04-liquide-mood.jpg'},
+{t:290,d:30,title:'Aube',action:'Silhouette trop longue dans la cour',dial:'« Le jour est à nous. Pour l’instant. »',son:'✖ loin',bg:'key-art-planB/K-cour.jpg'},
+{t:330,d:20,title:'Bientôt',action:'Œil sous le lit · main à la porte',dial:'« Bientôt. » / Carton: La guerre a un toit · E5 L’oncle',son:'✖ · smash',bg:'key-art-planB/K05-ombre-mood.jpg'}
+];
+const TOTAL=350;let i=0,playing=false,acc=0;
+const $=id=>document.getElementById(id);
+const fmt=s=>Math.floor(s/60)+':'+String(s%60).padStart(2,'0');
+function show(idx){i=Math.max(0,Math.min(shots.length-1,idx));const s=shots[i];
+$('tc').textContent=fmt(s.t)+' · '+s.d+'s';$('title').textContent=s.title;$('action').textContent=s.action;
+$('dial').textContent=s.dial||'';$('son').textContent=s.son||'';$('label').textContent=`Beat ${i+1}/${shots.length}`;
+$('fill').style.width=(s.t/TOTAL*100)+'%';const bg=$('bg');bg.classList.remove('on');
+bg.style.backgroundImage=s.bg?`url('${s.bg}')`:'none';bg.style.backgroundColor='#000';
+requestAnimationFrame(()=>bg.classList.add('on'));
+if(s.flash){$('flash').classList.remove('go');void $('flash').offsetWidth;$('flash').classList.add('go')}}
+function tick(){if(!playing)return;const s=shots[i];acc+=0.25;$('fill').style.width=(((s.t+Math.min(acc,s.d))/TOTAL)*100)+'%';
+if(acc>=s.d){acc=0;if(i>=shots.length-1){playing=false;$('play').textContent='▶ Lecture';return}show(i+1)}setTimeout(tick,250)}
+$('play').onclick=()=>{playing=!playing;$('play').textContent=playing?'⏸ Pause':'▶ Lecture';if(playing){acc=0;tick()}};
+$('prev').onclick=()=>{playing=false;$('play').textContent='▶ Lecture';acc=0;show(i-1)};
+$('next').onclick=()=>{playing=false;$('play').textContent='▶ Lecture';acc=0;show(i+1)};
+$('bar').onclick=e=>{const r=$('bar').getBoundingClientRect();const t=((e.clientX-r.left)/r.width)*TOTAL;let b=0;shots.forEach((s,idx)=>{if(s.t<=t)b=idx});show(b)};
+show(0);
+</script></body></html>
